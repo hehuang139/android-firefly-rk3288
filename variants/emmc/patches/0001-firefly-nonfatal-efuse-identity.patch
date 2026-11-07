@@ -1,0 +1,57 @@
+--- a/board/firefly/firefly-rk3288/firefly-rk3288.c
++++ b/board/firefly/firefly-rk3288/firefly-rk3288.c
+@@ -8,6 +8,7 @@
+ #include <led.h>
+ #include <log.h>
+ #include <asm/global_data.h>
++#include <asm/arch-rockchip/misc.h>
+ #include <dm/ofnode.h>
+ 
+ #ifdef CONFIG_SPL_BUILD
+@@ -45,3 +46,46 @@
+ 	}
+ }
+ #endif
++
++#if defined(CONFIG_MISC_INIT_R) && !defined(CONFIG_SPL_BUILD)
++/*
++ * Android and Ethernet need an identity before network/device-tree fixups.
++ * RK3288 stores its 16-byte CPU ID at byte 7 of the read-only eFuse device.
++ * Identity failure must never turn an otherwise bootable SD into a hang.
++ */
++int misc_init_r(void)
++{
++	const u32 cpuid_offset = 0x7;
++	u8 cpuid[16] = { 0 };
++	u8 any_bits = 0, all_bits = 0xff;
++	int ret, i;
++
++	ret = rockchip_cpuid_from_efuse(cpuid_offset, sizeof(cpuid), cpuid);
++	if (ret) {
++		printf("Firefly: eFuse CPU ID unavailable (%d), continuing boot\n", ret);
++		return 0;
++	}
++
++	/* Do not give every board the same identity for an empty/invalid fuse. */
++	for (i = 0; i < sizeof(cpuid); i++) {
++		any_bits |= cpuid[i];
++		all_bits &= cpuid[i];
++	}
++	if (!any_bits || all_bits == 0xff) {
++		printf("Firefly: invalid eFuse CPU ID, continuing without identity\n");
++		return 0;
++	}
++
++	ret = rockchip_cpuid_set(cpuid, sizeof(cpuid));
++	if (ret) {
++		printf("Firefly: serial setup failed (%d), continuing boot\n", ret);
++		return 0;
++	}
++
++	ret = rockchip_setup_macaddr();
++	if (ret)
++		printf("Firefly: MAC setup failed (%d), continuing boot\n", ret);
++
++	return 0;
++}
++#endif

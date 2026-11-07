@@ -1,0 +1,42 @@
+package {
+    default_applicable_licenses: ["firefly_audio_license"],
+}
+
+license {
+    name: "firefly_audio_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-Apache-2.0"],
+    license_text: ["LICENSE"],
+}
+
+cc_binary {
+    name: "android.hardware.audio.service-aidl.firefly",
+    relative_install_path: "hw",
+    defaults: [
+        "aidlaudioservice_defaults",
+        "latest_android_hardware_audio_core_sounddose_ndk_shared",
+        "latest_android_hardware_audio_core_ndk_shared",
+        "latest_android_hardware_bluetooth_audio_ndk_shared",
+        "latest_android_media_audio_common_types_ndk_shared",
+    ],
+    static_libs: ["libaudioserviceexampleimpl"],
+    shared_libs: [
+        "android.hardware.bluetooth.audio-impl",
+        "libbluetooth_audio_session_aidl",
+        "libmediautils_vendor",
+    ],
+    include_dirs: ["hardware/interfaces/audio/aidl/default"],
+    srcs: ["AudioCoreFirefly.cpp"],
+    init_rc: ["audio-firefly.rc"],
+    vintf_fragments: ["audio-firefly.xml"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}
+
+cc_binary {
+    name: "android.hardware.audio.effect.service-aidl.firefly",
+    relative_install_path: "hw",
+    defaults: ["aidlaudioeffectservice_defaults"],
+    shared_libs: ["libapexsupport", "libeffectconfig"],
+    srcs: ["EffectFactory.cpp", "AudioEffectFirefly.cpp"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

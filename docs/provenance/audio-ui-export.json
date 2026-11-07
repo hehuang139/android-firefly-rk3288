@@ -1,0 +1,301 @@
+{
+  "status": "exported_final_sources_with_explicit_tv_exclusions",
+  "ui_apk_sha256": "3a727e5a3cc1942d4da5fa0626afcb8d7234597a3cb053236413eb0219d89fce",
+  "audio_hal_binary_sha256": "71d22b5fe208c269ae0f6ec56b8b9db9e80857f769a85b9669f43e56a3608935",
+  "excluded_tv_files": [
+    "BroadcastPlaylist.java",
+    "BroadcasterResolver.java",
+    "ChongqingLive.java",
+    "JiangsuLive.java",
+    "PutianLive.java",
+    "QuanzhouLive.java",
+    "ShanghaiLive.java",
+    "XinjiangLive.java",
+    "XxteaCodec.java"
+  ],
+  "exclusion_reason": "Provider access/decryption and channel source licensing review; this TV subset alone is not a complete standalone app.",
+  "files": [
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/AppLaunch.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/AppLaunch.java",
+      "bytes": 3563,
+      "sha256": "a0229b854337832cd10545c89c7187bce3d3cdb651439b2870231c3fea6856c7"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/AppsActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/AppsActivity.java",
+      "bytes": 2648,
+      "sha256": "323edb4d4920d72f3d35512dd4460b824e6674cc1c8c7d532e66f37fe4e2cb18"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/ChannelCatalog.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCatalog.java",
+      "bytes": 6208,
+      "sha256": "2bb84cd6d89d1d87502c132a6beb84a8f6d7f9b18d6a080a548f00241228513a"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/DecoderActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/DecoderActivity.java",
+      "bytes": 6508,
+      "sha256": "09008ecc66aadf8224058ca62e6326a2e7de9374e52f1a1040fb6522e5d9f329"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/GuideLoader.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/GuideLoader.java",
+      "bytes": 4160,
+      "sha256": "035469c24f47c0956d981db622a8bdceb3b032d27152c05ddc5e9147afd52b33"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/HardwareDecodeCheck.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/HardwareDecodeCheck.java",
+      "bytes": 4976,
+      "sha256": "95cf7d6e8c0ee0be24192c3170f6e075d12ebcf89e9b0590813871f15ceed44f"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/HomeActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/HomeActivity.java",
+      "bytes": 10954,
+      "sha256": "2de7ca7abee417cd2b5f53e45ecda53e4e1a55882bb71e1b7900d9033b3bed7d"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/KidsActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/KidsActivity.java",
+      "bytes": 4790,
+      "sha256": "b47cb44d3d8a1ba8514b6b8d9837b9e061f755f4c45d6b9fc9eeca2588875106"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/KidsContent.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/KidsContent.java",
+      "bytes": 1066,
+      "sha256": "4838a10bc5845af11f85ef3fbbda901cd1a3a031c17765a5663acf6815bf0e38"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/LiveActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/LiveActivity.java",
+      "bytes": 20256,
+      "sha256": "86efb71d65074eb46d015818abee18ccc4add541981504319aeb85770b7b226e"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/ParentalActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalActivity.java",
+      "bytes": 5935,
+      "sha256": "bda1823c685416d26e573d37f398846a814c8c3022cc8c1bc0020daf58b9e649"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/ParentalBootReceiver.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalBootReceiver.java",
+      "bytes": 530,
+      "sha256": "8b0eeb08db70f538edd23db2f7fb8aae343b9fe8b52f7604156d4e3e99fea98b"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/ParentalPrefs.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalPrefs.java",
+      "bytes": 5319,
+      "sha256": "24570a9012d5cf04a699b4fd31c6be3886eebaacce368203d0918a82cfa55d89"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/PinDialog.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/PinDialog.java",
+      "bytes": 3789,
+      "sha256": "5a2b97756a34b6680431e55d61cf74309b1f812de5fa42eab64388364caf56a8"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/ProgramGuide.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/ProgramGuide.java",
+      "bytes": 5072,
+      "sha256": "7be6d611417be7fa71bc83ab6515aca0576160a043336d9c552a932da7effa21"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/PuzzleActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/PuzzleActivity.java",
+      "bytes": 4622,
+      "sha256": "90cb93227f87c8fcaaf767429aab08a3f18a27de2439e440aa7a7ad4885a0333"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/PuzzleRound.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/PuzzleRound.java",
+      "bytes": 1963,
+      "sha256": "646bb3cb37d888693735279f4ffb7d74c80fba7ebcda1d65787a2cd959a59825"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/RemoteActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/RemoteActivity.java",
+      "bytes": 8098,
+      "sha256": "f27676fddb5c1e73d3d70dd51e89789a6b57c3732da796ccbb5ca89cdcf5074b"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/SettingsActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/SettingsActivity.java",
+      "bytes": 3032,
+      "sha256": "4e3f03c8e69beb5a75e06a2db7d4054e21abb5e61659c3f47665a88e179984a9"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/TvActivity.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/TvActivity.java",
+      "bytes": 684,
+      "sha256": "d9f50dd1d95eaaa3b7bb45df5f589ece7a09d29d24e128aac54b19355f8d3257"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/TvUi.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/TvUi.java",
+      "bytes": 5332,
+      "sha256": "2ff5b5c751014a2b465ab44a3e9555fd8752b73c31e3823a17bf49f725ab2ca5"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/WatchBudget.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/WatchBudget.java",
+      "bytes": 778,
+      "sha256": "68b3958b67bff6d324efa1e9607fbc5d46c851f5f3214844cd3ff2ba14d29496"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/src/org/firefly/tv/WatchTimeTracker.java",
+      "target": "device/firefly/rk3288/tv/src/org/firefly/tv/WatchTimeTracker.java",
+      "bytes": 6178,
+      "sha256": "01b295b432b16f4d094405e5085fb3d48f5ea611ebb14025b9f4a2e77825b775"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/Android.bp",
+      "target": "device/firefly/rk3288/tv/Android.bp",
+      "bytes": 670,
+      "sha256": "ea5a002457275b98b55d68745391692774cc8768fa67d6ab868e7a5848e4c177"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/AndroidManifest.xml",
+      "target": "device/firefly/rk3288/tv/AndroidManifest.xml",
+      "bytes": 3384,
+      "sha256": "327ea5da754f10320ce642798df6d85102239d2f94891dfcc8ce7da88edbb90e"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/privapp-permissions-firefly-tv.xml",
+      "target": "device/firefly/rk3288/tv/privapp-permissions-firefly-tv.xml",
+      "bytes": 462,
+      "sha256": "6159542ad9ab32ebfede5211f5fd40c6d251d0425569596c0ebfa7f6213c708c"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/res/drawable/banner.xml",
+      "target": "device/firefly/rk3288/tv/res/drawable/banner.xml",
+      "bytes": 523,
+      "sha256": "44c7c51d40e386cc6d4739139e58507abeddac4d3eb1730901ae539afc04f610"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/res/drawable/ic_firefly.xml",
+      "target": "device/firefly/rk3288/tv/res/drawable/ic_firefly.xml",
+      "bytes": 505,
+      "sha256": "54a3860985c96ee53f1dad961076466a149bfc9235fba8436f40aee6082c1dcd"
+    },
+    {
+      "source": "work/tv-ui-redesign/candidate/res/values/styles.xml",
+      "target": "device/firefly/rk3288/tv/res/values/styles.xml",
+      "bytes": 636,
+      "sha256": "978c17b98bdd2e0fc17afca45351037f601cebecd40171b3938af8a1df18f539"
+    },
+    {
+      "source": "work/tv-ui-redesign/interface.patch",
+      "target": "patches/firefly-tv-ui-v3.patch",
+      "bytes": 38607,
+      "sha256": "d13f4bdeeac0e21a97f5e2b417cae34bd5997fb28dcd3156cf8651a97b0aefcd"
+    },
+    {
+      "source": "work/audio-xrun-fix/AudioCoreFirefly.cpp",
+      "target": "device/firefly/rk3288/audio/AudioCoreFirefly.cpp",
+      "bytes": 9995,
+      "sha256": "0971fd3d6c04e408b9a763c0ee795db1679f5b389c9cd0d6076b2d66470c6cba"
+    },
+    {
+      "source": "work/audio-analog-fix/audio_policy_configuration.xml",
+      "target": "device/firefly/rk3288/audio/audio_policy_configuration.xml",
+      "bytes": 1409,
+      "sha256": "297f80f1da1ddd1febec2df1bbcf39789be7d5cf0daa4d110e0eccfed64e80a7"
+    },
+    {
+      "source": "work/playback-image/init.fireflyrk3288.rc",
+      "target": "device/firefly/rk3288/init.fireflyrk3288.rc",
+      "bytes": 2619,
+      "sha256": "2e077c637e98169fedbb1aeca5a67d9c878108bb4da0f67ed5671ba60a6d10a8"
+    },
+    {
+      "source": "work/surface-performance-benchmark/init.fireflyrk3288.sf20.patch",
+      "target": "patches/init.fireflyrk3288.sf20.patch",
+      "bytes": 618,
+      "sha256": "d8edc4d2cea6e584d4ceaa61803faba23283ff20e13be741903cc3918ed7f495"
+    },
+    {
+      "source": "work/surface-performance-benchmark/init.fireflyrk3288.sf20-appbudget.patch",
+      "target": "patches/init.fireflyrk3288.sf20-appbudget.patch",
+      "bytes": 585,
+      "sha256": "a54c80f1de5eea83a5f99f6319791d1f2e2cde87612fd6ff10aea862e183acd6"
+    },
+    {
+      "source": "work/tv-ui-redesign/AudioTrackProbe.java",
+      "target": "tools/probes/AudioTrackProbe.java",
+      "bytes": 5056,
+      "sha256": "172b24ab54417aab23e4b4551021ebf2df841441ea9823cd36cd8a2af5e2e86c"
+    },
+    {
+      "source": "work/tv-ui-redesign/CodecProbe.java",
+      "target": "tools/probes/CodecProbe.java",
+      "bytes": 5686,
+      "sha256": "7c95e4a389fa1b5029a5e389a0676e2ceb81a1ac23222e6712c2db63113573d0"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/Android.bp",
+      "target": "device/firefly/rk3288/audio/Android.bp",
+      "bytes": 1405,
+      "sha256": "458383a71b537b0c2e1df9e1fde1720337a3a19c3b58c53d642fc7222bc7ce34"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/LICENSE",
+      "target": "device/firefly/rk3288/audio/LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/audio-firefly.rc",
+      "target": "device/firefly/rk3288/audio/audio-firefly.rc",
+      "bytes": 601,
+      "sha256": "2ad445b672bbe8f2c5c5bd532754203fada0ec5884b4800c76137c0fc10aba6b"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/audio-firefly.xml",
+      "target": "device/firefly/rk3288/audio/audio-firefly.xml",
+      "bytes": 445,
+      "sha256": "a7a6efad09c9fe1f9a249ebad4da81e5966f5d10acfac5af3ba7a5edb1642b43"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/AudioEffectFirefly.cpp",
+      "target": "device/firefly/rk3288/audio/AudioEffectFirefly.cpp",
+      "bytes": 771,
+      "sha256": "b01ba3ca6372c881508040e0f3449c4ed0605c0d6a6ab71e314bcea1c66a01c4"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/EffectFactory.cpp",
+      "target": "device/firefly/rk3288/audio/EffectFactory.cpp",
+      "bytes": 13026,
+      "sha256": "6c176d7cc9b0958120ae559fdd61b43166571f036c4e309f0e4a1eaf56691e99"
+    },
+    {
+      "source": "aosp/device/firefly/rk3288/audio/audio_effects_config.xml",
+      "target": "device/firefly/rk3288/audio/audio_effects_config.xml",
+      "bytes": 201,
+      "sha256": "826bbef9a836a351dd10bc989f5dbfb1ee094920c865ae7a8a27ec4b94fbb973"
+    },
+    {
+      "source": "original product HDMI HAL to final ES8323 XRUN HAL",
+      "target": "patches/audio-es8323-xrun.patch",
+      "bytes": 6693,
+      "sha256": "b4a24f4c39a07c2633752d92eb98986c1397bcfc5dcf25ff3344b88eb4be5375"
+    },
+    {
+      "source": "decompiled from final validated DTB; not hand-written original source",
+      "target": "kernel-dtb/rk3288-firefly-es8323-npll216.decompiled.dts",
+      "bytes": 54967,
+      "sha256": "a454d4d8ae636165253a80b120d3848bce8ef124f0934eb4669741836f1b6866"
+    },
+    {
+      "source": "local offline final DTB verification",
+      "target": "kernel-dtb/verification.json",
+      "bytes": 585,
+      "sha256": "6cbb5c40c99b20af93046a3672f07638b9e86fa130695c509004734a70914a4c"
+    }
+  ]
+}

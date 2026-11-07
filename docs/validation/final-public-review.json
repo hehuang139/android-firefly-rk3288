@@ -1,0 +1,14 @@
+{
+  "scope": "Final public source inventory, syntax, private-data and document review; no new hardware/full product build",
+  "payload_files_before_this_report": 486,
+  "payload_bytes_before_this_report": 22331885,
+  "python_ast_passed": 38,
+  "unexpected_binary_archive_or_key_files": [],
+  "private_data_pattern_hits": [],
+  "crlf_files": [],
+  "markdown_missing_relative_links": [],
+  "standalone_retrospective_matches": true,
+  "retrospective_sha256": "7b4ba35b7783adc6a397976379a980792cc88d1d79ff9be927a49945a00b2693",
+  "whole_public_android_clean_build": false,
+  "hdmi_audible_validation": false
+}

@@ -1,0 +1,649 @@
+--- a/src/org/firefly/tv/AppsActivity.java
++++ b/src/org/firefly/tv/AppsActivity.java
+@@ -1,50 +1,34 @@
+ /* SPDX-License-Identifier: Apache-2.0 */
+ package org.firefly.tv;
+-
+-import android.app.Activity;
+ import android.content.Intent;
+ import android.content.pm.PackageManager;
+ import android.content.pm.ResolveInfo;
++import android.graphics.drawable.Drawable;
+ import android.os.Bundle;
+-import android.widget.Button;
++import android.view.View;
+ import android.widget.LinearLayout;
+ import android.widget.ScrollView;
+ import java.util.LinkedHashMap;
+ import java.util.Map;
+ import java.util.TreeMap;
+ 
+-/** Includes sideloaded applications that have no Leanback launcher activity. */
+-public final class AppsActivity extends Activity {
+-    @Override
+-    protected void onCreate(Bundle state) {
+-        super.onCreate(state);
+-        LinearLayout page = TvUi.page(this, "全部应用", "选择应用后按确定键打开");
+-        ScrollView scroll = new ScrollView(this);
+-        LinearLayout list = TvUi.column(this);
+-        PackageManager manager = getPackageManager();
+-        Map<String, String> applications = new LinkedHashMap<>();
+-        collect(manager, Intent.CATEGORY_LEANBACK_LAUNCHER, applications);
+-        collect(manager, Intent.CATEGORY_LAUNCHER, applications);
+-        Map<String, String> sorted = new TreeMap<>();
+-        applications.forEach((name, label) -> sorted.put(label + "  ·  " + name, name));
+-        sorted.forEach((label, name) -> {
+-            Button button = TvUi.button(this, label, view -> AppLaunch.open(this, name));
+-            TvUi.addButton(list, button);
+-        });
+-        scroll.addView(list);
+-        page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
+-        if (list.getChildCount() > 0) {
+-            list.getChildAt(0).requestFocus();
++public final class AppsActivity extends TvActivity {
++    @Override protected void onCreate(Bundle state){
++        super.onCreate(state);LinearLayout page=TvUi.page(this,"应用","你的大屏应用，尽在这里");
++        ScrollView scroll=new ScrollView(this);scroll.setClipToPadding(false);scroll.setClipChildren(false);scroll.setVerticalScrollBarEnabled(false);
++        LinearLayout grid=TvUi.column(this);grid.setClipChildren(false);grid.setClipToPadding(false);grid.setPadding(TvUi.dp(this,5),TvUi.dp(this,5),TvUi.dp(this,5),TvUi.dp(this,5));
++        PackageManager pm=getPackageManager();Map<String,String> apps=new LinkedHashMap<>();collect(pm,Intent.CATEGORY_LEANBACK_LAUNCHER,apps);collect(pm,Intent.CATEGORY_LAUNCHER,apps);
++        Map<String,String> sorted=new TreeMap<>();apps.forEach((name,label)->sorted.put(label+"\u0000"+name,name));
++        LinearLayout row=null;View first=null;int index=0;
++        for(String name:sorted.values()){
++            if(index%5==0){row=TvUi.row(this);row.setClipChildren(false);LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,TvUi.dp(this,112));rp.bottomMargin=TvUi.dp(this,16);grid.addView(row,rp);}
++            Drawable icon=null;try{icon=pm.getApplicationIcon(name);}catch(PackageManager.NameNotFoundException ignored){}
++            View card=TvUi.appCard(this,apps.get(name),icon,"◈",v->AppLaunch.open(this,name));LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(0,-1,1);if(index%5!=4)cp.rightMargin=TvUi.dp(this,14);row.addView(card,cp);if(first==null)first=card;index++;
+         }
++        if(row!=null)while(index%5!=0){LinearLayout.LayoutParams empty=new LinearLayout.LayoutParams(0,1,1);if(index%5!=4)empty.rightMargin=TvUi.dp(this,14);row.addView(new View(this),empty);index++;}
++        scroll.addView(grid);page.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));if(first!=null)first.requestFocus();
+     }
+-
+-    private void collect(PackageManager manager, String category, Map<String, String> result) {
+-        Intent query = new Intent(Intent.ACTION_MAIN).addCategory(category);
+-        for (ResolveInfo info : manager.queryIntentActivities(query, 0)) {
+-            String name = info.activityInfo.packageName;
+-            if (!getPackageName().equals(name)) {
+-                result.put(name, info.loadLabel(manager).toString());
+-            }
+-        }
++    private void collect(PackageManager pm,String category,Map<String,String> result){
++        for(ResolveInfo info:pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(category),0)){String name=info.activityInfo.packageName;if(!getPackageName().equals(name))result.put(name,info.loadLabel(pm).toString());}
+     }
+ }
+--- a/src/org/firefly/tv/DecoderActivity.java
++++ b/src/org/firefly/tv/DecoderActivity.java
+@@ -24,7 +24,7 @@
+ import java.nio.file.Files;
+ 
+ /** Enumerates advertised codecs separately from a real sample playback test. */
+-public final class DecoderActivity extends Activity {
++public final class DecoderActivity extends TvActivity {
+     private final Handler handler = new Handler(Looper.getMainLooper());
+     private final ExecutorService worker = Executors.newSingleThreadExecutor();
+     private TextView progress;
+--- a/src/org/firefly/tv/HomeActivity.java
++++ b/src/org/firefly/tv/HomeActivity.java
+@@ -1,149 +1,99 @@
+ /* SPDX-License-Identifier: Apache-2.0 */
+ package org.firefly.tv;
+-
+-import android.app.Activity;
++import android.content.Context;
+ import android.content.Intent;
+-import android.net.ConnectivityManager;
+-import android.net.NetworkCapabilities;
+-import android.os.Bundle;
+-import android.os.Handler;
+-import android.os.Looper;
++import android.content.pm.PackageManager;
++import android.graphics.*;
++import android.graphics.drawable.*;
++import android.net.*;
++import android.os.*;
+ import android.text.format.DateFormat;
+-import android.view.Gravity;
+-import android.view.KeyEvent;
+-import android.widget.Button;
+-import android.widget.LinearLayout;
+-import android.widget.ScrollView;
+-import android.widget.TextView;
++import android.view.*;
++import android.widget.*;
+ import java.util.Date;
+ 
+-/** Remote-first home screen for the original Firefly board. */
+-public final class HomeActivity extends Activity {
+-    private final Handler handler = new Handler(Looper.getMainLooper());
+-    private TextView clock;
+-    private final Runnable tick = new Runnable() {
+-        @Override
+-        public void run() {
+-            clock.setText(DateFormat.format("MM月dd日  HH:mm", new Date()));
+-            handler.postDelayed(this, 30_000);
+-        }
++/** A calm, compact home for television, remote control and mouse. */
++public final class HomeActivity extends TvActivity {
++    private final Handler handler=new Handler(Looper.getMainLooper());
++    private TextView clock,network;
++    private ConnectivityManager connectivity;
++    private boolean observing;
++    private final Runnable tick=new Runnable(){public void run(){clock.setText(DateFormat.format("HH:mm",new Date()));updateNetwork();handler.postDelayed(this,30000);}};
++    private final ConnectivityManager.NetworkCallback callback=new ConnectivityManager.NetworkCallback(){
++        @Override public void onAvailable(Network n){handler.post(()->updateNetwork());}
++        @Override public void onLost(Network n){handler.post(()->updateNetwork());}
++        @Override public void onCapabilitiesChanged(Network n,NetworkCapabilities c){handler.post(()->updateNetwork());}
+     };
+-
+-    @Override
+-    protected void onCreate(Bundle state) {
+-        super.onCreate(state);
+-        WatchTimeTracker.start(this);
+-        buildHome();
++    @Override protected void onCreate(Bundle state){super.onCreate(state);WatchTimeTracker.start(this);connectivity=getSystemService(ConnectivityManager.class);buildHome();}
++    @Override protected void onResume(){
++        super.onResume();if(new ParentalPrefs(this).enabled()){startActivity(new Intent(this,KidsActivity.class));return;}
++        handler.removeCallbacks(tick);handler.post(tick);if(!observing){connectivity.registerDefaultNetworkCallback(callback);observing=true;}
+     }
+-
+-    @Override
+-    protected void onResume() {
+-        super.onResume();
+-        if (new ParentalPrefs(this).enabled()) {
+-            startActivity(new Intent(this, KidsActivity.class));
+-            return;
+-        }
+-        buildHome();
+-        handler.post(tick);
++    @Override protected void onPause(){handler.removeCallbacks(tick);if(observing){connectivity.unregisterNetworkCallback(callback);observing=false;}super.onPause();}
++    private int dp(int n){return TvUi.dp(this,n);}
++    private void buildHome(){
++        LinearLayout root=TvUi.column(this);root.setBackgroundColor(TvUi.BACKGROUND);root.setPadding(dp(42),dp(22),dp(42),dp(14));root.setClipChildren(false);root.setClipToPadding(false);setContentView(root);
++        LinearLayout top=TvUi.row(this);top.setClipChildren(false);
++        TextView logo=TvUi.text(this,"FIREFLY",17,TvUi.TEXT);logo.setLetterSpacing(.16f);logo.setTypeface(Typeface.create("sans-serif-medium",0));logo.setGravity(Gravity.CENTER_VERTICAL);
++        top.addView(logo,new LinearLayout.LayoutParams(dp(152),dp(32)));
++        top.addView(nav("首页",true,v->{}));top.addView(nav("直播",false,v->open(LiveActivity.class)));top.addView(nav("应用",false,v->open(AppsActivity.class)));top.addView(nav("儿童",false,v->open(KidsActivity.class)));
++        top.addView(new View(this),new LinearLayout.LayoutParams(0,1,1));
++        network=TvUi.text(this,"",12,TvUi.MUTED);network.setGravity(Gravity.CENTER_VERTICAL);top.addView(network);
++        clock=TvUi.text(this,"",17,TvUi.TEXT);clock.setPadding(dp(18),0,dp(18),0);top.addView(clock);top.addView(nav("设置",false,v->open(SettingsActivity.class)));
++        root.addView(top,new LinearLayout.LayoutParams(-1,dp(42)));
++        ScrollView scroll=new ScrollView(this);scroll.setClipToPadding(false);scroll.setClipChildren(false);scroll.setVerticalScrollBarEnabled(false);scroll.setFillViewport(true);
++        LinearLayout content=TvUi.column(this);content.setClipChildren(false);content.setClipToPadding(false);content.setPadding(dp(4),dp(13),dp(4),dp(12));scroll.addView(content);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
++        content.addView(hero(),new LinearLayout.LayoutParams(-1,dp(228)));
++        LinearLayout section=TvUi.row(this);section.setPadding(0,dp(23),0,dp(14));TextView heading=TvUi.text(this,"你的应用",17,TvUi.TEXT);heading.setTypeface(Typeface.create("sans-serif-medium",0));section.addView(heading,new LinearLayout.LayoutParams(0,-2,1));
++        TextView all=TvUi.text(this,"查看全部  ›",13,TvUi.MUTED);all.setPadding(dp(14),dp(5),dp(14),dp(5));all.setBackground(TvUi.focusBackground(this));TvUi.interactive(all,v->open(AppsActivity.class));section.addView(all);content.addView(section);
++        LinearLayout apps=TvUi.row(this);apps.setClipChildren(false);apps.setClipToPadding(false);
++        addApp(apps,"哔哩哔哩",AppLaunch.BILIBILI);addApp(apps,"酷喵",AppLaunch.YOUKU);addApp(apps,"奇异果",AppLaunch.IQIYI);addApp(apps,"SmartTube",AppLaunch.YOUTUBE);addApp(apps,"本地影院",AppLaunch.KODI);
++        addAppCell(apps,TvUi.appCard(this,"儿童专区",null,"✦",v->open(KidsActivity.class)),true);content.addView(apps,new LinearLayout.LayoutParams(-1,dp(108)));
++        LinearLayout footer=TvUi.row(this);footer.setPadding(dp(4),dp(10),dp(4),0);footer.addView(TvUi.text(this,"方向键选择  ·  确定打开  ·  Esc 返回",11,0xff737d8e),new LinearLayout.LayoutParams(0,-2,1));
++        TextView remote=TvUi.text(this,"遥控器  ›",11,TvUi.MUTED);remote.setPadding(dp(12),dp(5),dp(12),dp(5));remote.setBackground(TvUi.focusBackground(this));TvUi.interactive(remote,v->open(RemoteActivity.class));footer.addView(remote);root.addView(footer);
+     }
+-
+-    @Override
+-    protected void onPause() {
+-        handler.removeCallbacks(tick);
+-        super.onPause();
++    private TextView nav(String label,boolean selected,View.OnClickListener click){
++        TextView v=TvUi.text(this,label,14,selected?TvUi.TEXT:TvUi.MUTED);v.setGravity(Gravity.CENTER);v.setPadding(dp(15),dp(8),dp(15),dp(8));
++        StateListDrawable navStates=new StateListDrawable();
++        GradientDrawable focused=TvUi.rounded(this,0xff343b47,18);focused.setStroke(dp(2),0xffedf3fb);
++        navStates.addState(new int[]{android.R.attr.state_focused},focused);
++        navStates.addState(new int[]{android.R.attr.state_hovered},focused);
++        navStates.addState(new int[]{android.R.attr.state_pressed},TvUi.rounded(this,0xff465365,18));
++        navStates.addState(new int[0],TvUi.rounded(this,selected?0xff303640:0x00101216,18));
++        v.setBackground(navStates);TvUi.interactive(v,click);return v;
+     }
+-
+-    private void buildHome() {
+-        LinearLayout page = TvUi.page(this, "Firefly TV", "直播 · 本地视频 · 你的应用");
+-        LinearLayout status = TvUi.row(this);
+-        TextView network = TvUi.text(this, networkDescription(), 16, TvUi.ACCENT);
+-        status.addView(network, new LinearLayout.LayoutParams(0, -2, 1));
+-        clock = TvUi.text(this, "", 17, TvUi.MUTED);
+-        clock.setGravity(Gravity.END);
+-        status.addView(clock);
+-        page.addView(status);
+-        ScrollView scroll = new ScrollView(this);
+-        scroll.setFillViewport(true);
+-        LinearLayout content = TvUi.column(this);
+-        content.setPadding(0, TvUi.dp(this, 24), 0, 0);
+-        scroll.addView(content);
+-        page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
+-        addMainCards(content);
+-        TextView apps = TvUi.text(this, "视频与应用", 22, TvUi.TEXT);
+-        apps.setPadding(0, TvUi.dp(this, 28), 0, TvUi.dp(this, 16));
+-        content.addView(apps);
+-        addVideoApps(content);
+-        addUtilities(content);
+-        TextView help = TvUi.text(this, "方向键移动  ·  确定键打开  ·  主页键随时返回", 15,
+-                TvUi.MUTED);
+-        help.setPadding(0, TvUi.dp(this, 18), 0, 0);
+-        page.addView(help);
++    private FrameLayout hero(){
++        FrameLayout card=new FrameLayout(this);GradientDrawable bg=new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{0xff1d283a,0xff253c4d,0xff263144});bg.setCornerRadius(dp(18));card.setBackground(bg);card.setClipToOutline(true);card.addView(new CinemaArt(this),new FrameLayout.LayoutParams(-1,-1));
++        LinearLayout text=TvUi.column(this);text.setPadding(dp(30),dp(24),dp(30),dp(24));
++        TextView eyebrow=TvUi.text(this,"TELEVISION  /  "+ChannelCatalog.load(this).channels.size()+" 个直播频道",11,0xffb6c9d6);eyebrow.setLetterSpacing(.09f);text.addView(eyebrow);
++        TextView title=TvUi.text(this,"精彩，正在发生。",34,0xfff5f7fa);title.setTypeface(Typeface.create("sans-serif-medium",0));LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-2,-2);tp.topMargin=dp(18);text.addView(title,tp);
++        TextView sub=TvUi.text(this,"新闻、体育、影视，随心切换。",14,0xffbdcad7);LinearLayout.LayoutParams sp=new LinearLayout.LayoutParams(-2,-2);sp.topMargin=dp(12);text.addView(sub,sp);
++        LinearLayout actions=TvUi.row(this);actions.setClipChildren(false);actions.setPadding(0,dp(24),0,0);TextView watch=action("▶  看直播",true,v->open(LiveActivity.class));actions.addView(watch);
++        TextView local=action("本地影院",false,v->AppLaunch.open(this,AppLaunch.KODI));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-2,dp(38));lp.leftMargin=dp(12);actions.addView(local,lp);text.addView(actions);card.addView(text,new FrameLayout.LayoutParams(-1,-1));watch.post(()->watch.requestFocus());return card;
+     }
+-
+-    private void addMainCards(LinearLayout content) {
+-        LinearLayout row = TvUi.row(this);
+-        int count = ChannelCatalog.load(this).channels.size();
+-        Button live = TvUi.button(this, "电视直播\n" + count + " 个频道 · 节目单与收藏",
+-                view -> startActivity(new Intent(this, LiveActivity.class)));
+-        live.setTextSize(27);
+-        TvUi.addWeighted(row, live, 164);
+-        Button local = TvUi.button(this, "本地视频\nU盘 · 移动硬盘 · NAS",
+-                view -> AppLaunch.open(this, AppLaunch.KODI));
+-        local.setTextSize(27);
+-        TvUi.addWeighted(row, local, 164);
+-        content.addView(row);
+-        live.requestFocus();
++    private TextView action(String label,boolean primary,View.OnClickListener click){
++        TextView v=TvUi.text(this,label,14,primary?0xff152130:TvUi.TEXT);v.setTypeface(Typeface.create("sans-serif-medium",0));v.setGravity(Gravity.CENTER);v.setPadding(dp(22),dp(10),dp(22),dp(10));
++        if(primary){StateListDrawable states=new StateListDrawable();GradientDrawable f=TvUi.rounded(this,0xffffffff,22);f.setStroke(dp(2),0xffa3d4ee);states.addState(new int[]{android.R.attr.state_focused},f);states.addState(new int[0],TvUi.rounded(this,0xffe8eef3,22));v.setBackground(states);}else v.setBackground(TvUi.focusBackground(this));TvUi.interactive(v,click);return v;
+     }
+-
+-    private void addVideoApps(LinearLayout content) {
+-        LinearLayout row = TvUi.row(this);
+-        String bilibili = AppLaunch.available(this, "com.xiaodianshi.tv.yst", "com.bilibili.tv")
+-                ? "哔哩哔哩" : "BV · B站第三方";
+-        addApp(row, bilibili, AppLaunch.BILIBILI);
+-        addApp(row, "酷喵 · 优酷", AppLaunch.YOUKU);
+-        addApp(row, "银河奇异果", AppLaunch.IQIYI);
+-        addApp(row, "YouTube", AppLaunch.YOUTUBE);
+-        content.addView(row);
++    private void addApp(LinearLayout row,String label,String[] packages){
++        Intent intent=AppLaunch.resolve(getPackageManager(),packages);if(intent==null)return;Drawable icon=null;
++        try{android.content.ComponentName component=intent.resolveActivity(getPackageManager());if(component!=null)icon=getPackageManager().getApplicationIcon(component.getPackageName());}catch(PackageManager.NameNotFoundException ignored){}
++        addAppCell(row,TvUi.appCard(this,label,icon,"▶",v->AppLaunch.open(this,packages)),false);
+     }
+-
+-    private void addApp(LinearLayout row, String title, String... packages) {
+-        if (AppLaunch.available(this, packages)) {
+-            TvUi.addWeighted(row, TvUi.button(this, title,
+-                    view -> AppLaunch.open(this, packages)), 82);
++    private void addAppCell(LinearLayout row,View cell,boolean last){LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);if(!last)lp.rightMargin=dp(12);row.addView(cell,lp);}
++    private void updateNetwork(){if(network==null||connectivity==null)return;NetworkCapabilities c=connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());network.setText(c==null?"○  未连接":"●  "+(c.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)?"有线网络":"已连接"));network.setTextColor(c==null?TvUi.MUTED:0xffa9c9bb);}
++    private void open(Class<?> activity){startActivity(new Intent(this,activity));}
++    @Override protected void handleBackAction(){ /* Home is the root of navigation. */ }
++    @Override public boolean onKeyDown(int code,KeyEvent e){return code==KeyEvent.KEYCODE_BACK||super.onKeyDown(code,e);}
++    /** Original vector illustration; no external images or fabricated programme art. */
++    private static final class CinemaArt extends View {
++        final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
++        CinemaArt(Context c){super(c);setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);}
++        @Override protected void onDraw(Canvas c){
++            float w=getWidth(),h=getHeight();p.setShader(new RadialGradient(w*.82f,h*.14f,w*.43f,new int[]{0x5872b0ae,0x00396c89},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);p.setShader(null);
++            c.save();c.translate(w*.77f,h*.49f);c.rotate(-13);float sw=w*.27f,sh=h*.65f;p.setColor(0x18253649);c.drawRoundRect(new RectF(-sw*.5f,-sh*.5f,sw*.5f,sh*.5f),h*.065f,h*.065f,p);
++            p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(1.4f);p.setColor(0x385c8fa9);for(int n=0;n<4;n++){float a=n*h*.046f;c.drawRoundRect(new RectF(-sw*.5f+a,-sh*.5f+a,sw*.5f-a,sh*.5f-a),h*.04f,h*.04f,p);}p.setStyle(Paint.Style.FILL);p.setColor(0x557ec1d4);
++            Path play=new Path();play.moveTo(-h*.04f,-h*.09f);play.lineTo(h*.10f,0);play.lineTo(-h*.04f,h*.09f);play.close();c.drawPath(play,p);c.restore();p.setColor(0x18ffffff);c.drawCircle(w*.94f,h*.83f,3,p);c.drawCircle(w*.65f,h*.16f,2,p);
+         }
+     }
+-
+-    private void addUtilities(LinearLayout content) {
+-        LinearLayout row = TvUi.row(this);
+-        row.setPadding(0, TvUi.dp(this, 24), 0, 0);
+-        TvUi.addWeighted(row, TvUi.button(this, "儿童益智",
+-                view -> startActivity(new Intent(this, KidsActivity.class))), 62);
+-        TvUi.addWeighted(row, TvUi.button(this, "全部应用",
+-                view -> startActivity(new Intent(this, AppsActivity.class))), 62);
+-        TvUi.addWeighted(row, TvUi.button(this, "遥控器",
+-                view -> startActivity(new Intent(this, RemoteActivity.class))), 62);
+-        TvUi.addWeighted(row, TvUi.button(this, "设置",
+-                view -> startActivity(new Intent(this, SettingsActivity.class))), 62);
+-        content.addView(row);
+-    }
+-
+-    private String networkDescription() {
+-        ConnectivityManager manager = getSystemService(ConnectivityManager.class);
+-        NetworkCapabilities capabilities = manager.getNetworkCapabilities(manager.getActiveNetwork());
+-        if (capabilities == null) {
+-            return "网络未连接 · 可在设置中检查网线";
+-        }
+-        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+-            return "有线网络已连接";
+-        }
+-        return "网络已连接";
+-    }
+-
+-    @Override
+-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+-            return true;
+-        }
+-        return super.onKeyDown(keyCode, event);
+-    }
+ }
+--- a/src/org/firefly/tv/KidsActivity.java
++++ b/src/org/firefly/tv/KidsActivity.java
+@@ -13,7 +13,7 @@
+ import java.util.Set;
+ 
+ /** Child home only lists explicitly parent-approved video providers. */
+-public final class KidsActivity extends Activity {
++public final class KidsActivity extends TvActivity {
+     private final Handler handler = new Handler(Looper.getMainLooper());
+     private TextView remaining;
+     private final Runnable refresh = new Runnable() {
+@@ -117,6 +117,11 @@
+     }
+ 
+     @Override
++    protected void handleBackAction() {
++        leave();
++    }
++
++    @Override
+     public boolean onKeyDown(int keyCode, KeyEvent event) {
+         if (keyCode == KeyEvent.KEYCODE_BACK) {
+             leave();
+--- a/src/org/firefly/tv/LiveActivity.java
++++ b/src/org/firefly/tv/LiveActivity.java
+@@ -28,7 +28,7 @@
+ import java.util.Set;
+ 
+ /** Channel playback with bounded preparation, source failover and directional keys. */
+-public final class LiveActivity extends Activity implements SurfaceHolder.Callback {
++public final class LiveActivity extends TvActivity implements SurfaceHolder.Callback {
+     private static final String TAG = "FireflyLive";
+     private static final int PREPARE_TIMEOUT_MS = 18_000;
+     private final Handler handler = new Handler(Looper.getMainLooper());
+--- a/src/org/firefly/tv/ParentalActivity.java
++++ b/src/org/firefly/tv/ParentalActivity.java
+@@ -9,14 +9,14 @@
+ import android.widget.ScrollView;
+ 
+ /** PIN-gated controls. There is deliberately no factory PIN or unlimited quiz refill. */
+-public final class ParentalActivity extends Activity {
++public final class ParentalActivity extends TvActivity {
+     private ParentalPrefs prefs;
+ 
+     @Override
+     protected void onCreate(Bundle state) {
+         super.onCreate(state);
+         prefs = new ParentalPrefs(this);
+-        TvUi.page(this, "家长设置", "请先验证家长 PIN");
++        buildGate();
+         PinDialog.require(this, this::build);
+     }
+ 
+@@ -27,6 +27,14 @@
+         if (!isChangingConfigurations()) {
+             finish();
+         }
++    }
++
++    private void buildGate() {
++        LinearLayout page = TvUi.page(this, "家长设置", "验证后管理观看时长与儿童内容");
++        TvUi.addButton(page, TvUi.button(this, prefs.hasPin() ? "验证家长 PIN" : "设置家长 PIN",
++                view -> PinDialog.require(this, this::build)));
++        TvUi.addButton(page, TvUi.button(this, "返回", view -> finish()));
++        page.getChildAt(2).requestFocus();
+     }
+ 
+     private void build() {
+--- a/src/org/firefly/tv/PinDialog.java
++++ b/src/org/firefly/tv/PinDialog.java
+@@ -4,6 +4,7 @@
+ import android.app.Activity;
+ import android.app.AlertDialog;
+ import android.text.InputType;
++import android.view.KeyEvent;
+ import android.widget.EditText;
+ import android.widget.LinearLayout;
+ import android.widget.Toast;
+@@ -23,6 +24,7 @@
+                 .setPositiveButton("确定", null).create();
+         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                 .setOnClickListener(view -> verify(activity, dialog, input, action)));
++        cancelWithEscape(dialog);
+         dialog.show();
+     }
+ 
+@@ -51,7 +53,20 @@
+                 .setPositiveButton("保存", null).create();
+         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                 .setOnClickListener(view -> save(activity, dialog, first, second, action)));
++        cancelWithEscape(dialog);
+         dialog.show();
++    }
++
++    private static void cancelWithEscape(AlertDialog dialog) {
++        dialog.setOnKeyListener((ignored, code, event) -> {
++            if (code != KeyEvent.KEYCODE_ESCAPE || !event.hasNoModifiers()) {
++                return false;
++            }
++            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
++                dialog.cancel();
++            }
++            return true;
++        });
+     }
+ 
+     private static void save(Activity activity, AlertDialog dialog, EditText first,
+--- a/src/org/firefly/tv/PuzzleActivity.java
++++ b/src/org/firefly/tv/PuzzleActivity.java
+@@ -11,7 +11,7 @@
+ import java.security.SecureRandom;
+ 
+ /** Three untimed picture questions, navigated entirely with the remote. */
+-public final class PuzzleActivity extends Activity {
++public final class PuzzleActivity extends TvActivity {
+     private final SecureRandom random = new SecureRandom();
+     private ParentalPrefs prefs;
+     private int passed;
+--- a/src/org/firefly/tv/RemoteActivity.java
++++ b/src/org/firefly/tv/RemoteActivity.java
+@@ -20,7 +20,7 @@
+ import vendor.firefly.hardware.remote.IRemote;
+ 
+ /** Learns IR scancodes through the board daemon and displays received Android keys. */
+-public final class RemoteActivity extends Activity {
++public final class RemoteActivity extends TvActivity {
+     private static final String TAG = "FireflyRemote";
+     private static final String[] LABELS = {"上", "下", "左", "右", "确定", "返回", "主页",
+             "菜单", "音量加", "音量减", "电源"};
+--- a/src/org/firefly/tv/SettingsActivity.java
++++ b/src/org/firefly/tv/SettingsActivity.java
+@@ -12,7 +12,7 @@
+ import android.widget.ScrollView;
+ 
+ /** Small remote-accessible settings gateway without requiring a touch interface. */
+-public final class SettingsActivity extends Activity {
++public final class SettingsActivity extends TvActivity {
+     @Override
+     protected void onCreate(Bundle state) {
+         super.onCreate(state);
+--- a/src/org/firefly/tv/TvActivity.java
++++ b/src/org/firefly/tv/TvActivity.java
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++package org.firefly.tv;
++
++import android.app.Activity;
++import android.view.KeyEvent;
++
++/** Explicit Escape handling, independent of Android's predictive Back dispatch. */
++class TvActivity extends Activity {
++    protected void handleBackAction() {
++        finish();
++    }
++
++    @Override public boolean dispatchKeyEvent(KeyEvent event) {
++        if (event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE && event.hasNoModifiers()) {
++            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
++                handleBackAction();
++            }
++            return true;
++        }
++        return super.dispatchKeyEvent(event);
++    }
++}
+--- a/src/org/firefly/tv/TvUi.java
++++ b/src/org/firefly/tv/TvUi.java
+@@ -1,118 +1,67 @@
+ /* SPDX-License-Identifier: Apache-2.0 */
+ package org.firefly.tv;
+-
+ import android.app.Activity;
+ import android.content.Context;
+-import android.graphics.Color;
+ import android.graphics.Typeface;
++import android.graphics.drawable.Drawable;
+ import android.graphics.drawable.GradientDrawable;
+ import android.graphics.drawable.StateListDrawable;
+ import android.view.Gravity;
++import android.view.MotionEvent;
+ import android.view.View;
+ import android.widget.Button;
++import android.widget.ImageView;
+ import android.widget.LinearLayout;
+ import android.widget.TextView;
+ 
+-/** Shared television typography, spacing and visible directional-key focus. */
+ final class TvUi {
+-    static final int BACKGROUND = Color.rgb(10, 17, 30);
+-    static final int PANEL = Color.rgb(24, 39, 59);
+-    static final int TEXT = Color.rgb(237, 243, 250);
+-    static final int MUTED = Color.rgb(153, 173, 195);
+-    static final int ACCENT = Color.rgb(71, 217, 197);
+-
+-    private TvUi() { }
+-
+-    static int dp(Context context, int value) {
+-        return Math.round(value * context.getResources().getDisplayMetrics().density);
++    static final int BACKGROUND=0xff101216,PANEL=0xff22262e,TEXT=0xfff3f4f7,MUTED=0xffa7adb9,ACCENT=0xffb8d8e8;
++    private TvUi(){}
++    static int dp(Context c,int n){return Math.round(n*c.getResources().getDisplayMetrics().density);}
++    static LinearLayout column(Context c){LinearLayout v=new LinearLayout(c);v.setOrientation(1);v.setClipChildren(false);v.setClipToPadding(false);return v;}
++    static LinearLayout row(Context c){LinearLayout v=new LinearLayout(c);v.setOrientation(0);v.setGravity(Gravity.CENTER_VERTICAL);v.setClipChildren(false);v.setClipToPadding(false);return v;}
++    static LinearLayout page(Activity a,String title,String subtitle){
++        LinearLayout p=column(a);p.setBackgroundColor(BACKGROUND);p.setPadding(dp(a,44),dp(a,28),dp(a,44),dp(a,24));
++        TextView heading=text(a,title,27,TEXT);heading.setTypeface(Typeface.create("sans-serif-medium",0));p.addView(heading);
++        TextView detail=text(a,subtitle,14,MUTED);detail.setPadding(0,dp(a,8),0,dp(a,22));p.addView(detail);a.setContentView(p);return p;
+     }
+-
+-    static LinearLayout column(Context context) {
+-        LinearLayout result = new LinearLayout(context);
+-        result.setOrientation(LinearLayout.VERTICAL);
+-        return result;
++    static TextView text(Context c,String value,int size,int color){
++        TextView v=new TextView(c);v.setText(value);v.setTextSize(size);v.setTextColor(color);v.setFontFeatureSettings("kern");v.setIncludeFontPadding(false);return v;
+     }
+-
+-    static LinearLayout row(Context context) {
+-        LinearLayout result = new LinearLayout(context);
+-        result.setOrientation(LinearLayout.HORIZONTAL);
+-        result.setGravity(Gravity.CENTER_VERTICAL);
+-        return result;
++    static GradientDrawable rounded(Context c,int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(c,radius));return d;}
++    static StateListDrawable focusBackground(Context c){
++        StateListDrawable s=new StateListDrawable();GradientDrawable f=rounded(c,0xff343b47,12);f.setStroke(dp(c,2),0xffedf3fb);
++        s.addState(new int[]{android.R.attr.state_pressed},rounded(c,0xff465365,12));s.addState(new int[]{android.R.attr.state_focused},f);
++        s.addState(new int[]{android.R.attr.state_hovered},f);s.addState(new int[0],rounded(c,PANEL,12));return s;
+     }
+-
+-    static LinearLayout page(Activity activity, String title, String subtitle) {
+-        LinearLayout result = column(activity);
+-        result.setBackgroundColor(BACKGROUND);
+-        result.setPadding(dp(activity, 44), dp(activity, 28), dp(activity, 44),
+-                dp(activity, 24));
+-        result.addView(text(activity, title, 32, TEXT));
+-        TextView description = text(activity, subtitle, 16, MUTED);
+-        description.setPadding(0, dp(activity, 8), 0, dp(activity, 20));
+-        result.addView(description);
+-        activity.setContentView(result);
+-        return result;
++    static void interactive(View v,View.OnClickListener click){
++        v.setId(View.generateViewId());v.setFocusable(true);v.setFocusableInTouchMode(true);v.setClickable(true);v.setOnClickListener(click);
++        v.setOnFocusChangeListener((view,focus)->{
++            if(focus){
++                android.view.ViewParent parent=view.getParent();
++                while(parent instanceof android.view.ViewGroup){
++                    android.view.ViewGroup group=(android.view.ViewGroup)parent;
++                    group.setClipChildren(false);group.setClipToPadding(false);parent=group.getParent();
++                }
++            }
++            // Full-width list rows use the outline only, avoiding clipping at viewport edges.
++            boolean row=view instanceof Button;
++            view.animate().scaleX(focus&&!row?1.035f:1f).scaleY(focus&&!row?1.035f:1f).setDuration(130).start();
++        });
++        v.setOnHoverListener((view,event)->{if(event.getAction()==MotionEvent.ACTION_HOVER_ENTER)view.requestFocus();return false;});
+     }
+-
+-    static TextView text(Context context, String value, int size, int color) {
+-        TextView result = new TextView(context);
+-        result.setText(value);
+-        result.setTextSize(size);
+-        result.setTextColor(color);
+-        result.setFontFeatureSettings("kern");
+-        return result;
++    static Button button(Context c,String label,View.OnClickListener click){
++        Button b=new Button(c);b.setText(label);b.setTextSize(17);b.setTextColor(TEXT);b.setAllCaps(false);b.setGravity(Gravity.CENTER_VERTICAL|Gravity.START);
++        b.setMinHeight(dp(c,54));b.setPadding(dp(c,20),dp(c,10),dp(c,20),dp(c,10));b.setBackground(focusBackground(c));interactive(b,click);return b;
+     }
+-
+-    static Button button(Context context, String label, View.OnClickListener click) {
+-        Button result = new Button(context);
+-        result.setId(View.generateViewId());
+-        result.setText(label);
+-        result.setTextSize(19);
+-        result.setTextColor(TEXT);
+-        result.setAllCaps(false);
+-        result.setGravity(Gravity.CENTER);
+-        result.setMinHeight(dp(context, 60));
+-        result.setPadding(dp(context, 18), dp(context, 12), dp(context, 18),
+-                dp(context, 12));
+-        result.setFocusable(true);
+-        result.setFocusableInTouchMode(true);
+-        result.setBackground(focusBackground(context));
+-        result.setOnClickListener(click);
+-        return result;
++    static LinearLayout appCard(Context c,String label,Drawable icon,String fallback,View.OnClickListener click){
++        LinearLayout card=column(c);card.setGravity(Gravity.CENTER);card.setPadding(dp(c,10),dp(c,14),dp(c,10),dp(c,10));card.setBackground(focusBackground(c));interactive(card,click);
++        if(icon!=null){ImageView image=new ImageView(c);image.setImageDrawable(icon);image.setScaleType(ImageView.ScaleType.FIT_CENTER);card.addView(image,new LinearLayout.LayoutParams(dp(c,48),dp(c,48)));}
++        else{TextView glyph=text(c,fallback,28,TEXT);glyph.setGravity(Gravity.CENTER);card.addView(glyph,new LinearLayout.LayoutParams(dp(c,48),dp(c,48)));}
++        TextView name=text(c,label,13,TEXT);name.setGravity(Gravity.CENTER);name.setSingleLine(true);name.setEllipsize(android.text.TextUtils.TruncateAt.END);
++        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(c,10);card.addView(name,p);card.setContentDescription(label);return card;
+     }
+-
+-    static StateListDrawable focusBackground(Context context) {
+-        StateListDrawable states = new StateListDrawable();
+-        states.addState(new int[] {android.R.attr.state_focused},
+-                shape(context, Color.rgb(31, 73, 81), ACCENT));
+-        states.addState(new int[] {android.R.attr.state_pressed},
+-                shape(context, Color.rgb(31, 73, 81), ACCENT));
+-        states.addState(new int[0], shape(context, PANEL, PANEL));
+-        return states;
+-    }
+-
+-    private static GradientDrawable shape(Context context, int color, int stroke) {
+-        GradientDrawable result = new GradientDrawable();
+-        result.setColor(color);
+-        result.setCornerRadius(dp(context, 12));
+-        result.setStroke(dp(context, 2), stroke);
+-        return result;
+-    }
+-
+-    static void addButton(LinearLayout parent, Button button) {
+-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+-        params.setMargins(0, 0, 0, dp(parent.getContext(), 10));
+-        parent.addView(button, params);
+-    }
+-
+-    static void addWeighted(LinearLayout parent, View child, int height) {
+-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0,
+-                dp(parent.getContext(), height), 1);
+-        params.setMargins(0, 0, dp(parent.getContext(), 12), 0);
+-        parent.addView(child, params);
+-    }
+-
+-    static void emphasize(TextView view) {
+-        view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+-    }
++    static void addButton(LinearLayout p,Button b){LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=dp(p.getContext(),10);p.addView(b,lp);}
++    static void addWeighted(LinearLayout p,View c,int h){LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(p.getContext(),h),1);lp.rightMargin=dp(p.getContext(),12);p.addView(c,lp);}
++    static void emphasize(TextView v){v.setTypeface(Typeface.DEFAULT,Typeface.BOLD);}
+ }

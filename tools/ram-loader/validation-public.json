@@ -1,0 +1,68 @@
+{
+  "status": "offline_selftest_passed",
+  "export_contains_vendor_binaries": false,
+  "export_contains_device_io_code": false,
+  "hardware_access_during_export": false,
+  "exact_input": {
+    "name": "rk3288_loader_v1.12.263.bin",
+    "bytes": 209230,
+    "sha256": "b81f18bed5120111b01cafab7de45f27281f6ed3d9c3ea5c077c48debbd74218"
+  },
+  "exact_output": {
+    "sha256": "246f1e3adf3ebdae8e460a8c9570cd195f73fe93a2577524fe8fb8b5a118461f",
+    "bytes": 209230,
+    "ram_download_only": true,
+    "emmc_boot_or_system_image": false
+  },
+  "patch": {
+    "decoded_usbplug_offset": "0x11bcc",
+    "old_hex": "9200",
+    "new_hex": "d202",
+    "old_instruction": "lsls r2, r2, #2",
+    "new_instruction": "lsls r2, r2, #11",
+    "old_read_limit_bytes": 33554432,
+    "new_read_limit_bytes": 17179869184,
+    "old_crc": "0x6febd791",
+    "new_crc": "0x2165100a",
+    "package_changed_offsets_hex": [
+      "0x15516", "0x15517", "0x3314a", "0x3314b", "0x3314c", "0x3314d"
+    ],
+    "header_table_ddr_flashdata_flashboot_unchanged": true
+  },
+  "offline_tests": {
+    "exact_expected_output_reproduced": true,
+    "unknown_inputs_rejected": 6,
+    "bad_crc_or_structure_rejected": 2,
+    "valid_physical_transfer_ranges": 3,
+    "invalid_physical_transfer_ranges_rejected": 8,
+    "cli_output_reproduced": true,
+    "cli_overwrite_refused": true,
+    "python_optimized_mode_retains_validation": true,
+    "original_input_unchanged": true,
+    "generated_binary_removed_with_temporary_directory": true
+  },
+  "historical_hardware_evidence": {
+    "scope": "One original Firefly-RK3288 and this exact package; historical session only",
+    "actual_capacity_sectors": 30535680,
+    "actual_capacity_is_not_a_default_for_other_boards": true,
+    "ram_code_fingerprint_verified": true,
+    "ram_storage_table_pointer_verified": true,
+    "ram_limit_field_verified": true,
+    "read_only_sample_lbas_hex": ["0x2000", "0xff80", "0x10000", "0x10080", "0x20000", "0x800000", "0x17ff000"],
+    "sample_sectors_each": 128,
+    "all_samples_non_synthetic_cc": true,
+    "all_samples_match_known_media_layout": true,
+    "some_high_samples_have_identical_contents": true,
+    "media_or_ram_writes_by_readonly_verifier": false,
+    "complete_16gib_address_space_read_verified": false,
+    "general_rk3288_compatibility_certified": false
+  },
+  "provenance": {
+    "vendor_components_repository": "https://github.com/rockchip-linux/rkbin",
+    "recorded_component_commit": "3e288fe814e059dd06833495f845cab04ac20a5c",
+    "components": ["bin/rk32/rk3288_usbplug_v2.63.bin", "bin/rk32/rk3288_ddr_400MHz_v1.12.bin", "bin/rk32/rk3288_miniloader_v2.63.bin"],
+    "format_reference_repository": "https://github.com/rockchip-linux/rkdeveloptool",
+    "crc_implementation": "Independent bitwise implementation; vendor CRC table not copied",
+    "source_refactor": "Local exact-package build_readlimit_package.py refactored to an input/output CLI with explicit runtime validation"
+  }
+}

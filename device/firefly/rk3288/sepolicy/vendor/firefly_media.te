@@ -1,0 +1,7 @@
+type firefly_media_device, dev_type;
+allow mediacodec firefly_media_device:chr_file rw_file_perms;
+allowxperm mediacodec firefly_media_device:chr_file ioctl { 0x7c00-0x7cff };
+allowxperm mediacodec video_device:chr_file ioctl { 0x5600-0x56ff };
+allow mediacodec sysfs:dir r_dir_perms;
+allow mediacodec sysfs:file r_file_perms;
+allow mediacodec sysfs:lnk_file r_file_perms;

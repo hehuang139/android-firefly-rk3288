@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "profile": "Firefly original 12-key NEC, address 00 (wire user code 00FF)",
+  "keys": [
+    {"scancode": 20, "keycode": 116},
+    {"scancode": 19, "keycode": 139},
+    {"scancode": 3, "keycode": 103},
+    {"scancode": 2, "keycode": 108},
+    {"scancode": 14, "keycode": 105},
+    {"scancode": 26, "keycode": 106},
+    {"scancode": 7, "keycode": 352},
+    {"scancode": 92, "keycode": 141},
+    {"scancode": 72, "keycode": 102},
+    {"scancode": 1, "keycode": 158},
+    {"scancode": 88, "keycode": 114},
+    {"scancode": 11, "keycode": 115}
+  ]
+}

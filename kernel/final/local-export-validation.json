@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "changed_file_hashes_verified": 34,
+  "dts_hash_verified": true,
+  "cumulative_patch_hash_verified": true,
+  "config_hash_verified": true,
+  "files_privacy_pattern_scanned": 44,
+  "no_private_paths_network_or_device_identifiers_detected": true,
+  "build_script_syntax": "sh -n passed"
+}

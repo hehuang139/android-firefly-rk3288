@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Original Firefly-RK3288: Android 17 eMMC/HDMI bring-up.
+#include "rk3288-firefly.dts"
+
+/ {
+    chosen {
+        stdout-path = "serial2:115200n8";
+    };
+
+    hdmi-sound {
+        compatible = "simple-audio-card";
+        simple-audio-card,format = "i2s";
+        simple-audio-card,name = "HDMI";
+        simple-audio-card,mclk-fs = <512>;
+        simple-audio-card,cpu { sound-dai = <&i2s>; };
+        simple-audio-card,codec { sound-dai = <&hdmi>; };
+    };
+};
+
+// Retain the upstream original-board power rails, 8-bit bus and pinctrl.
+// Start with SDR high-speed at 50 MHz; do not advertise HS200/HS400/DDR.
+&emmc {
+    max-frequency = <50000000>;
+    /delete-property/ mmc-hs200-1_8v;
+    /delete-property/ mmc-hs200-1_2v;
+    /delete-property/ mmc-hs400-1_8v;
+    /delete-property/ mmc-hs400-1_2v;
+    /delete-property/ mmc-ddr-1_8v;
+    /delete-property/ mmc-ddr-1_2v;
+    status = "okay";
+};
+
+// Android resolves GPT labels only on eMMC during the first bring-up.
+&sdmmc { status = "disabled"; };
+&i2s { #sound-dai-cells = <0>; status = "okay"; };
+&usb_otg { dr_mode = "peripheral"; status = "okay"; };

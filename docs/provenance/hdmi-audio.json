@@ -1,0 +1,28 @@
+{
+  "status": "board_installed_analog_and_no_audio_sink_checked",
+  "physical_hdmi_audio_tested": false,
+  "hotplug_tested": false,
+  "clean_public_product_build": false,
+  "historical_built_source_files": [
+    {
+      "path": "device/firefly/rk3288/audio/AudioCoreFirefly.cpp",
+      "sha256": "395d0b0565008f6fb9068e56095437b17068d386bd3dd92ba38a7c4d810c05f1"
+    },
+    {
+      "path": "device/firefly/rk3288/audio/audio_policy_configuration.xml",
+      "sha256": "3d4258a36f31d42a401ac9f52c8c7ebadb7826d789f9f0e51d236453bc4cf170"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "device/firefly/rk3288/audio/AudioCoreFirefly.cpp",
+      "sha256": "f2efbf1d5d1cc407bcb672c51cbe7ba4444ebabf02feb0316e365c6445de0f25"
+    },
+    {
+      "path": "device/firefly/rk3288/audio/audio_policy_configuration.xml",
+      "sha256": "6084acd51370d91eb62869e5e925bf524e4b79b36c7a75f0328558db5925eb9a"
+    }
+  ],
+  "normalization": "Public files use LF. Original built-source/installed XML hashes are preserved separately; content changes are CRLF-to-LF only.",
+  "software_reboot_verified": true
+}

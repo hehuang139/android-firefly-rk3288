@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.firefly.tv" android:sharedUserId="android.uid.system">
+    <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="37" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.REBOOT" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REAL_GET_TASKS" />
+    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
+    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
+    <uses-feature android:name="android.software.leanback" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <application android:label="Firefly TV" android:theme="@style/FireflyTheme"
+        android:icon="@drawable/ic_firefly" android:banner="@drawable/banner"
+        android:allowBackup="false" android:supportsRtl="true" android:persistent="true"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".HomeActivity" android:exported="true"
+            android:screenOrientation="landscape" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".LiveActivity" android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity android:name=".AppsActivity" android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity android:name=".SettingsActivity" android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity android:name=".RemoteActivity" android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity android:name=".DecoderActivity" android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity android:name=".KidsActivity" android:exported="false"
+            android:launchMode="singleTask" android:screenOrientation="landscape" />
+        <activity android:name=".PuzzleActivity" android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity android:name=".ParentalActivity" android:exported="false"
+            android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <service android:name=".WatchTimeTracker" android:exported="false" />
+        <receiver android:name=".ParentalBootReceiver" android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
+        </receiver>
+    </application>
+</manifest>

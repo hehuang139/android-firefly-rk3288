@@ -1,0 +1,28 @@
+--- a/arch/arm/dts/rk3288-firefly-u-boot.dtsi
++++ b/arch/arm/dts/rk3288-firefly-u-boot.dtsi
+@@ -79,3 +79,25 @@
+ &sdmmc_pwr {
+ 	bootph-pre-ram;
+ };
++
++/* eMMC installation variant: do not load a second U-Boot from TF. */
++/ {
++	chosen {
++		u-boot,spl-boot-order = &emmc;
++	};
++};
++
++&emmc {
++	max-frequency = <50000000>;
++	/delete-property/ mmc-hs200-1_8v;
++	/delete-property/ mmc-hs200-1_2v;
++	/delete-property/ mmc-hs400-1_8v;
++	/delete-property/ mmc-hs400-1_2v;
++	/delete-property/ mmc-ddr-1_8v;
++	/delete-property/ mmc-ddr-1_2v;
++	status = "okay";
++};
++
++&sdmmc {
++	status = "disabled";
++};

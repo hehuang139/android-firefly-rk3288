@@ -1,0 +1,40 @@
+{
+  "software_reboot_verified": true,
+  "audio_services_running": true,
+  "monitor_autostart_system_persistent": true,
+  "payload_hashes_matched": true,
+  "vendor_and_system_ext_readonly": true,
+  "current_sink_no_audio_stays_on_analog": true,
+  "analog_audiotrack": {
+    "sampleRate": 48000,
+    "channels": 2,
+    "pcmBits": 16,
+    "durationSeconds": 4,
+    "peakDbfs": -26,
+    "leftSeconds": 2,
+    "rightSeconds": 2,
+    "frequencyHz": 440,
+    "systemVolumeChanged": false,
+    "audibleConfirmationRequired": true,
+    "bufferCapacityFrames": 4800,
+    "bufferSizeFrames": 4800,
+    "sessionId": 105,
+    "routedDevice": {
+      "id": 2,
+      "type": 21,
+      "address": "firefly-es8323",
+      "productName": "Firefly-RK3288 TV"
+    },
+    "underrunCount": 1,
+    "playState": 3,
+    "passed": true,
+    "writtenSamples": 384000,
+    "writtenFrames": 192000,
+    "writtenBytes": 768000,
+    "playbackHeadFrames": 192000,
+    "maximumPlaybackHeadFrames": 192000,
+    "elapsedMs": 4235
+  },
+  "hdmi_audible_confirmation": false,
+  "real_hdmi_hotplug_confirmation": false
+}

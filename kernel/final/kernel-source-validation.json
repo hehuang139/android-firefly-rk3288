@@ -1,0 +1,30 @@
+{
+  "status": "full_upstream_comparison_and_patch_replay_passed",
+  "upstream_version": "6.18.60",
+  "upstream_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.60.tar.xz",
+  "upstream_archive_sha256": "3c2f44ef6acc021a7ad444d9a2e6ec1ef488ff09368793d0004a6080f69d621e",
+  "final_zImage_sha256": "8c044786118434fc737d9c17b32bdbe4206fcd4112b625d30f29a4ba3124317a",
+  "final_zImage_bytes": 12227072,
+  "final_config_sha256": "96f53bfe2007da3beabcec566e16cdc3425cc065c4f043316a67b1482b5498eb",
+  "cumulative_patch_sha256": "d75b662b0aacefdc944bc86d18627992572a89906c3f2eb2940a5b06347ec7a8",
+  "upstream_counts": {
+    "regular": 91162,
+    "symlinks": 85,
+    "unchanged": 91221
+  },
+  "changed_file_count": 34,
+  "excluded_non_source_artifacts": [
+    {
+      "path": ".merge_tmp.config.AHlTBU3Dc5",
+      "reason": "Kconfig temporary merge artifact, not build source"
+    },
+    {
+      "path": ".tmp.config.tl0kh0rlG0",
+      "reason": "Kconfig temporary merge artifact, not build source"
+    }
+  ],
+  "patch_replayed_and_all_changed_file_hashes_matched": true,
+  "hardware_access": false,
+  "clean_kernel_rebuild_performed_by_export": false,
+  "source_tree_manifest_sha256": "76f17eb8ae0df46039d0950c8fce2283fef060abd92e5db538bbfa855f137645"
+}

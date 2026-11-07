@@ -1,0 +1,30 @@
+{
+  "scope": "Corresponding source and explanatory patch line endings only; generated metadata is outside this historical hash comparison",
+  "files": [
+    {
+      "path": "patches/firefly-audio-hdmi.patch",
+      "historical_bytes_sha256": "01b4a7e5600e801891e97a4064cf01c2c92ab42eff10609fa85fcbda30193b68",
+      "public_lf_sha256": "f2b6ffc48fe06ec8aa6f27015897891ba8b54f89122847f025cf8a8d609e9196"
+    },
+    {
+      "path": "device/firefly/rk3288/audio/AudioCoreFirefly.cpp",
+      "historical_bytes_sha256": "395d0b0565008f6fb9068e56095437b17068d386bd3dd92ba38a7c4d810c05f1",
+      "public_lf_sha256": "f2efbf1d5d1cc407bcb672c51cbe7ba4444ebabf02feb0316e365c6445de0f25"
+    },
+    {
+      "path": "device/firefly/rk3288/audio/audio_policy_configuration.xml",
+      "historical_bytes_sha256": "3d4258a36f31d42a401ac9f52c8c7ebadb7826d789f9f0e51d236453bc4cf170",
+      "public_lf_sha256": "6084acd51370d91eb62869e5e925bf524e4b79b36c7a75f0328558db5925eb9a"
+    },
+    {
+      "path": "device/firefly/rk3288/audio/tests/eld-parser-test.cpp",
+      "historical_bytes_sha256": "62863aa0cff1dc3fa4ed58215d8b3d9dc2411bc1280bd6d63904a5e96a671244",
+      "public_lf_sha256": "2fc86bce9c81c664d88e2ad2007df9e5503c72fb3e1dcab477bb0dab5216e74e"
+    },
+    {
+      "path": "variants/emmc/historical-rebuild.sh",
+      "historical_bytes_sha256": "c7edfba015d8ec6a4dc507864778d5a1a6bf64cc51edf13eae0330bbaf38c94f",
+      "public_lf_sha256": "3d4235f82a8568fe228076776e5559201d8660632596d32c271e7ed792b777a7"
+    }
+  ]
+}

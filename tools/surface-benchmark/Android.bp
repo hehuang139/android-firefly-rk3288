@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: Apache-2.0
+android_app {
+    name: "FireflySurfaceBenchmark",
+    srcs: ["src/**/*.java"],
+    manifest: "AndroidManifest.xml",
+    asset_dirs: ["assets"],
+    sdk_version: "current",
+    min_sdk_version: "28",
+    target_sdk_version: "28",
+    java_version: "17",
+    certificate: "testkey",
+    aaptflags: ["-0", "mp4"],
+}

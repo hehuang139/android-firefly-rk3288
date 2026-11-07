@@ -1,0 +1,13 @@
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -67,7 +67,10 @@
+ obj-$(CONFIG_QFW_MMIO) += qfw_mmio.o
+ obj-$(CONFIG_SANDBOX) += qfw_sandbox.o
+ endif
++# CPU identity is needed only after relocation; TPL uses OF_PLATDATA.
++ifndef CONFIG_SPL_BUILD
+ obj-$(CONFIG_ROCKCHIP_EFUSE) += rockchip-efuse.o
++endif
+ obj-$(CONFIG_ROCKCHIP_OTP) += rockchip-otp.o
+ obj-$(CONFIG_$(SPL_TPL_)ROCKCHIP_IODOMAIN) += rockchip-io-domain.o
+ obj-$(CONFIG_SANDBOX) += syscon_sandbox.o misc_sandbox.o

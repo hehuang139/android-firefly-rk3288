@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Original Firefly-RK3288: Android 17 mainline TF-card/HDMI bring-up.
+#include "rk3288-firefly.dts"
+
+/ {
+    chosen {
+        stdout-path = "serial2:115200n8";
+    };
+
+    hdmi-sound {
+        compatible = "simple-audio-card";
+        simple-audio-card,format = "i2s";
+        simple-audio-card,name = "HDMI";
+        simple-audio-card,mclk-fs = <512>;
+        simple-audio-card,cpu { sound-dai = <&i2s>; };
+        simple-audio-card,codec { sound-dai = <&hdmi>; };
+    };
+};
+
+// Android partitions and user data stay on the microSD card.
+&emmc { status = "disabled"; };
+&i2s { #sound-dai-cells = <0>; status = "okay"; };
+&sdmmc { max-frequency = <50000000>; };
+
+// Reserve the micro-USB OTG port for device-mode ADB during bring-up.
+&usb_otg { dr_mode = "peripheral"; status = "okay"; };

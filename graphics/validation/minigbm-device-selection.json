@@ -1,0 +1,98 @@
+{
+  "kind": "fixed-source and product-configuration audit; no runtime DRM device emulation",
+  "created_utc": "2026-11-03T22:55:49.378029+00:00",
+  "aosp_tag": "android-17.0.0_r1",
+  "minigbm_commit": "ce79bbee67b3e2ea7abb110e1415e9ceceaa6471",
+  "kernel_release": "6.18.60",
+  "result": "PASS",
+  "checks": {
+    "constructor_calls_init_try_nodes": true,
+    "render_then_primary_loops": true,
+    "returns_only_on_driver_success": true,
+    "render_range_128_to_190": true,
+    "primary_range_0_to_62": true,
+    "failed_driver_closes_node": true,
+    "exact_kernel_driver_name_match": true,
+    "rockchip_backend_present_panfrost_absent": true,
+    "generic_board_configuration": true,
+    "generic_cflags_no_drv_rockchip": true,
+    "chromeos_rockchip_backend_excluded": true,
+    "generic_rockchip_backend_selected": true,
+    "generic_rockchip_name_from_macro": true,
+    "generic_backend_linear_only": true,
+    "generic_backend_standard_dumb_create": true,
+    "generic_backend_standard_dumb_map": true,
+    "core_build_has_dumb_driver": true,
+    "kernel_rockchip_primary_only": true,
+    "kernel_rockchip_standard_dumb_create": true,
+    "kernel_rockchip_no_private_ioctl_table": true,
+    "kernel_panfrost_render_enabled": true,
+    "unneeded_virtual_drm_disabled": true,
+    "card_render_permissions": true,
+    "allocator_can_open_graphics_nodes": true,
+    "ordinary_apps_can_open_render_and_primary_nodes_dac": true,
+    "in_process_mapper_requires_primary_node": true,
+    "system_heap_matches_aosp_readonly_dac": true
+  },
+  "files": {
+    "node_selection": {
+      "path": "aosp/external/minigbm/cros_gralloc/cros_gralloc_driver.cc",
+      "sha256": "98e9054d5f98c3d107c25be6ac240c0b4bb858717860657641479595d3ec3103"
+    },
+    "backend_selection": {
+      "path": "aosp/external/minigbm/drv.c",
+      "sha256": "0bca874fb74e25fa21b96cf099fb359a4499467006dd59ae59bf38e614fec50e"
+    },
+    "selected_dumb_backend": {
+      "path": "aosp/external/minigbm/dumb_driver.c",
+      "sha256": "d778e831ef75778ac4e2b3582f6d291807a70d51673cb9e370bc39dabef20b32"
+    },
+    "dumb_helpers": {
+      "path": "aosp/external/minigbm/drv_helpers.c",
+      "sha256": "72bac2bdefc51034425303ff781dd773190db9416c72756594fa2db2ddc8d86d"
+    },
+    "guarded_chromeos_backend": {
+      "path": "aosp/external/minigbm/rockchip.c",
+      "sha256": "b8c9c201815a906f4dfb0bba32e54d712ce9fd42268a913f5c9d1bb04a7644d5"
+    },
+    "build": {
+      "path": "aosp/external/minigbm/Android.bp",
+      "sha256": "4986717eef05b7aa5c139de384d8be2b832b41bdc6300f826e39e9aeef24ba6a"
+    },
+    "board_config": {
+      "path": "port/graphics/BoardConfigGraphics.mk",
+      "sha256": "b56c7230613dc5feac7df1661c94d0f6c8b7ed04ea4620b750a5d0a9dd9cdc58"
+    },
+    "kernel_rockchip": {
+      "path": "kernel-port/linux-6.18.60/drivers/gpu/drm/rockchip/rockchip_drm_drv.c",
+      "sha256": "09c1d0c497198a1b48bb6ef9a9441a473508c0c7baebea57aab68f7c8c9dc07d"
+    },
+    "kernel_rockchip_gem": {
+      "path": "kernel-port/linux-6.18.60/drivers/gpu/drm/rockchip/rockchip_drm_gem.c",
+      "sha256": "a33b1b4332d00e95d4efca0acd2384ee33683dc2eed0a0539ddb2a8705b6aa97"
+    },
+    "kernel_panfrost": {
+      "path": "kernel-port/linux-6.18.60/drivers/gpu/drm/panfrost/panfrost_drv.c",
+      "sha256": "c69b99df086670f4879d87ed4db923598f0e65798c2ad736e97d93af00695edd"
+    },
+    "kernel_config": {
+      "path": "kernel-port/build/.config",
+      "sha256": "4da793791ce8c673d74f4ac12581775041397270845c57833cabc9e0f5b8c314"
+    },
+    "node_permissions": {
+      "path": "port/device/firefly/rk3288/init/ueventd.fireflyrk3288.rc",
+      "sha256": "68e176782e39dedcc76fbe050c26c5d6783831b2838bd88a529cdb0871f9648c"
+    },
+    "allocator_service": {
+      "path": "aosp/external/minigbm/cros_gralloc/aidl/allocator.rc",
+      "sha256": "6399fd2e6ab2b4297a64eac9d3593d9c4dd9c0cfd12094ac75f3858f1ff7ad4e"
+    }
+  },
+  "selected_allocation_path": "cros_gralloc_driver::allocate -> drv_bo_create -> backend_rockchip from dumb_driver.c -> drv_dumb_bo_create_ex -> DRM_IOCTL_MODE_CREATE_DUMB",
+  "selected_mapping_path": "drv_dumb_bo_map -> DRM_IOCTL_MODE_MAP_DUMB",
+  "correction": "The generic product does not define DRV_ROCKCHIP. Its Rockchip-named backend comes from dumb_driver.c, not the guarded ChromeOS-specific rockchip.c implementation.",
+  "conclusion": "Panfrost nodes fail backend matching and enumeration continues to a Rockchip primary card. The generic backend uses standard linear dumb-buffer ioctls supported by mainline Rockchip; no extra allocation-device selector is required. The port ueventd restores AOSP DRM DAC permissions for both app EGL and the in-process mapper; see the device access audit for the required vendor image sync.",
+  "updated_utc": "2026-11-04T00:28:25.434102+00:00",
+  "permission_correction": "Both render and primary DRM nodes use AOSP 0666 root graphics. Ordinary apps lack a default graphics GID; Mesa EGL opens Panfrost render nodes and the in-process minigbm mapper opens Rockchip primary nodes. system heap uses AOSP 0444 system system; libdmabufheap opens it O_RDONLY.",
+  "device_access_audit": "port/records/graphics-device-access-audit.json"
+}

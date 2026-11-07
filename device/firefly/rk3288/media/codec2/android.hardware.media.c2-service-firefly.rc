@@ -1,0 +1,6 @@
+service vendor.media.c2.firefly /vendor/bin/hw/android.hardware.media.c2-service-firefly
+    class hal
+    user mediacodec
+    group camera graphics drmrpc media
+    ioprio rt 4
+    task_profiles ProcessCapacityHigh

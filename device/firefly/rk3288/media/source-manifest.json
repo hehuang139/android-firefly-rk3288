@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "backend_source": "https://github.com/Kwiboo/FFmpeg.git",
+  "backend_revision": "b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935",
+  "codec2_source": "https://github.com/LineageOS/android_external_ffmpeg_codec2.git",
+  "codec2_revision": "00f6f65c7ef381470efbcfca8c0316bdcdfcffe7",
+  "target": "armv7a-linux-androideabi37",
+  "cpu": "cortex-a17/NEON",
+  "decoders": [
+    "h264",
+    "hevc"
+  ],
+  "hwaccels": [
+    "h264_v4l2request",
+    "hevc_v4l2request"
+  ],
+  "output": "NV12",
+  "libraries": {
+    "libavcodec.so": "0ee3c84ee9ef22ab35a98adb6d8c778ef8bfe9f183964df9a948d6f81edfd26b",
+    "libavutil.so": "06c8d37edf0e1daa5c4d2782bedb0fa14fdad04f74f07d8a48703eb4ef2b70c1",
+    "libswscale.so": "ec5d6a9e3352cefc70d332c52c493cf481fc1aa7ca160e9456b2c40f6880cd26"
+  },
+  "bitstream_zero_padding": 80
+}

@@ -1,0 +1,17 @@
+{
+  "normalized_to_lf": true,
+  "base": "historical stable analog AudioCoreFirefly.cpp",
+  "checks": [
+    {
+      "command": "git apply --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git apply ",
+      "exit_code": 0
+    }
+  ],
+  "patched_source_sha256": "f2efbf1d5d1cc407bcb672c51cbe7ba4444ebabf02feb0316e365c6445de0f25",
+  "matches_current_public_source": true,
+  "compiled_again_after_lf_only_change": false
+}

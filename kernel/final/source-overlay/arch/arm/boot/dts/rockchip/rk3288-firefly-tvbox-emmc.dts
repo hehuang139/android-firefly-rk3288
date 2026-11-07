@@ -1,0 +1,10 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Same original-board TV hardware, with only the internal eMMC enabled.
+#include "rk3288-firefly-tvbox.dts"
+
+&emmc { max-frequency = <50000000>; status = "okay"; };
+&sdmmc { status = "disabled"; };
+
+// Recovery baseline: keep the unvalidated custom HEVC block out of probe.
+&hevc { status = "disabled"; };
+&hevc_mmu { status = "disabled"; };

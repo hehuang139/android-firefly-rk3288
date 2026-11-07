@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<permissions>
+    <feature name="android.hardware.ethernet" />
+    <feature name="android.hardware.usb.host" />
+    <feature name="android.hardware.faketouch" />
+</permissions>

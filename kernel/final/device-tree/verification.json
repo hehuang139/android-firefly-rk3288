@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "method": "final binary decompile and byte-identical round trip",
+  "dtc_version": "Version: DTC 1.7.2-g52f07dcc",
+  "dtb_bytes": 43752,
+  "dtb_sha256": "2021fedaf9241b18d8184191c24a740f05beaceac0aeffb80c41376e1c815c5b",
+  "dts_sha256": "a454d4d8ae636165253a80b120d3848bce8ef124f0934eb4669741836f1b6866",
+  "round_trip_byte_identical": true,
+  "boot_image_sha256": "7709a35562a6af403f619d9459bda339ac31558b450501a2ee0f3184333ee5d6",
+  "decompile_warning_lines": 0,
+  "compile_warning_lines": 254,
+  "generated_source_is_not_original_hand_written_dts": true
+}

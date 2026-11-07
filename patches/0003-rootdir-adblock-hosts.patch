@@ -1,0 +1,40 @@
+--- a/rootdir/etc/hosts
++++ b/rootdir/etc/hosts
+@@ -1,2 +1,35 @@
+-127.0.0.1       localhost
+-::1             ip6-localhost
++# Firefly TV selected AdAway domains; attribution in NOTICE.md
++127.0.0.1 localhost
++::1 localhost ip6-localhost ip6-loopback
++0.0.0.0 5290727.fls.doubleclick.net
++0.0.0.0 8168974.fls.doubleclick.net
++0.0.0.0 8397396.fls.doubleclick.net
++0.0.0.0 accounts.doubleclick.net
++0.0.0.0 ad-emea.doubleclick.net
++0.0.0.0 ad.doubleclick.net
++0.0.0.0 adcolony.com
++0.0.0.0 ade.googlesyndication.com
++0.0.0.0 ads.inmobi.com
++0.0.0.0 ads.mopub.com
++0.0.0.0 ads.pubmatic.com
++0.0.0.0 adservice.google.com
++0.0.0.0 adx.g.doubleclick.net
++0.0.0.0 api.ad.xiaomi.com
++0.0.0.0 bid.g.doubleclick.net
++0.0.0.0 cm.g.doubleclick.net
++0.0.0.0 dart.l.doubleclick.net
++0.0.0.0 ff.doubleclick.net
++0.0.0.0 fls.doubleclick.net
++0.0.0.0 g.doubleclick.net
++0.0.0.0 googleads.g.doubleclick.net
++0.0.0.0 googleads4.g.doubleclick.net
++0.0.0.0 m.doubleclick.net
++0.0.0.0 pagead2.googlesyndication.com
++0.0.0.0 pubads.g.doubleclick.net
++0.0.0.0 s0.doubleclick.net
++0.0.0.0 sdkconfig.ad.xiaomi.com
++0.0.0.0 securepubads.g.doubleclick.net
++0.0.0.0 static.doubleclick.net
++0.0.0.0 stats.g.doubleclick.net
++0.0.0.0 survey.g.doubleclick.net
++0.0.0.0 tpc.googlesyndication.com

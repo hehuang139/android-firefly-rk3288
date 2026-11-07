@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Original Firefly-RK3288: HDMI television and IR, booting from TF.
+#include "rk3288-firefly.dts"
+
+/ {
+    chosen { stdout-path = "serial2:115200n8"; };
+    hdmi-sound {
+        compatible = "simple-audio-card";
+        simple-audio-card,format = "i2s";
+        simple-audio-card,name = "HDMI";
+        simple-audio-card,mclk-fs = <512>;
+        simple-audio-card,cpu { sound-dai = <&i2s>; };
+        simple-audio-card,codec { sound-dai = <&hdmi>; };
+    };
+
+    // RK3288 has a separate early-generation HEVC block. Its format table
+    // exposes HEVC only; H.264 remains on the Hantro VPU at ff9a0000.
+    hevc: video-codec@ff9c0000 {
+        compatible = "rockchip,rk3288-hevc";
+        reg = <0x0 0xff9c0000 0x0 0x400>;
+        interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
+        interrupt-names = "irq_dec";
+        clocks = <&cru ACLK_HEVC>, <&cru HCLK_HEVC>,
+                 <&cru SCLK_HEVC_CABAC>, <&cru SCLK_HEVC_CORE>;
+        clock-names = "axi", "ahb", "cabac", "core";
+        assigned-clocks = <&cru ACLK_HEVC>, <&cru HCLK_HEVC>,
+                          <&cru SCLK_HEVC_CORE>, <&cru SCLK_HEVC_CABAC>;
+        assigned-clock-rates = <400000000>, <100000000>, <300000000>, <300000000>;
+        iommus = <&hevc_mmu>;
+        power-domains = <&power RK3288_PD_HEVC>;
+        resets = <&cru SRST_HEVC>;
+        reset-names = "video_core";
+        status = "okay";
+    };
+};
+
+// The original board has its IR receiver on GPIO7_A0. The parent DTS sets
+// GPIO/pinmux; do not substitute Beta's GPIO7_A5 or Reload's different wiring.
+&ir {
+    linux,rc-map-name = "rc-firefly-rk3288";
+    wakeup-source;
+    status = "okay";
+};
+// Expose one Android boot medium so duplicate GPT PARTLABELs cannot win a race
+// during first-stage mounting. The eMMC variant reverses these two statuses.
+&emmc { max-frequency = <50000000>; status = "disabled"; };
+&hevc_mmu {
+    power-domains = <&power RK3288_PD_HEVC>;
+    status = "okay";
+};
+&i2s { #sound-dai-cells = <0>; status = "okay"; };
+&sdmmc { max-frequency = <50000000>; status = "okay"; };
+&usb_otg { dr_mode = "peripheral"; status = "okay"; };
+
+// CEC C0/C7 pinmux must follow this exact board's schematic. Keep the default
+// upstream wiring until the PCB route is confirmed; GPIO IR and USB are ready.

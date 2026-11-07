@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <bool name="config_showNavigationBar">false</bool>
+    <bool name="config_voice_capable">false</bool>
+    <bool name="config_sms_capable">false</bool>
+    <bool name="config_defaultInTouchMode">false</bool>
+    <bool name="config_enableAutoPowerModes">false</bool>
+    <bool name="config_useAutoSuspend">false</bool>
+    <bool name="config_supportAutoRotation">false</bool>
+    <integer name="config_shortPressOnPowerBehavior">1</integer>
+    <integer name="config_longPressOnPowerBehavior">1</integer>
+    <string-array translatable="false" name="config_ntpServers">
+        <item>ntp://ntp.aliyun.com</item>
+        <item>ntp://ntp.tencent.com</item>
+        <item>ntp://time.android.com</item>
+    </string-array>
+</resources>

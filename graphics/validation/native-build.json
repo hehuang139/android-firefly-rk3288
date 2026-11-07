@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-04",
+  "mesa_commit": "875160ed32cc5bc32777fa04870a0a57ed38c987",
+  "mesa_version": "26.1.0-devel",
+  "native_builder_image_id": "sha256:c5cec90978fdc7ab9a44e5d2cc945d0ba9239f638a4023e3fb13a5bc8099240f",
+  "native_build_ninja_tasks": 647,
+  "native_build_exit_code": 0,
+  "shader_generation_architectures": [
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    12,
+    13
+  ],
+  "shader_generation_exit_code": 0,
+  "shader_inputs": [
+    "src/panfrost/libpan/query_pool.cl",
+    "src/panfrost/libpan/draw_helper.cl",
+    "src/panfrost/libpan/indirect_dispatch.cl"
+  ],
+  "generation_pipeline": [
+    "mesa_clc",
+    "vtn_bindgen2",
+    "panfrost_compile"
+  ],
+  "tool_sha256": {
+    "mesa_clc": "435eae2db39f69180d992d9be82c3ed7c44301564c1a5085baecda5bbd1730c0",
+    "vtn_bindgen2": "c90ee4d98e540a95ceb5d174b260eff248d0e62edbfd98892ac783ee95c66e64",
+    "panfrost_compile": "25277cc01fb47b592ec734e1858b8327d164b41b7296e1aa83e417cbc1a98f6f"
+  },
+  "android_target_libraries": "not yet compiled",
+  "hardware_hdmi": "pending board boot"
+}

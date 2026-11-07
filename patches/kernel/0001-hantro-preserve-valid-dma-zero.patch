@@ -1,0 +1,183 @@
+--- a/drivers/media/platform/verisilicon/hantro.h
++++ b/drivers/media/platform/verisilicon/hantro.h
+@@ -12,6 +12,7 @@
+ #ifndef HANTRO_H_
+ #define HANTRO_H_
+ 
++#include <linux/dma-mapping.h>
+ #include <linux/platform_device.h>
+ #include <linux/videodev2.h>
+ #include <linux/wait.h>
+@@ -466,6 +467,7 @@
+ }
+ 
+ void *hantro_get_ctrl(struct hantro_ctx *ctx, u32 id);
++/* A missing reference returns DMA_MAPPING_ERROR; DMA address 0 is valid. */
+ dma_addr_t hantro_get_ref(struct hantro_ctx *ctx, u64 ts);
+ 
+ static inline struct vb2_v4l2_buffer *
+--- a/drivers/media/platform/verisilicon/hantro_drv.c
++++ b/drivers/media/platform/verisilicon/hantro_drv.c
+@@ -49,11 +49,21 @@
+ {
+ 	struct vb2_queue *q = v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx);
+ 	struct vb2_buffer *buf;
++	dma_addr_t addr;
+ 
+ 	buf = vb2_find_buffer(q, ts);
+ 	if (!buf)
+-		return 0;
+-	return hantro_get_dec_buf_addr(ctx, buf);
++		return DMA_MAPPING_ERROR;
++	addr = hantro_get_dec_buf_addr(ctx, buf);
++	/* The postprocessor also returns 0 when its allocation failed. */
++	if (hantro_needs_postproc(ctx, ctx->vpu_dst_fmt) &&
++	    !ctx->postproc.dec_q[buf->index].cpu)
++		return DMA_MAPPING_ERROR;
++	if (!addr)
++		dev_info_once(ctx->dev->dev,
++			      "FIREFLY_HANTRO_DMA_ZERO: valid reference ts=%llu capture=%u DMA=0 retained\n",
++			      ts, buf->index);
++	return addr;
+ }
+ 
+ static const struct v4l2_event hantro_eos_event = {
+--- a/drivers/media/platform/verisilicon/hantro_g1_mpeg2_dec.c
++++ b/drivers/media/platform/verisilicon/hantro_g1_mpeg2_dec.c
+@@ -95,7 +95,8 @@
+ 				const struct v4l2_ctrl_mpeg2_sequence *seq,
+ 				const struct v4l2_ctrl_mpeg2_picture *pic)
+ {
+-	dma_addr_t forward_addr = 0, backward_addr = 0;
++	dma_addr_t forward_addr = DMA_MAPPING_ERROR;
++	dma_addr_t backward_addr = DMA_MAPPING_ERROR;
+ 	dma_addr_t current_addr, addr;
+ 
+ 	switch (pic->picture_coding_type) {
+@@ -118,9 +119,9 @@
+ 		addr += ALIGN(ctx->dst_fmt.width, 16);
+ 	vdpu_write_relaxed(vpu, addr, G1_REG_DEC_OUT_BASE);
+ 
+-	if (!forward_addr)
++	if (forward_addr == DMA_MAPPING_ERROR)
+ 		forward_addr = current_addr;
+-	if (!backward_addr)
++	if (backward_addr == DMA_MAPPING_ERROR)
+ 		backward_addr = current_addr;
+ 
+ 	/* Set forward ref frame (top/bottom field) */
+--- a/drivers/media/platform/verisilicon/hantro_g1_vp8_dec.c
++++ b/drivers/media/platform/verisilicon/hantro_g1_vp8_dec.c
+@@ -375,7 +375,7 @@
+ 
+ 
+ 	ref = hantro_get_ref(ctx, hdr->last_frame_ts);
+-	if (!ref) {
++	if (ref == DMA_MAPPING_ERROR) {
+ 		vpu_debug(0, "failed to find last frame ts=%llu\n",
+ 			  hdr->last_frame_ts);
+ 		ref = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
+@@ -383,20 +383,20 @@
+ 	vdpu_write_relaxed(vpu, ref, G1_REG_ADDR_REF(0));
+ 
+ 	ref = hantro_get_ref(ctx, hdr->golden_frame_ts);
+-	if (!ref && hdr->golden_frame_ts)
++	if (ref == DMA_MAPPING_ERROR && hdr->golden_frame_ts)
+ 		vpu_debug(0, "failed to find golden frame ts=%llu\n",
+ 			  hdr->golden_frame_ts);
+-	if (!ref)
++	if (ref == DMA_MAPPING_ERROR)
+ 		ref = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
+ 	if (hdr->flags & V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN)
+ 		ref |= G1_REG_ADDR_REF_TOPC_E;
+ 	vdpu_write_relaxed(vpu, ref, G1_REG_ADDR_REF(4));
+ 
+ 	ref = hantro_get_ref(ctx, hdr->alt_frame_ts);
+-	if (!ref && hdr->alt_frame_ts)
++	if (ref == DMA_MAPPING_ERROR && hdr->alt_frame_ts)
+ 		vpu_debug(0, "failed to find alt frame ts=%llu\n",
+ 			  hdr->alt_frame_ts);
+-	if (!ref)
++	if (ref == DMA_MAPPING_ERROR)
+ 		ref = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
+ 	if (hdr->flags & V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT)
+ 		ref |= G1_REG_ADDR_REF_TOPC_E;
+--- a/drivers/media/platform/verisilicon/hantro_h264.c
++++ b/drivers/media/platform/verisilicon/hantro_h264.c
+@@ -357,14 +357,14 @@
+ 				   unsigned int dpb_idx)
+ {
+ 	struct v4l2_h264_dpb_entry *dpb = ctx->h264_dec.dpb;
+-	dma_addr_t dma_addr = 0;
++	dma_addr_t dma_addr = DMA_MAPPING_ERROR;
+ 	s32 cur_poc = ctx->h264_dec.cur_poc;
+ 	u32 flags;
+ 
+ 	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+ 		dma_addr = hantro_get_ref(ctx, dpb[dpb_idx].reference_ts);
+ 
+-	if (!dma_addr) {
++	if (dma_addr == DMA_MAPPING_ERROR) {
+ 		struct vb2_v4l2_buffer *dst_buf;
+ 		struct vb2_buffer *buf;
+ 
+--- a/drivers/media/platform/verisilicon/rockchip_vpu2_hw_mpeg2_dec.c
++++ b/drivers/media/platform/verisilicon/rockchip_vpu2_hw_mpeg2_dec.c
+@@ -98,7 +98,8 @@
+ 				    const struct v4l2_ctrl_mpeg2_sequence *seq,
+ 				    const struct v4l2_ctrl_mpeg2_picture *pic)
+ {
+-	dma_addr_t forward_addr = 0, backward_addr = 0;
++	dma_addr_t forward_addr = DMA_MAPPING_ERROR;
++	dma_addr_t backward_addr = DMA_MAPPING_ERROR;
+ 	dma_addr_t current_addr, addr;
+ 
+ 	switch (pic->picture_coding_type) {
+@@ -121,9 +122,9 @@
+ 		addr += ALIGN(ctx->dst_fmt.width, 16);
+ 	vdpu_write_relaxed(vpu, addr, VDPU_REG_DEC_OUT_BASE);
+ 
+-	if (!forward_addr)
++	if (forward_addr == DMA_MAPPING_ERROR)
+ 		forward_addr = current_addr;
+-	if (!backward_addr)
++	if (backward_addr == DMA_MAPPING_ERROR)
+ 		backward_addr = current_addr;
+ 
+ 	/* Set forward ref frame (top/bottom field) */
+--- a/drivers/media/platform/verisilicon/rockchip_vpu2_hw_vp8_dec.c
++++ b/drivers/media/platform/verisilicon/rockchip_vpu2_hw_vp8_dec.c
+@@ -451,7 +451,7 @@
+ 	dma_addr_t ref;
+ 
+ 	ref = hantro_get_ref(ctx, hdr->last_frame_ts);
+-	if (!ref) {
++	if (ref == DMA_MAPPING_ERROR) {
+ 		vpu_debug(0, "failed to find last frame ts=%llu\n",
+ 			  hdr->last_frame_ts);
+ 		ref = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
+@@ -459,20 +459,20 @@
+ 	vdpu_write_relaxed(vpu, ref, VDPU_REG_VP8_ADDR_REF0);
+ 
+ 	ref = hantro_get_ref(ctx, hdr->golden_frame_ts);
+-	if (!ref && hdr->golden_frame_ts)
++	if (ref == DMA_MAPPING_ERROR && hdr->golden_frame_ts)
+ 		vpu_debug(0, "failed to find golden frame ts=%llu\n",
+ 			  hdr->golden_frame_ts);
+-	if (!ref)
++	if (ref == DMA_MAPPING_ERROR)
+ 		ref = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
+ 	if (hdr->flags & V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN)
+ 		ref |= VDPU_REG_VP8_GREF_SIGN_BIAS;
+ 	vdpu_write_relaxed(vpu, ref, VDPU_REG_VP8_ADDR_REF2_5(2));
+ 
+ 	ref = hantro_get_ref(ctx, hdr->alt_frame_ts);
+-	if (!ref && hdr->alt_frame_ts)
++	if (ref == DMA_MAPPING_ERROR && hdr->alt_frame_ts)
+ 		vpu_debug(0, "failed to find alt frame ts=%llu\n",
+ 			  hdr->alt_frame_ts);
+-	if (!ref)
++	if (ref == DMA_MAPPING_ERROR)
+ 		ref = vb2_dma_contig_plane_dma_addr(&vb2_dst->vb2_buf, 0);
+ 	if (hdr->flags & V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT)
+ 		ref |= VDPU_REG_VP8_AREF_SIGN_BIAS;

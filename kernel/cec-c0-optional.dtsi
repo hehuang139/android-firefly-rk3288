@@ -1,0 +1,7 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Include only after confirming this board routes HDMI pin13 to GPIO7_C0.
+// C7 is shared with UART2 RX and must not be selected while debugging there.
+&hdmi {
+    pinctrl-names = "default";
+    pinctrl-0 = <&hdmi_cec_c0>;
+};

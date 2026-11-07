@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: Apache-2.0
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "FireflyTV",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    manifest: "AndroidManifest.xml",
+    certificate: "platform",
+    privileged: true,
+    system_ext_specific: true,
+    platform_apis: true,
+    static_libs: ["vendor.firefly.hardware.remote-V1-java"],
+    optimize: { enabled: false },
+    required: ["privapp-permissions-firefly-tv.xml"],
+}
+
+prebuilt_etc {
+    name: "privapp-permissions-firefly-tv.xml",
+    src: "privapp-permissions-firefly-tv.xml",
+    sub_dir: "permissions",
+    system_ext_specific: true,
+}

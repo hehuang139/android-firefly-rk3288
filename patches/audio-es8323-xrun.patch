@@ -1,0 +1,136 @@
+--- a/device/firefly/rk3288/audio/AudioCoreFirefly.cpp
++++ b/device/firefly/rk3288/audio/AudioCoreFirefly.cpp
+@@ -1,9 +1,11 @@
+ // SPDX-License-Identifier: Apache-2.0
+-// HDMI PCM backend for the original Firefly-RK3288 simple-audio-card.
++// ES8323 onboard analog DAC backend for the original Firefly-RK3288.
+ #include <algorithm>
+ #include <cstdlib>
+ #include <limits>
+ #include <optional>
++#include <memory>
++#include <tinyalsa/asoundlib.h>
+ #include <string>
+ #include <vector>
+ 
+@@ -23,6 +25,7 @@
+ using aidl::android::hardware::audio::common::SinkMetadata;
+ using aidl::android::hardware::audio::common::SourceMetadata;
+ using aidl::android::media::audio::common::AudioDevice;
++using aidl::android::media::audio::common::AudioDeviceAddress;
+ using aidl::android::media::audio::common::AudioDeviceType;
+ using aidl::android::media::audio::common::AudioOffloadInfo;
+ using aidl::android::media::audio::common::AudioPortConfig;
+@@ -33,17 +36,44 @@
+ 
+ // Card numbers can change when a USB DAC is plugged in. Match the DT card ID
+ // instead of assuming card0; never route television audio to an unrelated card.
+-std::optional<int> findHdmiCard() {
++std::optional<int> findAnalogCard() {
+     for (int card = 0; card < 32; ++card) {
+         std::string id;
+         if (::android::base::ReadFileToString(
+                     "/proc/asound/card" + std::to_string(card) + "/id", &id) &&
+-            ::android::base::Trim(id) == "HDMI") {
++            ::android::base::Trim(id) == "FireflyES8323") {
+             return card;
+         }
+     }
+-    LOG(ERROR) << "Firefly HDMI ALSA card not found (expected simple-audio-card ID HDMI)";
++    LOG(ERROR) << "Firefly ES8323 ALSA card not found (expected card ID FireflyES8323)";
+     return std::nullopt;
++}
++
++// Configure only the real, named ES8323 controls. Missing controls fail the
++// stream instead of silently discarding audio or using another ALSA card.
++bool configureAnalogMixer(int card) {
++    std::unique_ptr<mixer, decltype(&mixer_close)> mix(mixer_open(card), mixer_close);
++    if (!mix) return false;
++    const auto set = [&](const char* name, int value) {
++        mixer_ctl* ctl = mixer_get_ctl_by_name(mix.get(), name);
++        if (!ctl) { LOG(ERROR) << "Missing ES8323 control " << name; return false; }
++        for (unsigned i = 0; i < mixer_ctl_get_num_values(ctl); ++i) {
++            if (mixer_ctl_set_value(ctl, i, value) != 0) {
++                LOG(ERROR) << "Failed ES8323 control " << name; return false;
++            }
++        }
++        return true;
++    };
++    // PCM 192 = 0 dB; output 2 at 21 = -13.5 dB. Output 1 is unused.
++    // Android supplies user volume/mute. Headphones Switch is the DT route.
++    return set("Left Mixer Left Bypass Switch", 0) &&
++           set("Right Mixer Right Bypass Switch", 0) &&
++           set("PCM Volume", 192) &&
++           set("Output 1 Playback Volume", 0) &&
++           set("Output 2 Playback Volume", 21) &&
++           set("Headphones Switch", 1) &&
++           set("Left Mixer Left Playback Switch", 1) &&
++           set("Right Mixer Right Playback Switch", 1);
+ }
+ 
+ class StreamOutFirefly final : public StreamOut, public StreamAlsa {
+@@ -55,8 +85,9 @@
+ 
+     ndk::ScopedAStatus setConnectedDevices(const ConnectedDevices& devices) override {
+         if (devices.size() > 1 ||
+-            (!devices.empty() && (devices[0].type.type != AudioDeviceType::OUT_DEVICE ||
+-                                  devices[0].type.connection != "hdmi"))) {
++            (!devices.empty() && (devices[0].type.type != AudioDeviceType::OUT_BUS ||
++                                  !devices[0].type.connection.empty() ||
++                                  devices[0].address != AudioDeviceAddress(std::string("firefly-es8323"))))) {
+             return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
+         }
+         return StreamCommonImpl::setConnectedDevices(devices);
+@@ -72,10 +103,28 @@
+         const size_t bytes = frames * mFrameSizeBytes;
+         alsa::applyGain(buffer, mGain.load(), bytes, mConfig->format, mConfig->channels);
+         auto* proxy = mAlsaDeviceProxies.front().get();
+-        if (const int error = proxy_write_with_retries(proxy, buffer, bytes, mReadWriteRetries);
+-            error != 0) {
+-            LOG(ERROR) << "Firefly HDMI PCM write failed: " << error;
+-            return ::android::INVALID_OPERATION;
++        // A zero-byte AIDL burst is a state transition, not a PCM write.
++        if (bytes == 0) {
++            *latencyMs = static_cast<int32_t>(proxy_get_latency(proxy));
++            return ::android::OK;
++        }
++        int error = proxy_write_with_retries(proxy, buffer, bytes, mReadWriteRetries);
++        if (error != 0) {
++            // Do not permanently poison the AIDL stream after a transient XRUN.
++            // Reopen at most once, retaining the proxy's cumulative frame count.
++            // The already gained buffer is retried directly, without double gain.
++            LOG(WARNING) << "Firefly ES8323 PCM write failed: " << error
++                         << "; reopening once: " << pcm_get_error(proxy->pcm);
++            proxy_close(proxy);
++            error = proxy_open(proxy);
++            if (error == 0) {
++                error = proxy_write_with_retries(proxy, buffer, bytes, mReadWriteRetries);
++            }
++            if (error != 0) {
++                LOG(ERROR) << "Firefly ES8323 PCM recovery failed: " << error;
++                return ::android::INVALID_OPERATION;
++            }
++            LOG(INFO) << "Firefly ES8323 PCM recovered and current buffer written";
+         }
+         *actual = frames;
+         *latencyMs = static_cast<int32_t>(std::min(
+@@ -86,8 +135,8 @@
+   private:
+     void onClose(StreamDescriptor::State) override { defaultOnClose(); }
+ 
+-    // AudioFlinger applies volume in software. There is no PCM hardware volume
+-    // control on the DW-HDMI transmitter; do not advertise a dummy mixer.
++    // AudioFlinger applies user volume in software; the real DAC mixer is
++    // initialized to a fixed conservative analog gain, never a dummy sink.
+     ndk::ScopedAStatus getHwVolume(std::vector<float>*) override {
+         return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+     }
+@@ -95,7 +144,7 @@
+         return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+     }
+     std::vector<alsa::DeviceProfile> getDeviceProfiles() override {
+-        if (auto card = findHdmiCard(); card.has_value()) {
++        if (auto card = findAnalogCard(); card.has_value() && configureAnalogMixer(*card)) {
+             return {{*card, 0, PCM_OUT, false /*isExternal*/}};
+         }
+         return {};

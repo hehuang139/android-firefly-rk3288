@@ -1,0 +1,292 @@
+[
+  {
+    "path": "Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml",
+    "status": "modified",
+    "upstream_sha256": "91a2e753f71d0a443d01a84fcaeb57900961404f5d59fabcccf621210790485e",
+    "final_sha256": "68501e592cde5553dc55c73065f0964f7bd223df5e35ac64b4de2ee4539c0817",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "arch/arm/boot/dts/rockchip/Makefile",
+    "status": "modified",
+    "upstream_sha256": "16f766d9aa03f3b49d1e3f848d3246711ce9c797f26a4f2215ca9d1dabf3076d",
+    "final_sha256": "edf643d067f8fe546c6ced4c38a82f2625736d1fe6a09c0047d98f9f02fdb6c2",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/base/bus.c",
+    "status": "modified",
+    "upstream_sha256": "53975b1d25058a6828ea4a1d0fa2cc3d1a23dc5ba37a8cb8e2a765fb707399e1",
+    "final_sha256": "7b80f6db48d6ea04dfe17e5d0a82ad8c817669d8875f6bac17087a8c7b4031f7",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/base/dd.c",
+    "status": "modified",
+    "upstream_sha256": "26efc05457b05672d7156cc7c6198dfc7c4875bc3a9cb0629ed716992704ed0f",
+    "final_sha256": "c210f149e287b15d34404fe238d53126e8983b8c7418ec4f7ec76e0107d7ac4d",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/base/driver.c",
+    "status": "modified",
+    "upstream_sha256": "eb941fd97750d96c5c877fe390fa2ac4ced8cd7eb34a66f4a27f88ecb4341bfa",
+    "final_sha256": "4248f6600edadb79bf8b4daa81f66bad47fe4f7642264f2142dbbbb6d6aaae4d",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/base/platform.c",
+    "status": "modified",
+    "upstream_sha256": "b3df261190611e2840323be3e1082f6f1b0a9165176b7ad12eca4ad6ac8622c1",
+    "final_sha256": "6f38e6dfb5f2865c4b7e5b529a4378d539b175d7833a16fe3e6fca0b4156364f",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/iommu/rockchip-iommu.c",
+    "status": "modified",
+    "upstream_sha256": "28627903ee9a9fa51c16cbc396190aae423c39e39dff0c2ad062443600dd65d3",
+    "final_sha256": "8e8bffd0c6d478b0e1b0426a106217991b9604a4795acaaa7de88bdefd8ad460",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/platform/rockchip/rkvdec/Makefile",
+    "status": "modified",
+    "upstream_sha256": "9157230bfe2c19266cf6a11f9f4f8f2686dbb61d070c5a6cb74bf8e8f79b23a8",
+    "final_sha256": "1951466744533375f3cae6d100396b87703f639c953957479240dc3b45781c76",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/platform/rockchip/rkvdec/rkvdec-regs.h",
+    "status": "modified",
+    "upstream_sha256": "49615ca14f56b1d5f66992f8caa256a052d0baa0014e2c2dc07de3c721134af0",
+    "final_sha256": "83a1048327be25b15ed5718c52bbec220359746b25162a99e775e4c68e485666",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/platform/rockchip/rkvdec/rkvdec.c",
+    "status": "modified",
+    "upstream_sha256": "18c31bb33d50155a97cb445428eeed0178f3626b5580522502ea65c8904ce1ae",
+    "final_sha256": "4a98bde3fc55554c19dbbeb1ad31ed60468d2f27ecbc9fd2e80a837c76f9d6dc",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/platform/rockchip/rkvdec/rkvdec.h",
+    "status": "modified",
+    "upstream_sha256": "085a1e5ccc89ea652bc56618b839457f67a0d984d91edc8d9637e6a94e0c6cc5",
+    "final_sha256": "29f09892c180fb435a7d4b90aaa10939f588a50636ca1775af97bc2645ea2647",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/hantro.h",
+    "status": "modified",
+    "upstream_sha256": "576601e173780a080a5978ce257e04b0da465f8986f3ae215f52c481c215977b",
+    "final_sha256": "ded4bbc2d0c30003790bbd03cca9893e866abc6a7e5aa2e2b913357ab2c713a2",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/hantro_drv.c",
+    "status": "modified",
+    "upstream_sha256": "4051effd658abb96a91b00b57b5bd0340c6e6342e1a3d7c2f7e071e5442a6aa5",
+    "final_sha256": "6d778ea6c0c6f137e48880521e20706c6d76bca321069a0ac8d1e2a77bc7b6d1",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/hantro_g1_mpeg2_dec.c",
+    "status": "modified",
+    "upstream_sha256": "303bd8ded9eba2deeb81ca2d88cdbca20669fffb3ce07594ef6a22644cbcd8ee",
+    "final_sha256": "f179f32117810b44b8b417f09fb97bab25f8264bf16c7b0e85442bed5a472351",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/hantro_g1_vp8_dec.c",
+    "status": "modified",
+    "upstream_sha256": "1a3a19d7d4dc1470ba3f5463b82da19f0903de651408b7a91998c88f09f3dddd",
+    "final_sha256": "5531bfd16019411b07e4ec48ce3eed86e24d05fd6fe717a385a2392241e1a3d6",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/hantro_h264.c",
+    "status": "modified",
+    "upstream_sha256": "59d2372e5914b60a0116e0318cfcbd2a2981b748b04c0ddae931162b37dfd08a",
+    "final_sha256": "37142be05e3c7066061ea842b3100ce7b35ca81b0a6e77bc9dcef95456036e97",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/rockchip_vpu2_hw_mpeg2_dec.c",
+    "status": "modified",
+    "upstream_sha256": "3ccfe324c75b9281bdacecc5344e551e49d0d4d2714ad7069c672c1003e96a95",
+    "final_sha256": "12a14f6f700650f44eb3d0bba727d1200c6df878d89cb1da9f129cead78e4122",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/rockchip_vpu2_hw_vp8_dec.c",
+    "status": "modified",
+    "upstream_sha256": "0965a949f1544d68014a2de6b9737f8f896d07a04f1acc7607499c0e2f504ef5",
+    "final_sha256": "d82576b0b88c2ea5111ca32ce6e41b44a744845f8f98ae26a92a5ea972c61a2c",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": true
+  },
+  {
+    "path": "drivers/media/platform/verisilicon/rockchip_vpu_hw.c",
+    "status": "modified",
+    "upstream_sha256": "596f5d3ffa63842a683a50831fa89e2873427e646dae540854d40d015c0b44da",
+    "final_sha256": "fef8e9bb9a8e9a27a0811962ae77213f2c568ecd192a0cc372cb3f147607c221",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/rc/keymaps/Makefile",
+    "status": "modified",
+    "upstream_sha256": "316ced2e7ade55f872e79b78d0d1eb3d83bae96a8757460ae323337ed9690345",
+    "final_sha256": "9a7e81c1146c37fb79499bd36d1ebb804e0655aa1a5f190bd4a8c108f3342dd0",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/pmdomain/core.c",
+    "status": "modified",
+    "upstream_sha256": "9c29c7ee4b45ceda7daabff3b86d42b71dab5d493e8e489ebb74b177411e3127",
+    "final_sha256": "3afbc5aef4b0700e2f65fe177367b461059fab3c10112daf42ed72c7d41511bd",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/pmdomain/rockchip/pm-domains.c",
+    "status": "modified",
+    "upstream_sha256": "0dae886c4e3edcc31c0174068f2b3b164ad3f77e0cb6074c46d2ea06d4a586b9",
+    "final_sha256": "932dc9a23bbbe69f7a4d227d2dc03469dcf6406fbf6c2f77d111375a19b16d50",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/tty/serial/8250/8250_port.c",
+    "status": "modified",
+    "upstream_sha256": "098c2cc4c9c3cae823e25f4de430f5c38ad069ff8025df46dd38eeeded51ede8",
+    "final_sha256": "102961224b21c836515a195ad9210199c5e93012de51ab67011a5be8a5f075b8",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "init/main.c",
+    "status": "modified",
+    "upstream_sha256": "9611baf922a4aa7061c694d43ae6ee3b6250079c7b0ee09f6895f4a8ed372734",
+    "final_sha256": "2d9e44ba0b09e1beb0861879e2251c401170326c816c1f9cc6550d420b4d771c",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "kernel/Makefile",
+    "status": "modified",
+    "upstream_sha256": "e60a1698fa9d7fa898032bf543e3ea643b73ac6491ef02186edd162c6f1f25f1",
+    "final_sha256": "fb89ea3860e7eace347541f658022847d8c9a9d42f04ab510d60d90d11c426ee",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "kernel/printk/printk.c",
+    "status": "modified",
+    "upstream_sha256": "a3275de85bf4f4e9779bd115c91989501a8cdc25bcf59fa46bf074a5c4425f0f",
+    "final_sha256": "a15f72f33a8e515123fe6f96f3796ad87080a3e3ed6a4c1bfe884fa1ee6cda9e",
+    "upstream_mode": "0o664",
+    "final_mode": "0o664",
+    "dma_overlay": false
+  },
+  {
+    "path": "arch/arm/boot/dts/rockchip/rk3288-firefly-android17.dts",
+    "status": "added",
+    "final_sha256": "ec14197d9d71b82957175785d3754e0a95b0190bb90e392e5fddf9eee9cb5db7",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "arch/arm/boot/dts/rockchip/rk3288-firefly-tvbox-emmc.dts",
+    "status": "added",
+    "final_sha256": "7e8d1e26f7dc6ef60daa82e0b2c3a69b7674da511a9ed74b8f141dd030026bba",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "arch/arm/boot/dts/rockchip/rk3288-firefly-tvbox.dts",
+    "status": "added",
+    "final_sha256": "771e0efc79e5df0896ff187407b06250f5347b66118c08d9891b8035abca7ca3",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/platform/rockchip/rkvdec/rkvdec-hevc.c",
+    "status": "added",
+    "final_sha256": "7b852eeb4d0f37e2563d53ae2632edc48cc0fbacbd4ec91d0ecf89b20495ba16",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "drivers/media/rc/keymaps/rc-firefly-rk3288.c",
+    "status": "added",
+    "final_sha256": "3f135e33fdcf708b78a524da2b1302e9ebe6099d0c631dc96c6d5480d27aeedc",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "include/linux/firefly_boot_diag.h",
+    "status": "added",
+    "final_sha256": "38cceaebc84e2369bbe3d063203da7560ce630792aed7ac1bbae8c1a02ec0ec8",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "include/linux/firefly_hantro_diag.h",
+    "status": "added",
+    "final_sha256": "20bc857ad738a7848338ce046ca119e3d907a6740d405a7dc2077726787cdda7",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  },
+  {
+    "path": "kernel/firefly_boot_diag.c",
+    "status": "added",
+    "final_sha256": "dd129b8596bd2148d82a50881ab06a906e4543c83971450c951b4f6e56021998",
+    "final_mode": "0o644",
+    "dma_overlay": false
+  }
+]

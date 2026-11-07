@@ -1,0 +1,12 @@
+--- init.fireflyrk3288.sf20.rc
++++ init.fireflyrk3288.sf20-appbudget.rc
+@@ -5,6 +5,9 @@
+     setprop debug.sf.late.sf.duration 20000000
+     setprop debug.sf.early.sf.duration 20000000
+     setprop debug.sf.earlyGl.sf.duration 20000000
++    # Specify early app budgets; constructor fallback reads an unset member.
++    setprop debug.sf.early.app.duration 16666667
++    setprop debug.sf.earlyGl.app.duration 16666667
+     # Register the AIDL software Codec2 store before media services start.
+     setprop media.c2.hal.selection aidl
+     setprop debug.stagefright.ccodec 4

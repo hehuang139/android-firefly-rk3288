@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.patch text eol=lf
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.img binary
+*.apk binary

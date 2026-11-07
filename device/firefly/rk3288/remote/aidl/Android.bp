@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: Apache-2.0
+package {
+    default_applicable_licenses: ["firefly_remote_license"],
+}
+
+aidl_interface {
+    name: "vendor.firefly.hardware.remote",
+    vendor_available: true,
+    srcs: ["vendor/firefly/hardware/remote/*.aidl"],
+    local_include_dir: ".",
+    stability: "vintf",
+    frozen: true,
+    versions_with_info: [{ version: "1", imports: [] }],
+    backend: {
+        java: { enabled: true, sdk_version: "system_current" },
+        cpp: { enabled: false },
+        ndk: { enabled: true },
+    },
+}

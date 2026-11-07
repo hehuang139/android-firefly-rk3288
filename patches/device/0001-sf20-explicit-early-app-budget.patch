@@ -1,0 +1,16 @@
+--- a/device/firefly/rk3288/init/init.fireflyrk3288.rc
++++ b/device/firefly/rk3288/init/init.fireflyrk3288.rc
+@@ -1,5 +1,13 @@
+ # SPDX-License-Identifier: Apache-2.0
+ on early-init
++    # Allow the GPU display pipeline to overlap two refresh intervals.
++    setprop debug.sf.use_phase_offsets_as_durations true
++    setprop debug.sf.late.sf.duration 20000000
++    setprop debug.sf.early.sf.duration 20000000
++    setprop debug.sf.earlyGl.sf.duration 20000000
++    # Specify early app budgets; constructor fallback reads an unset member.
++    setprop debug.sf.early.app.duration 16666667
++    setprop debug.sf.earlyGl.app.duration 16666667
+     # Register the AIDL software Codec2 store before media services start.
+     setprop media.c2.hal.selection aidl
+     setprop debug.stagefright.ccodec 4

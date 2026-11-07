@@ -1,0 +1,24 @@
+From: Firefly RK3288 port maintainers
+Subject: [PATCH] soong: forward opt-in Go heap controls to the primary builder
+
+The primary builder starts under env -i. Forward explicit host build controls
+so a container memory limit can be respected during dependency analysis.
+No target Android runtime settings are changed.
+
+Base: platform/build/soong @ 6722dd8833db7482df1a2543ca3fcf67ddf0f7b1
+      android-17.0.0_r1
+
+--- a/ui/build/soong.go
++++ b/ui/build/soong.go
+@@ -208,5 +208,11 @@
+ 	commonArgs = append(commonArgs, "-l", filepath.Join(pb.config.FileListDir(), "Android.bp.list"))
+ 	invocationEnv := make(map[string]string)
++	if memoryLimit := os.Getenv("SOONG_GOMEMLIMIT"); memoryLimit != "" {
++		invocationEnv["GOMEMLIMIT"] = memoryLimit
++	}
++	if gcPercent := os.Getenv("SOONG_GOGC"); gcPercent != "" {
++		invocationEnv["GOGC"] = gcPercent
++	}
+ 	if pb.debugPort != "" {
+ 		//debug mode
+ 		commonArgs = append(commonArgs, "--delve_listen", pb.debugPort,

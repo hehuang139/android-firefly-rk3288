@@ -1,0 +1,53 @@
+--- a/cros_gralloc/cros_gralloc_driver.cc
++++ b/cros_gralloc/cros_gralloc_driver.cc
+@@ -7,6 +7,7 @@
+ #include "cros_gralloc_driver.h"
+ 
+ #include <cstdlib>
++#include <drm_fourcc.h>
+ #include <cutils/properties.h>
+ #include <fcntl.h>
+ #include <hardware/gralloc.h>
+@@ -110,8 +111,20 @@
+ 		return NULL;
+ 
+ 	drv = drv_create(fd, NULL);
+-	if (!drv)
++	if (!drv) {
+ 		close(fd);
++		return nullptr;
++	}
++
++	// Primary nodes can grant DRM master on open. Allocation does not need it;
++	// release it for the compositor, as minigbm_create_default_device does.
++	if (drmGetNodeTypeFromFd(fd) == DRM_NODE_PRIMARY && drmIsMaster(fd) &&
++	    drmDropMaster(fd)) {
++		ALOGE("Failed to release allocator DRM master: %s.", strerror(errno));
++		drv_destroy(drv);
++		close(fd);
++		return nullptr;
++	}
+ 
+ 	return drv;
+ }
+@@ -201,6 +214,20 @@
+ 					 &resolved_format, &resolved_use_flags);
+ 
+ 	combo = drv_get_combination(drv_.get(), resolved_format, resolved_use_flags);
++	// The generic Rockchip backend supports NV12 textures but not direct
++	// scanout. A Surface adds HW_COMPOSER even when GPU composition is valid.
++	// Retry that exact video-decoder case without promising scanout support.
++	const uint64_t nv12_surface_flags =
++	    BO_USE_SCANOUT | BO_USE_TEXTURE | BO_USE_HW_VIDEO_DECODER;
++	if (!combo && resolved_format == DRM_FORMAT_NV12 &&
++	    strcmp(drv_get_name(drv_.get()), "rockchip") == 0 &&
++	    (resolved_use_flags & nv12_surface_flags) == nv12_surface_flags) {
++		const uint64_t texture_use_flags = resolved_use_flags & ~BO_USE_SCANOUT;
++		combo = drv_get_combination(drv_.get(), resolved_format, texture_use_flags);
++		if (combo)
++			resolved_use_flags = texture_use_flags;
++	}
++
+ 	if (!combo && (descriptor->droid_usage & GRALLOC_USAGE_HW_VIDEO_ENCODER) &&
+ 	    descriptor->droid_format != HAL_PIXEL_FORMAT_YCbCr_420_888) {
+ 		// Unmask BO_USE_HW_VIDEO_ENCODER for other formats. They are mostly

@@ -1,0 +1,13 @@
+--- /vendor/etc/init/hw/init.fireflyrk3288.rc.before
++++ /vendor/etc/init/hw/init.fireflyrk3288.rc
+@@ -1,5 +1,10 @@
+ # SPDX-License-Identifier: Apache-2.0
+ on early-init
++    # Allow the GPU display pipeline to overlap two refresh intervals.
++    setprop debug.sf.use_phase_offsets_as_durations true
++    setprop debug.sf.late.sf.duration 20000000
++    setprop debug.sf.early.sf.duration 20000000
++    setprop debug.sf.earlyGl.sf.duration 20000000
+     # Register the AIDL software Codec2 store before media services start.
+     setprop media.c2.hal.selection aidl
+     setprop debug.stagefright.ccodec 4

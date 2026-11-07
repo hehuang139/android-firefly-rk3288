@@ -1,0 +1,7 @@
+{
+  "path": "device/firefly/rk3288/media/media_codecs_firefly.xml",
+  "source": "final vendor image content, H.264-only advertisement",
+  "historical_installed_sha256": "54287229aea580dc0256c7928204f2cb7ee52362377f63447354168cdb885446",
+  "public_lf_sha256": "54287229aea580dc0256c7928204f2cb7ee52362377f63447354168cdb885446",
+  "component_store_note": "Experimental HEVC component source remains, but is not advertised by this XML and final DT nodes are disabled."
+}

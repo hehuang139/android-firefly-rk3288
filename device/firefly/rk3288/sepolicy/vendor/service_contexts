@@ -1,0 +1,2 @@
+android.hardware.media.c2.IComponentStore/firefly u:object_r:hal_codec2_service:s0
+vendor.firefly.hardware.remote.IRemote/default u:object_r:hal_firefly_remote_service:s0

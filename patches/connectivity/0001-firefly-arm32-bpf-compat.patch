@@ -1,0 +1,94 @@
+--- a/bpf/loader/NetBpfLoad.cpp
++++ b/bpf/loader/NetBpfLoad.cpp
+@@ -115,6 +115,21 @@
+ // should be 0 for APEX/mainline builds.
+ static_assert(!minSupportedKernelVer, "NetBpfLoad must not assume min kver");
+ 
++// This userdebug port runs a native ARM32 kernel and userspace. Its ARM JIT
++// lacks atomic operations and BPF subprogram calls. Keep all verifier/load/map
++// checks, but permit the kernel's real interpreter for this exact board only.
++// This requires CONFIG_BPF_JIT_ALWAYS_ON=n; it does not mark loading successful.
++static bool fireflyArm32BpfCompat() {
++#if defined(__arm__) && !defined(__aarch64__)
++    static const bool enabled = isArm() && isKernel32Bit() && isUserdebug &&
++            GetProperty("ro.hardware", "") == "fireflyrk3288" &&
++            GetProperty("ro.product.device", "") == "rk3288";
++    return enabled;
++#else
++    return false;
++#endif
++}
++
+ static unsigned int page_size = static_cast<unsigned int>(getpagesize());
+ 
+ typedef struct {
+@@ -1002,7 +1017,7 @@
+     }
+     if (!isUser) ALOGD("prog %s id %d len jit:%d xlat:%d", progPinLoc, progId, jitLen, xlatLen);
+ 
+-    if (!jitLen && api_level_full >= NETBPFLOAD_25Q2_VER) {
++    if (!jitLen && api_level_full >= NETBPFLOAD_25Q2_VER && !fireflyArm32BpfCompat()) {
+         ALOGE("Kernel eBPF JIT failure for %s", progPinLoc);
+         return -ENOTSUP;
+     }
+@@ -1351,7 +1366,8 @@
+ static bool loadAllObjects() {
+     // Enable on kernels that have the BPF CFI backports, see: b/488034908
+     // b/494690861: funcs may trigger Real-time Kernel Protection (RKP)
+-    bool funcs = isAtLeast26Q2 && isAtLeastKernelVersion(6, 6, 118);
++    bool funcs = isAtLeast26Q2 && isAtLeastKernelVersion(6, 6, 118) &&
++            !fireflyArm32BpfCompat();
+ 
+     if (!loadObject(BPFROOT "offload.o", /*libbpf*/false)) return false;
+     if (!loadObject(BPFROOT "test.o")) return false;
+@@ -1511,6 +1527,10 @@
+ 
+ static int doLoad(char** argv, char * const envp[]) {
+     libbpf_set_print(libbpfPrint);
++    if (fireflyArm32BpfCompat()) {
++        ALOGW("Firefly RK3288 userdebug ARM32 BPF compatibility: native interpreter "
++              "fallback and inline objects; all BPF loading checks remain required.");
++    }
+ 
+     const bool runningAsRoot = !getuid();  // true iff U QPR3 or V+
+ 
+@@ -1588,18 +1608,18 @@
+ 
+     // Technically already required by U, but only enforce on V+
+     // see also: //system/netd/tests/kernel_test.cpp TestKernel64Bit
+-    if (isAtLeastV && isKernel32Bit() && isAtLeastKernelVersion(5, 16)) {
++    if (isAtLeastV && isKernel32Bit() && isAtLeastKernelVersion(5, 16) && !fireflyArm32BpfCompat()) {
+         ALOGE("Android V+ platform with 32 bit kernel version >= 5.16.0 is unsupported");
+         if (!isTV()) return 8;
+     }
+ 
+-    if (isKernel32Bit() && isAtLeast25Q2) {
++    if (isKernel32Bit() && isAtLeast25Q2 && !fireflyArm32BpfCompat()) {
+         ALOGE("Android 25Q2 requires 64 bit kernel.");
+         return 9;
+     }
+ 
+     // 6.6 is highest version supported by Android V, so this is effectively W+ (sdk=36+)
+-    if (isKernel32Bit() && isAtLeastKernelVersion(6, 7)) {
++    if (isKernel32Bit() && isAtLeastKernelVersion(6, 7) && !fireflyArm32BpfCompat()) {
+         ALOGE("Android platform with 32 bit kernel version >= 6.7.0 is unsupported");
+         return 10;
+     }
+@@ -1665,7 +1685,7 @@
+      * Note, however, that TV and Wear devices will continue to support 32-bit userspace
+      * on ARM64.
+      */
+-    if (isUserspace32bit() && isAtLeastKernelVersion(6, 2)) {
++    if (isUserspace32bit() && isAtLeastKernelVersion(6, 2) && !fireflyArm32BpfCompat()) {
+         // Stuff won't work reliably, but...
+         if (isArm() && (isTV() || isWear())) {
+             // exempt Arm TV or Wear devices (arm32 ABI is far less problematic than x86-32)
+@@ -1690,7 +1710,7 @@
+     // Since officially Android only supports LTS, 6.13+ really means 6.18+,
+     // and won't be supported before 2026, most likely Android 17 / 26Q2.
+     // 6.13+ (implying 26Q2+) requires 64-bit userspace.
+-    if (isUserspace32bit() && isAtLeastKernelVersion(6, 13)) {
++    if (isUserspace32bit() && isAtLeastKernelVersion(6, 13) && !fireflyArm32BpfCompat()) {
+         // due to previous check only reachable on Arm && (<=T kernel uprev || TV || Wear)
+         ALOGE("64-bit userspace required on 6.13+ kernels.");
+         return 14;

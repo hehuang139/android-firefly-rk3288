@@ -1,0 +1,47 @@
+From: Firefly RK3288 port maintainers
+Subject: [PATCH] adbd: keep failed USB initialization from enabling TCP
+
+An unavailable FunctionFS endpoint must leave the default USB-only board
+without a listener. Keep explicit listen_addrs and TCP-port requests intact,
+as well as USB setup and host-key authentication.
+
+Base: platform/packages/modules/adb @ 9084198a2d4b0f6a0f174260fb42da33485b684d
+      android-17.0.0_r1
+
+--- a/daemon/main.cpp
++++ b/daemon/main.cpp
+@@ -258,19 +258,15 @@
+     // adbd_auth_init will spawn a thread, so we need to defer it until after selinux transitions.
+     adbd_auth_init();
+ 
+-    bool is_usb = false;
+-
+ #if defined(__ANDROID__)
+     if (access(USB_FFS_ADB_EP0, F_OK) == 0) {
+         // Listen on USB.
+         usb_init();
+-        is_usb = true;
+     }
+ #endif
+ 
+     // If one of these properties is set, also listen on that port.
+-    // If one of the properties isn't set and we couldn't listen on usb, listen
+-    // on the default port.
++    // A failed USB setup must not implicitly enable a network listener.
+     std::vector<std::string> addrs;
+     std::string prop_addr = android::base::GetProperty("service.adb.listen_addrs", "");
+     if (prop_addr.empty()) {
+@@ -291,13 +287,6 @@
+             // Listen on TCP and VSOCK port specified by service.adb.tcp.port property.
+             addrs.push_back(android::base::StringPrintf("tcp:%d", port));
+             addrs.push_back(android::base::StringPrintf("vsock:%d", port));
+-            setup_adb(addrs);
+-        } else if (!is_usb) {
+-            // Listen on default port.
+-            addrs.push_back(
+-                    android::base::StringPrintf("tcp:%d", DEFAULT_ADB_LOCAL_TRANSPORT_PORT));
+-            addrs.push_back(
+-                    android::base::StringPrintf("vsock:%d", DEFAULT_ADB_LOCAL_TRANSPORT_PORT));
+             setup_adb(addrs);
+         }
+     } else {

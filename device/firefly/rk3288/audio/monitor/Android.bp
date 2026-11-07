@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+android_app {
+    name: "FireflyHdmiAudio",
+    srcs: ["src/**/*.java"],
+    manifest: "AndroidManifest.xml",
+    certificate: "platform",
+    privileged: true,
+    system_ext_specific: true,
+    platform_apis: true,
+    optimize: { enabled: false },
+}

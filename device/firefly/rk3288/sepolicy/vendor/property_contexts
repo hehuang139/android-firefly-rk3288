@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+vendor.hwc.backend_override       u:object_r:vendor_firefly_graphics_prop:s0 exact string
+ro.vendor.hwc.use_overlay_planes  u:object_r:vendor_firefly_graphics_prop:s0 exact bool
+persist.vendor.firefly.cec_input  u:object_r:vendor_firefly_cec_prop:s0 exact bool
+init.svc.vendor.firefly-cec-input u:object_r:vendor_firefly_cec_status_prop:s0 exact string

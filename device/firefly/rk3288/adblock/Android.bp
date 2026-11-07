@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: Apache-2.0
+package {
+    default_applicable_licenses: ["FireflyAdblockLicense"],
+}
+license {
+    name: "FireflyAdblockLicense",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-CC-BY-3.0"],
+    license_text: ["NOTICE.md"],
+}
+prebuilt_etc {
+    name: "FireflyAdblockCMFA",
+    src: "cmfa-rules.yaml",
+    filename: "cmfa-rules.yaml",
+    sub_dir: "firefly-tv/adblock",
+    product_specific: true,
+}
+prebuilt_etc {
+    name: "FireflyAdblockNotice",
+    src: "NOTICE.md",
+    filename: "NOTICE.md",
+    sub_dir: "firefly-tv/adblock",
+    product_specific: true,
+}
