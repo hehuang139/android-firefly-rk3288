@@ -1,8 +1,10 @@
 # Hantro H.264 / FFmpeg / Codec2
 
-The `fix/live-channel-audio` branch adds an uninstalled AC-3/MP2 software-audio
-candidate. Its isolated ARM32 build passed, but codec enumeration, PCM decoding,
-live playback and the ordinary H.264 regression have not run on the board.
+The `fix/live-channel-audio` branch adds AC-3/MP2 software-audio decoding.
+The paired ARM32 components have been installed and exercised on the board:
+specified-codec PCM probes reached EOS and selected live channels played in the
+native TV activity. The later AVC metadata-level update retains the original
+1920x1088 picture-size limit; it does not establish full Level 5.1 capabilities.
 See [candidate build and validation](../../../../docs/live-channel-audio-candidate.md).
 The H.264 results below describe the accepted `main` baseline.
 

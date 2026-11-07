@@ -1,0 +1,401 @@
+{
+  "recordedUtc": "2026-11-07T16:54:12.640Z",
+  "scope": "A public snapshot of bounded Fujian playback evidence. Historical normal programmes, the pre-fix midnight failure, and the repaired midnight transport/decoding of station test patterns are preserved separately. Media addresses, endpoints, credentials and raw device logs are excluded.",
+  "earlier_round": {
+    "channels_confirmed": 10,
+    "hd_channels": 7,
+    "channels_360p": 2,
+    "channels_576p": 1,
+    "minimum_required_continuous_playback_seconds": 60,
+    "actual_minimum_observed_seconds": 61.08,
+    "all_channels_physically_listened_to": false,
+    "zero_drops_for_all_channels_claimed": false,
+    "results": [
+      {
+        "id": "FujianNewsTV.cn",
+        "name": "福建新闻",
+        "number": 920,
+        "width": 1920,
+        "height": 1080,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 65.39,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_province_dynamic_and_local_playback"
+      },
+      {
+        "id": "FujianCultureTourismSportsTV.cn",
+        "name": "福建文旅体育",
+        "number": 921,
+        "width": 1920,
+        "height": 1080,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.42,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_province_dynamic_and_local_playback"
+      },
+      {
+        "id": "StraitsSatelliteTV.cn",
+        "name": "海峡卫视",
+        "number": 922,
+        "width": 1920,
+        "height": 1080,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 61.08,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_province_dynamic_and_local_playback"
+      },
+      {
+        "id": "XiamenMobileTV.cn",
+        "name": "厦门移动电视",
+        "number": 316,
+        "width": 1920,
+        "height": 1080,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.75,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_province_dynamic_and_local_playback"
+      },
+      {
+        "id": "QuanzhouTV1.cn",
+        "name": "泉州新闻综合",
+        "number": 317,
+        "width": 640,
+        "height": 360,
+        "hd": false,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.89,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 4,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_province_dynamic_and_local_playback"
+      },
+      {
+        "id": "QuanzhouTV2.cn",
+        "name": "泉州闽南语",
+        "number": 318,
+        "width": 640,
+        "height": 360,
+        "hd": false,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 65.34,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_province_dynamic_and_local_playback"
+      },
+      {
+        "id": "ShishiGeneral.cn",
+        "name": "石狮新闻综合",
+        "number": 950,
+        "width": 1920,
+        "height": 1080,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.91,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_county_static_and_satellite_playback"
+      },
+      {
+        "id": "JinjiangTV.cn",
+        "name": "晋江电视台",
+        "number": 951,
+        "width": 1280,
+        "height": 720,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.56,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_county_static_and_satellite_playback"
+      },
+      {
+        "id": "XiamenStarTVChina.cn",
+        "name": "厦门卫视",
+        "number": 940,
+        "width": 720,
+        "height": 576,
+        "hd": false,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.86,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.firefly.mp2.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_county_static_and_satellite_playback"
+      },
+      {
+        "id": "DehuaGeneral.cn",
+        "name": "德化综合",
+        "number": 952,
+        "width": 1920,
+        "height": 1080,
+        "hd": true,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 61.64,
+        "video_decoder": "c2.firefly.h264.decoder",
+        "audio_decoder": "c2.android.aac.decoder",
+        "all_observation_windows_advanced": true,
+        "dropped_frames_in_observation_windows": 0,
+        "physical_listening_verified": false,
+        "evidence_group": "earlier_dehua_static_playback"
+      }
+    ],
+    "evidence_groups": [
+      {
+        "group": "earlier_province_dynamic_and_local_playback",
+        "source_result_sha256": "fc7ebbc85191cd9bdc9ee70b858e26c41eb106e96c23fea6b83ca6a1e1e9104f",
+        "app_sha256": "826e707b4e12f1234723738c4fa2256b1866e034c7df4c58eec50188b5c472fd",
+        "catalog_sha256": "55f3d4b65547b563b5f255f5b6a036f0703eae7b5142cbbd20f48d331d3bfce2"
+      },
+      {
+        "group": "earlier_county_static_and_satellite_playback",
+        "source_result_sha256": "f13ef4a70cc81ad8362cda740819674b331662b66875e9711afe68a57d23776f",
+        "app_sha256": "826e707b4e12f1234723738c4fa2256b1866e034c7df4c58eec50188b5c472fd",
+        "catalog_sha256": "ed015f3b94b8d1edfbd1c29a1848b487c93790324787862f82e76c702ad8f16f"
+      },
+      {
+        "group": "earlier_dehua_static_playback",
+        "source_result_sha256": "ce9596f79ede17cd4afb4de2a808745f6b2919f6e92701cf491d4771feb34610",
+        "app_sha256": "826e707b4e12f1234723738c4fa2256b1866e034c7df4c58eec50188b5c472fd",
+        "catalog_sha256": "760b48949fe01998b33bc7f452a36c8bd232e7496c7035a6bb6b2ad1aa1d58de"
+      }
+    ],
+    "normal_programme_evidence_scope": "Earlier daytime normal programmes on the 826e private APK and then-current catalogs; not a full retest on the 1386 APK."
+  },
+  "latest_county_dynamic_round": {
+    "observed_provenance_utc": "2026-11-07T16:46:32.600979+00:00",
+    "source_result_sha256": "423b9f5b95c05cc151bfa0f292ff21de5147af8dcd8f133381455b149a1c939c",
+    "app_sha256": "1386e29ecc8172d0f7f71037114d61aadd560525b18ba7cd7fae1ade75bb4827",
+    "catalog_sha256": "81f4a347c1117dc30a873b786ffd2be0d14be2aa4006701ac6c210f944d8fc3f",
+    "c2_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+    "running_c2_matches_installed_component": true,
+    "status": "midnight_transport_and_decoding_passed_for_station_test_patterns",
+    "all_tested_channels_passed_transport_and_decoding": true,
+    "tested_channels": 2,
+    "normal_programme_verified_in_this_round": false,
+    "two_hour_ticket_expiry_renewal_verified": false,
+    "physical_listening_verified": false,
+    "all_channels_on_latest_apk_retested": false,
+    "results": [
+      {
+        "id": "ShishiGeneral.cn",
+        "number": 950,
+        "name": "石狮新闻综合",
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.61,
+        "elapsed_seconds": 69.02,
+        "dimensions": "1920 x 1080",
+        "video_codec": "c2.firefly.h264.decoder",
+        "audio_codec": "c2.android.aac.decoder",
+        "physical_listening_verified": false,
+        "long_term_stability_verified": false,
+        "ticket_expiry_renewal_verified": false,
+        "content": "station_test_pattern",
+        "normal_programme_verified": false,
+        "initial_observed_frames": 56,
+        "initial_observed_dropped": 20,
+        "last_observed_frames": 1674,
+        "last_observed_dropped": 28,
+        "single_active_connection": true,
+        "audio_track_running_in_all_active_snapshots": true,
+        "interval_frames": 1618,
+        "interval_dropped_frames": 8,
+        "all_observation_windows_advanced": true,
+        "observation_windows": [
+          {
+            "seconds": 22.25,
+            "frames": 559,
+            "dropped": 8,
+            "progress": true
+          },
+          {
+            "seconds": 21.17,
+            "frames": 530,
+            "dropped": 0,
+            "progress": true
+          },
+          {
+            "seconds": 21.19,
+            "frames": 529,
+            "dropped": 0,
+            "progress": true
+          }
+        ],
+        "independent_official_media_silence_evidence_available": true
+      },
+      {
+        "id": "JinjiangTV.cn",
+        "number": 951,
+        "name": "晋江电视台",
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.8,
+        "elapsed_seconds": 69.2,
+        "dimensions": "1280 x 720",
+        "video_codec": "c2.firefly.h264.decoder",
+        "audio_codec": "c2.android.aac.decoder",
+        "physical_listening_verified": false,
+        "long_term_stability_verified": false,
+        "ticket_expiry_renewal_verified": false,
+        "content": "station_test_pattern",
+        "normal_programme_verified": false,
+        "initial_observed_frames": 70,
+        "initial_observed_dropped": 6,
+        "last_observed_frames": 1690,
+        "last_observed_dropped": 6,
+        "single_active_connection": true,
+        "audio_track_running_in_all_active_snapshots": true,
+        "interval_frames": 1620,
+        "interval_dropped_frames": 0,
+        "all_observation_windows_advanced": true,
+        "observation_windows": [
+          {
+            "seconds": 22.33,
+            "frames": 558,
+            "dropped": 0,
+            "progress": true
+          },
+          {
+            "seconds": 21.26,
+            "frames": 532,
+            "dropped": 0,
+            "progress": true
+          },
+          {
+            "seconds": 21.2,
+            "frames": 530,
+            "dropped": 0,
+            "progress": true
+          }
+        ]
+      }
+    ]
+  },
+  "shishi_midnight_off_air_media_check": {
+    "observed_at": "2026-11-08T00:32:25.996686+08:00",
+    "id": "ShishiGeneral.cn",
+    "name": "石狮新闻综合",
+    "number": 950,
+    "status": "official_current_off_air_test_pattern",
+    "width": 1920,
+    "height": 1080,
+    "frame_rate": "25/1",
+    "video_codec": "H.264 High Level 4.0",
+    "audio_codec": "AAC LC",
+    "audio_sample_rate": 32000,
+    "audio_channels": 2,
+    "decoded_frames_inspected": 2,
+    "station_identity_visible": true,
+    "normal_programme_verified": false,
+    "audio_mean_volume_db": -91,
+    "audio_max_volume_db": -91,
+    "manifest_progressed": true,
+    "device_playback_verified_in_this_check": false,
+    "note": "The current official stream carried the station off-air test pattern. This media-only check neither replaces earlier normal-programme playback evidence nor proves repaired APK playback or ticket-expiry continuity."
+  },
+  "excluded_or_unconfirmed": {
+    "official_placeholder_at_sample_time": [
+      "福建综合",
+      "东南卫视",
+      "福建少儿",
+      "福州综合",
+      "福州生活",
+      "福州少儿",
+      "莆田一套",
+      "仙游电视台",
+      "厦视二套"
+    ],
+    "public_list_entries_with_only_audio": [
+      "标为福建新闻的另一条线路",
+      "标为福建经济的线路",
+      "标为三明新闻综合的线路"
+    ],
+    "public_gaps_not_filled": [
+      "漳州",
+      "三明",
+      "南平",
+      "龙岩",
+      "宁德"
+    ],
+    "note": "These describe observed sources and times, not permanent availability or the existence of broadcast services."
+  },
+  "limits": [
+    "At least one minute of software-observed continuous playback is not long-term availability proof.",
+    "AudioTrack activity is not per-channel physical listening verification.",
+    "A finite original-stream hardware decoding sample is not a claim for every H.264 Level 5.1 stream.",
+    "The 0528 Shishi failure is retained; the repaired 1386 midnight round proves bounded transport/decoding for two station test charts, not normal-programme availability or two-hour ticket renewal.",
+    "No bypass of membership, paywall, encryption or explicit source access restrictions was used.",
+    "Both midnight board screenshots showed off-air station test charts. Only Shishi has a separate measured-silence result; Jinjiang audio silence is not established."
+  ],
+  "county_dynamic_round_before_midnight_fix": {
+    "source_result_sha256": "f45fb1bccab3bf51eb86b12a67e6c8d82dc2c4a5e3371280ca877c1dcff61609",
+    "app_sha256": "052850779b54d179058e4c0b41c7e79e93b48301cdc7efe2b20252ed75cf3049",
+    "catalog_sha256": "95784af971f2825b51ab8a8ee7d327e24124667848c66d51987d0b9693455728",
+    "all_channels_passed": false,
+    "cross_midnight_issue_under_repair": true,
+    "ticket_expiry_continuity_verified": false,
+    "results": [
+      {
+        "id": "ShishiGeneral.cn",
+        "name": "石狮新闻综合",
+        "number": 950,
+        "status": "terminal_playback_error",
+        "elapsed_seconds": 11.45
+      },
+      {
+        "id": "JinjiangTV.cn",
+        "name": "晋江电视台",
+        "number": 951,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 65.08,
+        "elapsed_seconds": 69.53,
+        "dimensions": "1280 x 720",
+        "video_codec": "c2.firefly.h264.decoder",
+        "audio_codec": "c2.android.aac.decoder"
+      },
+      {
+        "id": "DehuaGeneral.cn",
+        "name": "德化综合",
+        "number": 952,
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.28,
+        "elapsed_seconds": 68.7,
+        "dimensions": "1920 x 1080",
+        "video_codec": "c2.firefly.h264.decoder",
+        "audio_codec": "c2.android.aac.decoder"
+      }
+    ],
+    "historical_status_note": "This preserved failure preceded the later 1386 repair and is not the current installed result."
+  }
+}

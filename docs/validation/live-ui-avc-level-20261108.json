@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-11-07T16:54:12.647Z",
+  "scope": "Public source review and fresh consistency check of existing public launcher build; private runtime context separately identified",
+  "passed": true,
+  "public_launcher_build": {
+    "passed": true,
+    "stages": [
+      {
+        "name": "aidl_java",
+        "exit_code": 0
+      },
+      {
+        "name": "javac_sdk37_platform",
+        "exit_code": 0
+      },
+      {
+        "name": "classes_jar",
+        "exit_code": 0
+      },
+      {
+        "name": "dex",
+        "exit_code": 0
+      },
+      {
+        "name": "resources_compile",
+        "exit_code": 0
+      },
+      {
+        "name": "resources_link",
+        "exit_code": 0
+      },
+      {
+        "name": "zipalign",
+        "exit_code": 0
+      },
+      {
+        "name": "platform_sign",
+        "exit_code": 0
+      },
+      {
+        "name": "verify_signature",
+        "exit_code": 0
+      },
+      {
+        "name": "manifest_badging",
+        "exit_code": 0
+      }
+    ],
+    "apk_sha256": "177ba387a37597dd7d4c09d85eaf1c6fbcf92645e8c873521d6d4ffacca4fb02",
+    "bytes": 82469,
+    "java_source_count": 27,
+    "signature_scheme": "v3",
+    "installed_on_board": false,
+    "repeated_in_this_review": false
+  },
+  "source_consistency": {
+    "scope": "Fresh consistency check of the already-built public launcher and reviewed source only",
+    "passed": true,
+    "public_apk_sha256": "177ba387a37597dd7d4c09d85eaf1c6fbcf92645e8c873521d6d4ffacca4fb02",
+    "public_apk_bytes": 82469,
+    "java_source_count": 27,
+    "all_33_build_inputs_match_current_public_files": true,
+    "apk_bytes_match_verified_build_digest": true,
+    "unchanged_playback_methods": [
+      "openSource",
+      "openResolvedSource",
+      "createPlayer",
+      "onPlaybackCompleted",
+      "prepare",
+      "playTest",
+      "playKidsVideo",
+      "failover",
+      "refreshExpiringSource",
+      "releasePlayer",
+      "changeChannel",
+      "changeSource",
+      "digit",
+      "selectNumber",
+      "surfaceCreated",
+      "surfaceChanged",
+      "surfaceDestroyed"
+    ],
+    "play_method_only_adds_ui_current_channel_marker": true,
+    "catalog_source_parser_and_headers_unchanged": true,
+    "new_build_run": false,
+    "public_apk_installed_on_board": false
+  },
+  "public_source_constraints": {
+    "checks": [
+      {
+        "name": "only_six_authorized_source_files_changed",
+        "passed": true
+      },
+      {
+        "name": "git_diff_whitespace",
+        "passed": true
+      },
+      {
+        "name": "nothing_staged",
+        "passed": true
+      },
+      {
+        "name": "ChannelCatalog.java_matches_reviewed_generic_ui_source",
+        "passed": true
+      },
+      {
+        "name": "ChannelCategories.java_matches_reviewed_generic_ui_source",
+        "passed": true
+      },
+      {
+        "name": "ScriptStringTable.java_matches_reviewed_generic_ui_source",
+        "passed": true
+      },
+      {
+        "name": "picker_only_adds_verified_touch_first_click_fix",
+        "passed": true
+      },
+      {
+        "name": "public_tree_contains_27_java_sources",
+        "passed": true
+      },
+      {
+        "name": "private_provider_classes_absent",
+        "passed": true
+      },
+      {
+        "name": "private_provider_references_absent",
+        "passed": true
+      },
+      {
+        "name": "public_disabled_resolver_byte_unchanged",
+        "passed": true
+      },
+      {
+        "name": "C2FFMPEGVideoDecodeInterface.cpp_has_no_stream_ticket_or_private_endpoint",
+        "passed": true
+      },
+      {
+        "name": "ChannelCatalog.java_has_no_stream_ticket_or_private_endpoint",
+        "passed": true
+      },
+      {
+        "name": "ChannelCategories.java_has_no_stream_ticket_or_private_endpoint",
+        "passed": true
+      },
+      {
+        "name": "ChannelPicker.java_has_no_stream_ticket_or_private_endpoint",
+        "passed": true
+      },
+      {
+        "name": "LiveActivity.java_has_no_stream_ticket_or_private_endpoint",
+        "passed": true
+      },
+      {
+        "name": "ScriptStringTable.java_has_no_stream_ticket_or_private_endpoint",
+        "passed": true
+      },
+      {
+        "name": "public_channels_json_remains_empty",
+        "passed": true
+      },
+      {
+        "name": "public_m3u_remains_absent",
+        "passed": true
+      },
+      {
+        "name": "public_epg_remains_empty",
+        "passed": true
+      },
+      {
+        "name": "public_catalog_files_byte_unchanged",
+        "passed": true
+      },
+      {
+        "name": "c2_only_adds_avc_42_5_51_and_comments",
+        "passed": true
+      },
+      {
+        "name": "c2_picture_size_limits_still_1920_by_1088",
+        "passed": true
+      },
+      {
+        "name": "media_codecs.xml_unchanged",
+        "passed": true
+      },
+      {
+        "name": "media_codecs_firefly.xml_unchanged",
+        "passed": true
+      }
+    ],
+    "only_source_change_count": 6,
+    "public_channels_empty": true,
+    "private_provider_hook_unchanged_and_disabled": true
+  },
+  "generic_parser_boundary": {
+    "scope": "Public generic literal reader, actual production source on JVM; no provider response or device access",
+    "passed": true,
+    "cases": 23,
+    "checks": [
+      {
+        "stage": "compile",
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "stage": "boundary_cases",
+        "exit_code": 0,
+        "output": "Generic literal boundary checks passed: 23"
+      }
+    ],
+    "production_source_sha256": "48bdb6fa97d9cc7b2d883fca35e687075a466c3a2085730cc735c508b868a7d5",
+    "test_source_sha256": "324914fe01353e8f3c6077cada152ea259d756dec48bfcf5e40b5782cda57d56"
+  },
+  "native_scope": {
+    "only_three_avc_level_constants_and_comments_added": true,
+    "width_limit": 1920,
+    "height_limit": 1088,
+    "xml_and_other_resource_constraints_unchanged": true,
+    "all_level51_streams_supported": false,
+    "added_4k_or_8k_decode": false,
+    "h265_hardware_enabled": false
+  },
+  "private_runtime_snapshot": {
+    "channels_confirmed": 10,
+    "hd_channels": 7,
+    "observation_window_seconds": {
+      "min": 61.08,
+      "max": 65.39
+    },
+    "mp2_decoder_confirmed": true,
+    "physical_listening_verified": false,
+    "multi_hour_per_channel_stability_verified": false,
+    "dynamic_ticket_expiry_renewal_verified": false,
+    "is_public_apk_board_test": false,
+    "historical_snapshot": true,
+    "launcher_apk_sha256": "826e707b4e12f1234723738c4fa2256b1866e034c7df4c58eec50188b5c472fd",
+    "content": "normal_programme"
+  },
+  "full_android_product_clean_build": false,
+  "new_whole_disk_image_tested": false,
+  "latest_private_runtime_round": {
+    "observed_provenance_utc": "2026-11-07T16:46:32.600979+00:00",
+    "source_result_sha256": "423b9f5b95c05cc151bfa0f292ff21de5147af8dcd8f133381455b149a1c939c",
+    "app_sha256": "1386e29ecc8172d0f7f71037114d61aadd560525b18ba7cd7fae1ade75bb4827",
+    "catalog_sha256": "81f4a347c1117dc30a873b786ffd2be0d14be2aa4006701ac6c210f944d8fc3f",
+    "c2_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+    "running_c2_matches_installed_component": true,
+    "status": "midnight_transport_and_decoding_passed_for_station_test_patterns",
+    "all_tested_channels_passed_transport_and_decoding": true,
+    "tested_channels": 2,
+    "normal_programme_verified_in_this_round": false,
+    "two_hour_ticket_expiry_renewal_verified": false,
+    "physical_listening_verified": false,
+    "all_channels_on_latest_apk_retested": false,
+    "results": [
+      {
+        "id": "ShishiGeneral.cn",
+        "number": 950,
+        "name": "石狮新闻综合",
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.61,
+        "elapsed_seconds": 69.02,
+        "dimensions": "1920 x 1080",
+        "video_codec": "c2.firefly.h264.decoder",
+        "audio_codec": "c2.android.aac.decoder",
+        "physical_listening_verified": false,
+        "long_term_stability_verified": false,
+        "ticket_expiry_renewal_verified": false,
+        "content": "station_test_pattern",
+        "normal_programme_verified": false,
+        "initial_observed_frames": 56,
+        "initial_observed_dropped": 20,
+        "last_observed_frames": 1674,
+        "last_observed_dropped": 28,
+        "single_active_connection": true,
+        "audio_track_running_in_all_active_snapshots": true,
+        "interval_frames": 1618,
+        "interval_dropped_frames": 8,
+        "all_observation_windows_advanced": true,
+        "observation_windows": [
+          {
+            "seconds": 22.25,
+            "frames": 559,
+            "dropped": 8,
+            "progress": true
+          },
+          {
+            "seconds": 21.17,
+            "frames": 530,
+            "dropped": 0,
+            "progress": true
+          },
+          {
+            "seconds": 21.19,
+            "frames": 529,
+            "dropped": 0,
+            "progress": true
+          }
+        ],
+        "independent_official_media_silence_evidence_available": true
+      },
+      {
+        "id": "JinjiangTV.cn",
+        "number": 951,
+        "name": "晋江电视台",
+        "status": "sustained_playback_confirmed",
+        "observed_seconds": 64.8,
+        "elapsed_seconds": 69.2,
+        "dimensions": "1280 x 720",
+        "video_codec": "c2.firefly.h264.decoder",
+        "audio_codec": "c2.android.aac.decoder",
+        "physical_listening_verified": false,
+        "long_term_stability_verified": false,
+        "ticket_expiry_renewal_verified": false,
+        "content": "station_test_pattern",
+        "normal_programme_verified": false,
+        "initial_observed_frames": 70,
+        "initial_observed_dropped": 6,
+        "last_observed_frames": 1690,
+        "last_observed_dropped": 6,
+        "single_active_connection": true,
+        "audio_track_running_in_all_active_snapshots": true,
+        "interval_frames": 1620,
+        "interval_dropped_frames": 0,
+        "all_observation_windows_advanced": true,
+        "observation_windows": [
+          {
+            "seconds": 22.33,
+            "frames": 558,
+            "dropped": 0,
+            "progress": true
+          },
+          {
+            "seconds": 21.26,
+            "frames": 532,
+            "dropped": 0,
+            "progress": true
+          },
+          {
+            "seconds": 21.2,
+            "frames": 530,
+            "dropped": 0,
+            "progress": true
+          }
+        ]
+      }
+    ]
+  },
+  "private_midnight_repair_host_checks": {
+    "passed": true,
+    "no_device_access_in_host_check": true,
+    "saved_fixture_checks": 50,
+    "fresh_fixture_checks": 50,
+    "compile_exit_code": 0,
+    "fresh_official_responses_checked": true,
+    "original_https_host_path_and_expiry_guards_retained": true,
+    "player_dispatch_ui_manifest_and_resources_unchanged": true,
+    "only_private_county_helper_changed": true,
+    "private_java_source_count": 37,
+    "same_signing_certificate": true,
+    "v2_signature_and_content_digest_verified": true,
+    "two_hour_ticket_expiry_renewal_verified": false
+  }
+}

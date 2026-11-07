@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-11-07T16:54:12.644Z",
+  "scope": "Public generic grouped channel UI and bounded AVC level metadata source update",
+  "branch": "fix/live-channel-audio",
+  "base_commit": "27ad2f47d6117d4be6accbcfe0d511cfab0e8feb",
+  "changed_sources": {
+    "device/firefly/rk3288/media/codec2/C2FFMPEGVideoDecodeInterface.cpp": "53fae5d9113cba368a028a70364cd6ff461e4b1b473c80d366731d702e71dfeb",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCatalog.java": "e980d17437eafda5663ce5b48e3a617bba640a41286fbdf461269ad7bd68dd76",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCategories.java": "8e5d9ece18664c433bed0d42d7c643c7b1fab69e8448c3c9bd108d687353e0b5",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelPicker.java": "6e55180ffe2b64d5f3914a2951ffe140f25792021a04872232df72ddd48996e8",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/LiveActivity.java": "031b7b7904140cc9bac8819260ee1c78d8b1621f0888a3b52d9385f9a8ab50e4",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ScriptStringTable.java": "48bdb6fa97d9cc7b2d883fca35e687075a466c3a2085730cc735c508b868a7d5"
+  },
+  "public_launcher": {
+    "apk_sha256": "177ba387a37597dd7d4c09d85eaf1c6fbcf92645e8c873521d6d4ffacca4fb02",
+    "bytes": 82469,
+    "java_source_count": 27,
+    "all_build_input_sha256": {
+      "device/firefly/rk3288/tv/Android.bp": "ea5a002457275b98b55d68745391692774cc8768fa67d6ab868e7a5848e4c177",
+      "device/firefly/rk3288/tv/AndroidManifest.xml": "327ea5da754f10320ce642798df6d85102239d2f94891dfcc8ce7da88edbb90e",
+      "device/firefly/rk3288/tv/privapp-permissions-firefly-tv.xml": "6159542ad9ab32ebfede5211f5fd40c6d251d0425569596c0ebfa7f6213c708c",
+      "device/firefly/rk3288/tv/res/drawable/banner.xml": "44c7c51d40e386cc6d4739139e58507abeddac4d3eb1730901ae539afc04f610",
+      "device/firefly/rk3288/tv/res/drawable/ic_firefly.xml": "54a3860985c96ee53f1dad961076466a149bfc9235fba8436f40aee6082c1dcd",
+      "device/firefly/rk3288/tv/res/values/styles.xml": "978c17b98bdd2e0fc17afca45351037f601cebecd40171b3938af8a1df18f539",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/AppLaunch.java": "4eacae651648575ff1a48380e14d281851e98824128e3ae235da0e461951969b",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/AppsActivity.java": "323edb4d4920d72f3d35512dd4460b824e6674cc1c8c7d532e66f37fe4e2cb18",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/BroadcasterResolver.java": "c86f930b485f9cdd68579818b3312fc5ca4e9a4a3b11a3577f6d65fa2bb5d193",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCatalog.java": "e980d17437eafda5663ce5b48e3a617bba640a41286fbdf461269ad7bd68dd76",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCategories.java": "8e5d9ece18664c433bed0d42d7c643c7b1fab69e8448c3c9bd108d687353e0b5",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelPicker.java": "6e55180ffe2b64d5f3914a2951ffe140f25792021a04872232df72ddd48996e8",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/DecoderActivity.java": "09008ecc66aadf8224058ca62e6326a2e7de9374e52f1a1040fb6522e5d9f329",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/GuideLoader.java": "7c0ad948eb762ae2f8bf81e74987b1fd654d40baa11fffefe027f256d234a36c",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/HardwareDecodeCheck.java": "95cf7d6e8c0ee0be24192c3170f6e075d12ebcf89e9b0590813871f15ceed44f",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/HomeActivity.java": "2de7ca7abee417cd2b5f53e45ecda53e4e1a55882bb71e1b7900d9033b3bed7d",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/KidsActivity.java": "7023be49f5cfc7c0edf5f48af75e217ec249866703b0b88fb3e967bdb852b6e1",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/KidsContent.java": "4838a10bc5845af11f85ef3fbbda901cd1a3a031c17765a5663acf6815bf0e38",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/LiveActivity.java": "031b7b7904140cc9bac8819260ee1c78d8b1621f0888a3b52d9385f9a8ab50e4",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalActivity.java": "bda1823c685416d26e573d37f398846a814c8c3022cc8c1bc0020daf58b9e649",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalBootReceiver.java": "8b0eeb08db70f538edd23db2f7fb8aae343b9fe8b52f7604156d4e3e99fea98b",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalPrefs.java": "24570a9012d5cf04a699b4fd31c6be3886eebaacce368203d0918a82cfa55d89",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/PinDialog.java": "5a2b97756a34b6680431e55d61cf74309b1f812de5fa42eab64388364caf56a8",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ProgramGuide.java": "7be6d611417be7fa71bc83ab6515aca0576160a043336d9c552a932da7effa21",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/PuzzleActivity.java": "90cb93227f87c8fcaaf767429aab08a3f18a27de2439e440aa7a7ad4885a0333",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/PuzzleRound.java": "646bb3cb37d888693735279f4ffb7d74c80fba7ebcda1d65787a2cd959a59825",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/RemoteActivity.java": "f27676fddb5c1e73d3d70dd51e89789a6b57c3732da796ccbb5ca89cdcf5074b",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/ScriptStringTable.java": "48bdb6fa97d9cc7b2d883fca35e687075a466c3a2085730cc735c508b868a7d5",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/SettingsActivity.java": "4e3f03c8e69beb5a75e06a2db7d4054e21abb5e61659c3f47665a88e179984a9",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/TvActivity.java": "d9f50dd1d95eaaa3b7bb45df5f589ece7a09d29d24e128aac54b19355f8d3257",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/TvUi.java": "2ff5b5c751014a2b465ab44a3e9555fd8752b73c31e3823a17bf49f725ab2ca5",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/WatchBudget.java": "68b3958b67bff6d324efa1e9607fbc5d46c851f5f3214844cd3ff2ba14d29496",
+      "device/firefly/rk3288/tv/src/org/firefly/tv/WatchTimeTracker.java": "01b295b432b16f4d094405e5085fb3d48f5ea611ebb14025b9f4a2e77825b775"
+    },
+    "signature_scheme": "v3",
+    "certificate_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+    "apk_in_repository": false,
+    "board_installed": false
+  },
+  "generic_literal_parser": {
+    "source_sha256": "48bdb6fa97d9cc7b2d883fca35e687075a466c3a2085730cc735c508b868a7d5",
+    "executed_boundary_test_source_sha256": "324914fe01353e8f3c6077cada152ea259d756dec48bfcf5e40b5782cda57d56",
+    "test_cases": 23,
+    "public_provider_hook_enabled": false
+  },
+  "native_interface": {
+    "source_sha256": "53fae5d9113cba368a028a70364cd6ff461e4b1b473c80d366731d702e71dfeb",
+    "added_avc_metadata_levels": [
+      "4.2",
+      "5",
+      "5.1"
+    ],
+    "picture_size_range": "96x96 through 1920x1088",
+    "other_code_and_xml_limits_unchanged": true,
+    "new_native_build_in_this_source_review": false
+  },
+  "private_runtime_context": {
+    "launcher_apk_sha256": "826e707b4e12f1234723738c4fa2256b1866e034c7df4c58eec50188b5c472fd",
+    "component_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+    "scope": "Different private launcher and channel configuration; bounded per-channel playback, not the public empty-catalog APK",
+    "report_sha256": "4431d234b5eccae54a5121075a95c9fb9a61ea894e047c199e64ed332276a56b",
+    "historical_snapshot": true,
+    "note": "Retained earlier 826e ten-channel normal-programme observations; superseded only for separately retested midnight channels below."
+  },
+  "excluded": [
+    "private provider implementations",
+    "channel playback addresses and tickets",
+    "credentials and signing keys",
+    "APK and native binaries",
+    "raw device logs"
+  ],
+  "latest_private_runtime_context": {
+    "observed_provenance_utc": "2026-11-07T16:46:32.600979+00:00",
+    "source_result_sha256": "423b9f5b95c05cc151bfa0f292ff21de5147af8dcd8f133381455b149a1c939c",
+    "app_sha256": "1386e29ecc8172d0f7f71037114d61aadd560525b18ba7cd7fae1ade75bb4827",
+    "catalog_sha256": "81f4a347c1117dc30a873b786ffd2be0d14be2aa4006701ac6c210f944d8fc3f",
+    "c2_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+    "running_c2_matches_installed_component": true,
+    "status": "midnight_transport_and_decoding_passed_for_station_test_patterns",
+    "all_tested_channels_passed_transport_and_decoding": true,
+    "tested_channels": 2,
+    "normal_programme_verified_in_this_round": false,
+    "two_hour_ticket_expiry_renewal_verified": false,
+    "physical_listening_verified": false,
+    "all_channels_on_latest_apk_retested": false,
+    "scope": "Installed private 1386 launcher with private runtime catalog; only channels 950 and 951 retested in this midnight round. Public 177b APK remains uninstalled.",
+    "public_launcher_board_installed": false,
+    "private_county_source_sha256": "5b214a03debf9e62e51e9278c69906c997832dec317754a70246afa5b9458a0b",
+    "private_county_patch_sha256": "d5766a70b6e3f644ef9aaad2cf2af1a352267a4f0749168855c99ffcae972a2b",
+    "private_host_validation_sha256": "44b668d137f1c39c964328fc8383740acfe36710554065033f3e2639f49aeca2",
+    "private_build_validation_sha256": "a7cd8dc272fdd1170c79c38ae0b8f546f7bfd68cad6f9ee616d08c30245ff606",
+    "private_public_playback_report_sha256": "a25dec4ce563c38105e129dd753fb096055e6613cfd8669d767357abcefca6f8"
+  }
+}

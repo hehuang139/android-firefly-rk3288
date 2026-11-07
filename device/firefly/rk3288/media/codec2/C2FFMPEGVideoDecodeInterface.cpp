@@ -104,7 +104,11 @@ C2FFMPEGVideoDecodeInterface::C2FFMPEGVideoDecodeInterface(
                             C2Config::LEVEL_AVC_1_2, C2Config::LEVEL_AVC_1_3,
                             C2Config::LEVEL_AVC_2, C2Config::LEVEL_AVC_2_1, C2Config::LEVEL_AVC_2_2,
                             C2Config::LEVEL_AVC_3, C2Config::LEVEL_AVC_3_1, C2Config::LEVEL_AVC_3_2,
-                            C2Config::LEVEL_AVC_4, C2Config::LEVEL_AVC_4_1
+                            C2Config::LEVEL_AVC_4, C2Config::LEVEL_AVC_4_1,
+                            // Broadcast encoders may signal Level 5.1 for 1080p.
+                            // Picture-size and codec XML resource limits remain in force.
+                            C2Config::LEVEL_AVC_4_2, C2Config::LEVEL_AVC_5,
+                            C2Config::LEVEL_AVC_5_1
                     })
                 })
                 .withSetter(ProfileLevelSetter, mSize)

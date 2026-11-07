@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 package org.firefly.tv;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -23,8 +21,6 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 /** Channel playback with bounded preparation, source failover and directional keys. */
@@ -57,6 +53,8 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
     private TextView channelText;
     private TextView statusText;
     private TextView programmeText;
+    private ChannelPicker channelPicker;
+    private android.window.OnBackInvokedCallback liveBackCallback;
     private MediaPlayer player;
     private int channelIndex;
     private int sourceIndex;
@@ -82,6 +80,11 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         String requested = getIntent().getStringExtra("kids_video");
         kidsVideo = "colors".equals(requested) || "counting".equals(requested) ? requested : null;
         createPlayerView();
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            liveBackCallback = this::handleBackAction;
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT, liveBackCallback);
+        }
         guideWorker.execute(() -> {
             ProgramGuide loaded = GuideLoader.load(getApplicationContext(), catalog);
             handler.post(() -> {
@@ -115,6 +118,17 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         banner.addView(help);
         FrameLayout.LayoutParams position = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
         root.addView(banner, position);
+        channelPicker = new ChannelPicker(this, catalog, favorites, new ChannelPicker.Listener() {
+            @Override public void onChannelSelected(int originalIndex) {
+                channelIndex = originalIndex;
+                sourceIndex = 0;
+                play();
+            }
+            @Override public void onFavoriteToggle(int originalIndex) {
+                toggleFavorite(originalIndex);
+            }
+        });
+        root.addView(channelPicker, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
     }
 
@@ -136,6 +150,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
     @Override
     protected void onStop() {
         stopped = true;
+        channelPicker.dismiss();
         handler.removeCallbacksAndMessages(null);
         releasePlayer();
         super.onStop();
@@ -143,6 +158,9 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
 
     @Override
     protected void onDestroy() {
+        if (android.os.Build.VERSION.SDK_INT >= 33 && liveBackCallback != null) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(liveBackCallback);
+        }
         guideWorker.shutdownNow();
         playbackWorker.shutdownNow();
         handler.removeCallbacksAndMessages(null);
@@ -156,6 +174,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         }
         ChannelCatalog.Channel channel = catalog.channels.get(channelIndex);
         programmeText.setText(guide == null ? "正在读取节目单…" : guide.current(channel.tvgId));
+        channelPicker.setGuide(guide);
     }
 
     @Override
@@ -195,6 +214,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             return;
         }
         ChannelCatalog.Channel channel = catalog.channels.get(channelIndex);
+        channelPicker.setCurrentChannel(channelIndex);
         sourceIndex = Math.floorMod(sourceIndex, channel.sources.size());
         ChannelCatalog.Source source = channel.sources.get(sourceIndex);
         String star = favorites.contains(channel.id) ? " ★" : "";
@@ -425,33 +445,46 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         if (catalog.channels.isEmpty() || decoderTest || kidsVideo != null) {
             return;
         }
-        List<ChannelCatalog.Channel> channels = catalog.channels;
-        String[] labels = new String[channels.size()];
-        for (int index = 0; index < labels.length; index++) {
-            ChannelCatalog.Channel channel = channels.get(index);
-            labels[index] = String.format(Locale.ROOT, "%03d   %s   %s%s", channel.number,
-                    channel.group, channel.name, favorites.contains(channel.id) ? " ★" : "");
-        }
-        new AlertDialog.Builder(this).setTitle("电视直播")
-                .setSingleChoiceItems(labels, channelIndex, (dialog, index) -> {
-                    channelIndex = index;
-                    sourceIndex = 0;
-                    play();
-                    dialog.dismiss();
-                }).setNegativeButton("返回", null).show();
+        banner.setVisibility(View.GONE);
+        channelPicker.show(channelIndex, guide);
     }
 
     private void toggleFavorite() {
         if (catalog.channels.isEmpty() || decoderTest || kidsVideo != null) {
             return;
         }
-        String id = catalog.channels.get(channelIndex).id;
+        toggleFavorite(channelIndex);
+    }
+
+    private void toggleFavorite(int index) {
+        if (index < 0 || index >= catalog.channels.size()) return;
+        String id = catalog.channels.get(index).id;
         boolean removed = favorites.remove(id);
         if (!removed) {
             favorites.add(id);
         }
         preferences.edit().putStringSet("favorites", new HashSet<>(favorites)).apply();
+        channelPicker.refreshFavorites();
         show(removed ? "已取消收藏" : "已加入收藏", true);
+    }
+
+    @Override
+    protected void handleBackAction() {
+        if (channelPicker != null && channelPicker.isShowing()) channelPicker.dismiss();
+        else super.handleBackAction();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (channelPicker != null && channelPicker.isShowing()) {
+            int key = event.getKeyCode();
+            if (key >= KeyEvent.KEYCODE_0 && key <= KeyEvent.KEYCODE_9) {
+                channelPicker.dismiss();
+            } else if (channelPicker.handleKeyEvent(event)) {
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     private boolean digit(int keyCode) {
@@ -508,6 +541,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
                 return true;
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
+                if (event.getRepeatCount() > 0) return true;
                 chooseChannel();
                 return true;
             case KeyEvent.KEYCODE_MENU:

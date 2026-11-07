@@ -89,7 +89,9 @@ final class ChannelCatalog {
             throw new JSONException("Invalid channel id");
         }
         return new Channel(id, item.getString("name"), item.optString("group", "其他"),
-                item.optString("tvgId", id), item.optInt("number", number), sources);
+                item.optString("tvgId", id), item.optInt("number", number), sources,
+                item.optString("province"), item.optString("provinceCode"),
+                item.optString("category"));
     }
 
     private static Source source(JSONObject item) throws JSONException {
@@ -129,15 +131,21 @@ final class ChannelCatalog {
         final String tvgId;
         final int number;
         final List<Source> sources;
+        final String province;
+        final String provinceCode;
+        final String category;
 
         Channel(String id, String name, String group, String tvgId, int number,
-                List<Source> sources) {
+                List<Source> sources, String province, String provinceCode, String category) {
             this.id = id;
             this.name = name;
             this.group = group;
             this.tvgId = tvgId;
             this.number = number;
             this.sources = Collections.unmodifiableList(sources);
+            this.province = province;
+            this.provinceCode = provinceCode;
+            this.category = category;
         }
     }
 

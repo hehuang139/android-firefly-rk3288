@@ -1,9 +1,11 @@
 # Building the source release
 
-This branch carries an uninstalled live-TV/audio candidate. Follow
+This branch carries the live-TV/audio and grouped-picker updates. Paired private
+runtime components have been installed and tested on the board; the separately
+built public APK contains no channel sources and has not been installed. Follow
 [the candidate instructions](docs/live-channel-audio-candidate.md) for its
 four-library FFmpeg build and separate launcher build. The historical accepted
-firmware and candidate runtime validation are recorded separately.
+firmware and the bounded candidate runtime validation are recorded separately.
 
 Use x86_64 Linux, Docker, Git/repo, Python 3, make, patch, curl, xz, ripgrep,
 dtc and an ARM hard-float cross compiler (`arm-linux-gnueabihf-*`). The Android
