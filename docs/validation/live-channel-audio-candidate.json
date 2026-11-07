@@ -16,9 +16,20 @@
     "scope": "Historical catalog metadata and selector behavior; not a fresh availability or board playback test"
   },
   "fresh_catalog_availability_recheck": {
-    "status": "in_progress",
-    "source_lines_to_check": 268,
-    "board_playback_tested": false
+    "status": "bounded_host_media_demux_completed_board_playback_pending",
+    "channels_checked": 200,
+    "source_lines_checked": 268,
+    "channels_with_media": 149,
+    "source_lines_with_media": 167,
+    "direct_confirmed_channels": 110,
+    "direct_confirmed_sources": 123,
+    "configured_proxy_only_channels": 39,
+    "configured_proxy_only_sources": 44,
+    "unconfirmed_channels": 51,
+    "unconfirmed_sources": 101,
+    "board_playback_tested": false,
+    "full_media_decode_performed": false,
+    "aggregate_report": "live-channel-availability-20261107.json"
   },
   "public_launcher_build": {
     "profile": "Public optional-content profile; 24 Java sources",

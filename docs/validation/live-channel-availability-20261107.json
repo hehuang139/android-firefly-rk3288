@@ -1,0 +1,73 @@
+{
+  "startedUtc": "2026-11-07T01:22:37.242943+00:00",
+  "finishedUtc": "2026-11-07T01:24:18.430283+00:00",
+  "catalog_sha256": "17fa616967053b17853fb50d755448c40135fedc2f2ddec6ecf53765c5b591d4",
+  "scope": "Fresh host HLS manifest and bounded actual media-segment demux; no board playback test",
+  "channels_total": 200,
+  "sources_total": 268,
+  "channels_with_at_least_one_fresh_media_source": 149,
+  "channels_not_confirmed": 51,
+  "sources_fresh_media_confirmed": 167,
+  "sources_not_confirmed": 101,
+  "sources_direct_confirmed": 123,
+  "sources_proxy_only_confirmed": 44,
+  "channels_direct_confirmed": 110,
+  "channels_proxy_only_confirmed": 39,
+  "method": {
+    "concurrency": 6,
+    "curl_timeout_seconds": 10,
+    "connect_timeout_seconds": 5,
+    "max_manifest_bytes": 1048576,
+    "max_media_segment_bytes": 8388608,
+    "failed_route_attempts_max": 2,
+    "dynamic_resolvers_refreshed": true,
+    "direct_and_configured_proxy_routes_distinguished": true,
+    "actual_media_demux_with_ffprobe": true,
+    "failed_direct_routes_retry": "Retry through already configured proxy; proxy-required routes retry the same proxy",
+    "full_media_decode_performed": false,
+    "ffprobe_operation": "Inspect demuxed stream information from a bounded real media segment; no ffmpeg frame decode or device playback.",
+    "max_manifest_nesting": 4,
+    "selected_variant": "Highest available variant at or below 1080p",
+    "media_sampling": "First actual media segment; at most 8 MiB, plus fMP4 initialization at most 1 MiB"
+  },
+  "failure_categories_by_final_source_attempt": {
+    "not_hls": 5,
+    "timeout": 1,
+    "http_5xx": 69,
+    "resolver_failure": 11,
+    "http_404": 8,
+    "request_or_manifest_failure": 7
+  },
+  "failure_categories_by_attempt": {
+    "timeout": 4,
+    "not_hls": 8,
+    "request_or_manifest_failure": 81,
+    "http_5xx": 71,
+    "resolver_failure": 22,
+    "http_404": 16
+  },
+  "failure_counting_scope": {
+    "final_source_categories": "One category per unconfirmed source, using its final attempted route; mutually exclusive and sums to unconfirmed source count.",
+    "attempt_categories": "All attempts from unconfirmed sources; each attempt has one category, but a source appears twice and may appear in different categories.",
+    "unconfirmed_sources_with_different_attempt_categories": 69
+  },
+  "video_codecs_by_valid_source": {
+    "h264": 167
+  },
+  "audio_codecs_by_valid_source": {
+    "aac": 150,
+    "ac3": 19,
+    "mp2": 1
+  },
+  "candidate_codec_names_only_match_sources": 167,
+  "limits": [
+    "Network observations come from the build host, not the disconnected board.",
+    "Board cached channel list could not be compared.",
+    "Timeout, HTTP errors and resolver failures are observations, not proof of permanent dead streams.",
+    "Codec presence does not verify ARM32 runtime decode, smooth playback or A/V sync.",
+    "Codec-name matches do not check every profile, level, resolution or performance limit."
+  ],
+  "board_playback_tested": false,
+  "full_sanitized_report_sha256": "a01b97d6314cdfbad9ac935588edabc92c1bbb7720f8f4a73e1e2c17a55f1521",
+  "publication_scope": "Aggregate counts and method only; channel identifiers, stream URLs, request data, proxy endpoint and raw logs are not included."
+}
