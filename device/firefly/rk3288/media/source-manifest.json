@@ -8,7 +8,9 @@
   "cpu": "cortex-a17/NEON",
   "decoders": [
     "h264",
-    "hevc"
+    "hevc",
+    "ac3",
+    "mp2"
   ],
   "hwaccels": [
     "h264_v4l2request",
@@ -16,9 +18,33 @@
   ],
   "output": "NV12",
   "libraries": {
-    "libavcodec.so": "0ee3c84ee9ef22ab35a98adb6d8c778ef8bfe9f183964df9a948d6f81edfd26b",
-    "libavutil.so": "06c8d37edf0e1daa5c4d2782bedb0fa14fdad04f74f07d8a48703eb4ef2b70c1",
-    "libswscale.so": "ec5d6a9e3352cefc70d332c52c493cf481fc1aa7ca160e9456b2c40f6880cd26"
+    "libavcodec.so": "5b46b6b258f2267c2dee2dd013119db7a18241252847cc78c0a3fdefd3ab2339",
+    "libavutil.so": "109753fb830f87253058d7ce01965aa0c20bf7d72c84ea1c7693ecb4e5979852",
+    "libswresample.so": "b77dba4714cdeadf7f1f3aa9e44ccc1374b145ad75d486d7d41535d1d75aa70b",
+    "libswscale.so": "bcc53b4208ace712c7a056889e642989cf5935f259a433fee0d0b24a5be92c8b"
   },
-  "bitstream_zero_padding": 80
+  "bitstream_zero_padding": 80,
+  "profile": "live_channel_audio_candidate",
+  "status": "isolated_component_builds_passed_hardware_pending",
+  "parsers": [
+    "h264",
+    "hevc",
+    "ac3",
+    "mpegaudio"
+  ],
+  "output_scope": "NV12 is the video path; audio defaults to PCM16",
+  "accepted_main_baseline": {
+    "git_commit": "6c334b856efd4d76a4ae0588974f6e6225a3216e",
+    "decoders": [
+      "h264",
+      "hevc"
+    ],
+    "libraries": {
+      "libavcodec.so": "0ee3c84ee9ef22ab35a98adb6d8c778ef8bfe9f183964df9a948d6f81edfd26b",
+      "libavutil.so": "06c8d37edf0e1daa5c4d2782bedb0fa14fdad04f74f07d8a48703eb4ef2b70c1",
+      "libswscale.so": "ec5d6a9e3352cefc70d332c52c493cf481fc1aa7ca160e9456b2c40f6880cd26"
+    },
+    "hardware_results_apply_to_candidate": false
+  },
+  "candidate_validation": "../../../../docs/validation/live-channel-audio-candidate.json"
 }

@@ -4,6 +4,11 @@
 Linux 6.18.60、Mesa Panfrost、V4L2 Request、FFmpeg 和 Codec2。
 这是开发用途的 userdebug 移植，不是厂商认证产品或通用 RK3288 盒子固件。
 
+本分支 `fix/live-channel-audio` 另外包含尚未上板的直播候选：直播保持内置
+播放器，并增加 AC-3/MP2 Codec2 软件解码。候选完成隔离编译，尚未刷入或完成
+播放回归；下述实测结论属于 `main` 的已验基线，不能作为候选通过验收的证明。
+构建方法和验收边界见 [直播候选说明](docs/live-channel-audio-candidate.md)。
+
 已在原版板卡上验证系统启动、eMMC、HDMI 桌面、H.264 硬件解码及 3.5 mm
 模拟音频。H.264 的 12 秒 1080p60 样片 720/720 帧像素校验通过；本地
 Surface 播放稳定窗口为 597/600 帧，中间 8 秒 480/480 帧。YouTube 实际

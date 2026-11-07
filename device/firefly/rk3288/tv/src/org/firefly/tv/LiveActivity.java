@@ -41,7 +41,6 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             java.util.concurrent.Executors.newSingleThreadExecutor();
     private java.util.concurrent.Future<?> pendingPlayback;
     private int playbackGeneration;
-    private boolean delegatedPlayback;
     private final Runnable guideTick = new Runnable() {
         @Override
         public void run() {
@@ -129,10 +128,6 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         }
         stopped = false;
         handler.post(guideTick);
-        if (delegatedPlayback) {
-            show("按确定键选择频道，上下键换台，左右键换线路。", false);
-            return;
-        }
         if (surfaceReady) {
             play();
         }
@@ -184,7 +179,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
 
     private void play() {
         releasePlayer();
-        if (!surfaceReady || stopped || delegatedPlayback) {
+        if (!surfaceReady || stopped) {
             return;
         }
         if (decoderTest) {
@@ -238,11 +233,8 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
     }
 
     private void openResolvedSource(ChannelCatalog.Source source, String url) {
-        if (source.kodi) {
-            delegatedPlayback = AppLaunch.kodiStream(this, source, url);
-            show(delegatedPlayback ? "正在打开频道，返回后可按确定键选台。" : "频道播放器打开失败。", false);
-            return;
-        }
+        // Legacy catalogs may request Kodi. Live TV stays in this activity so
+        // channel navigation, programme refresh and Back/Escape remain consistent.
         MediaPlayer next = createPlayer();
         try {
             next.setDataSource(this, Uri.parse(url), source.headers);
@@ -417,7 +409,6 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         }
         channelIndex = Math.floorMod(channelIndex + delta, catalog.channels.size());
         sourceIndex = 0;
-        delegatedPlayback = false;
         play();
     }
 
@@ -427,7 +418,6 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         }
         int count = catalog.channels.get(channelIndex).sources.size();
         sourceIndex = Math.floorMod(sourceIndex + delta, count);
-        delegatedPlayback = false;
         play();
     }
 
@@ -446,7 +436,6 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
                 .setSingleChoiceItems(labels, channelIndex, (dialog, index) -> {
                     channelIndex = index;
                     sourceIndex = 0;
-                    delegatedPlayback = false;
                     play();
                     dialog.dismiss();
                 }).setNegativeButton("返回", null).show();
@@ -490,7 +479,6 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             if (catalog.channels.get(index).number == requested) {
                 channelIndex = index;
                 sourceIndex = 0;
-                delegatedPlayback = false;
                 play();
                 return;
             }

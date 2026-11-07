@@ -47,6 +47,17 @@ cc_prebuilt_library_shared {
     strip: { none: true },
 }
 cc_prebuilt_library_shared {
+    name: "libfirefly_swresample",
+    licenses: ["firefly_ffmpeg_lgpl_license"],
+    stem: "libswresample",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: ["prebuilts/arm/libswresample.so"],
+    export_include_dirs: ["include"],
+    shared_libs: ["libfirefly_avutil"],
+    strip: { none: true },
+}
+cc_prebuilt_library_shared {
     name: "libfirefly_swscale",
     licenses: ["firefly_ffmpeg_lgpl_license"],
     stem: "libswscale",
@@ -70,7 +81,7 @@ cc_binary {
         "libavservices_minijail", "libbase", "libbinder_ndk",
         "libcodec2_aidl", "libcodec2_hal_common", "libcodec2_soft_common",
         "libcodec2_vndk", "liblog", "libstagefright_foundation", "libutils",
-        "libfirefly_avcodec", "libfirefly_avutil", "libfirefly_swscale",
+        "libfirefly_avcodec", "libfirefly_avutil", "libfirefly_swscale", "libfirefly_swresample",
     ],
     init_rc: ["codec2/android.hardware.media.c2-service-firefly.rc"],
     vintf_fragments: ["codec2/android.hardware.media.c2-service-firefly.xml"],

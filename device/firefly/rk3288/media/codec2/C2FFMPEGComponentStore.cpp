@@ -19,6 +19,8 @@
 #include <android-base/properties.h>
 
 #include "C2FFMPEGCommon.h"
+#include "C2FFMPEGAudioDecodeComponent.h"
+#include "C2FFMPEGAudioDecodeInterface.h"
 #include "C2FFMPEGVideoDecodeComponent.h"
 #include "C2FFMPEGVideoDecodeInterface.h"
 
@@ -33,6 +35,11 @@ static const C2FFMPEGComponentInfo kFFMPEGVideoComponents[] = {
     { "c2.firefly.hevc.decoder", MEDIA_MIMETYPE_VIDEO_HEVC, AV_CODEC_ID_HEVC },
 };
 static constexpr size_t kNumVideoComponents = 2;
+static const C2FFMPEGComponentInfo kFFMPEGAudioComponents[] = {
+    { "c2.firefly.ac3.decoder", MEDIA_MIMETYPE_AUDIO_AC3, AV_CODEC_ID_AC3 },
+    { "c2.firefly.mp2.decoder", MEDIA_MIMETYPE_AUDIO_MPEG_LAYER_II, AV_CODEC_ID_MP2 },
+};
+static constexpr size_t kNumAudioComponents = 2;
 
 C2FFMPEGComponentStore::C2FFMPEGComponentStore()
     : mReflectorHelper(std::make_shared<C2ReflectorHelper>()),
@@ -59,6 +66,15 @@ c2_status_t C2FFMPEGComponentStore::createComponent(
             return C2_OK;
         }
     }
+    for (size_t i = 0; i < kNumAudioComponents; ++i) {
+        const auto* info = &kFFMPEGAudioComponents[i];
+        if (name == info->name) {
+            component->reset();
+            *component = std::shared_ptr<C2Component>(new C2FFMPEGAudioDecodeComponent(
+                info, std::make_shared<C2FFMPEGAudioDecodeInterface>(info, mReflectorHelper)));
+            return C2_OK;
+        }
+    }
     return C2_NOT_FOUND;
 }
 
@@ -76,6 +92,15 @@ c2_status_t C2FFMPEGComponentStore::createInterface(
             return C2_OK;
         }
     }
+    for (size_t i = 0; i < kNumAudioComponents; ++i) {
+        const auto* info = &kFFMPEGAudioComponents[i];
+        if (name == info->name) {
+            interface->reset();
+            *interface = std::shared_ptr<C2ComponentInterface>(new SimpleInterface<C2FFMPEGAudioDecodeInterface>(
+                info->name, 0, std::make_shared<C2FFMPEGAudioDecodeInterface>(info, mReflectorHelper)));
+            return C2_OK;
+        }
+    }
     ALOGE("createInterface: unknown component = %s", name.c_str());
     return C2_NOT_FOUND;
 }
@@ -89,6 +114,15 @@ std::vector<std::shared_ptr<const C2Component::Traits>>
         traits->domain = C2Component::DOMAIN_VIDEO;
         traits->kind = C2Component::KIND_DECODER;
         traits->mediaType = kFFMPEGVideoComponents[i].mediaType;
+        traits->rank = 0x100;
+        ret.push_back(traits);
+    }
+    for (size_t i = 0; i < kNumAudioComponents; ++i) {
+        auto traits = std::make_shared<C2Component::Traits>();
+        traits->name = kFFMPEGAudioComponents[i].name;
+        traits->domain = C2Component::DOMAIN_AUDIO;
+        traits->kind = C2Component::KIND_DECODER;
+        traits->mediaType = kFFMPEGAudioComponents[i].mediaType;
         traits->rank = 0x100;
         ret.push_back(traits);
     }

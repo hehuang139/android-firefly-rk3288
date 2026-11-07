@@ -1,5 +1,10 @@
 # Building the source release
 
+This branch carries an uninstalled live-TV/audio candidate. Follow
+[the candidate instructions](docs/live-channel-audio-candidate.md) for its
+four-library FFmpeg build and separate launcher build. The historical accepted
+firmware and candidate runtime validation are recorded separately.
+
 Use x86_64 Linux, Docker, Git/repo, Python 3, make, patch, curl, xz, ripgrep,
 dtc and an ARM hard-float cross compiler (`arm-linux-gnueabihf-*`). The Android
 build uses its pinned Clang/Bionic toolchain. Budget roughly 64 GB RAM and

@@ -1,5 +1,10 @@
 # RK3288 playback source export
 
+On `fix/live-channel-audio`, the separate [live-audio candidate](live-channel-audio-candidate.md)
+adds AC-3/MP2 and swresample. That candidate passed isolated component builds
+and has not been installed or playback-tested. The measured H.264 results here
+remain evidence for the accepted `main` baseline.
+
 This export contains the final playback changes and small diagnostic sources.
 It is an integration payload for the complete Firefly device port, not a
 standalone Android distribution. No overlay candidate or device/user data is
@@ -44,8 +49,9 @@ overlay defaults based on this export.
 - The complete FFmpeg V4L2 Request source at
   `b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935` from
   <https://github.com/Kwiboo/FFmpeg>, plus the port's Android discovery/UAPI
-  patch and `build-ffmpeg.py`. The minimal service uses avcodec, avutil and
-  swscale; include actual configure options and corresponding source.
+  patch and `build-ffmpeg.py`. The accepted baseline uses avcodec, avutil and
+  swscale; this candidate additionally requires swresample. Include actual
+  configure options and corresponding source.
 - The Codec2 bridge originates from
   <https://github.com/LineageOS/android_external_ffmpeg_codec2> at
   `00f6f65c7ef381470efbcfca8c0316bdcdfcffe7`.

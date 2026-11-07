@@ -1,0 +1,229 @@
+{
+  "scope": "Isolated candidate launcher and ARM32 Codec2/FFmpeg builds and static ELF inspection; no board installation, runtime decoding, live playback or whole Android product build.",
+  "branch": "fix/live-channel-audio",
+  "accepted_main_commit": "6c334b856efd4d76a4ae0588974f6e6225a3216e",
+  "status": "component_builds_passed_runtime_pending",
+  "historical_catalog_analysis": {
+    "channels": 193,
+    "source_lines": 261,
+    "native_routes": 239,
+    "kodi_routes": 22,
+    "kodi_audio_groups": {
+      "ac3_only": 18,
+      "aac_and_ac3": 3,
+      "mp2": 1
+    },
+    "scope": "Historical catalog metadata and selector behavior; not a fresh availability or board playback test"
+  },
+  "fresh_catalog_availability_recheck": {
+    "status": "in_progress",
+    "source_lines_to_check": 268,
+    "board_playback_tested": false
+  },
+  "public_launcher_build": {
+    "profile": "Public optional-content profile; 24 Java sources",
+    "apk_sha256": "e0e03b7961b71a9551d4bbc94349d7d92355dbb30780f77e132635c5909528ca",
+    "bytes": 131437,
+    "source_count": 24,
+    "manifest_and_resources_unchanged": true,
+    "shared_originals_unchanged": true,
+    "source_sha256": {
+      "src/org/firefly/tv/AppLaunch.java": "4eacae651648575ff1a48380e14d281851e98824128e3ae235da0e461951969b",
+      "src/org/firefly/tv/AppsActivity.java": "323edb4d4920d72f3d35512dd4460b824e6674cc1c8c7d532e66f37fe4e2cb18",
+      "src/org/firefly/tv/BroadcasterResolver.java": "c86f930b485f9cdd68579818b3312fc5ca4e9a4a3b11a3577f6d65fa2bb5d193",
+      "src/org/firefly/tv/ChannelCatalog.java": "7a115ef9be251d12897241cd32e85a95700044f98410c88f77489033760bccb1",
+      "src/org/firefly/tv/DecoderActivity.java": "09008ecc66aadf8224058ca62e6326a2e7de9374e52f1a1040fb6522e5d9f329",
+      "src/org/firefly/tv/GuideLoader.java": "7c0ad948eb762ae2f8bf81e74987b1fd654d40baa11fffefe027f256d234a36c",
+      "src/org/firefly/tv/HardwareDecodeCheck.java": "95cf7d6e8c0ee0be24192c3170f6e075d12ebcf89e9b0590813871f15ceed44f",
+      "src/org/firefly/tv/HomeActivity.java": "2de7ca7abee417cd2b5f53e45ecda53e4e1a55882bb71e1b7900d9033b3bed7d",
+      "src/org/firefly/tv/KidsActivity.java": "7023be49f5cfc7c0edf5f48af75e217ec249866703b0b88fb3e967bdb852b6e1",
+      "src/org/firefly/tv/KidsContent.java": "4838a10bc5845af11f85ef3fbbda901cd1a3a031c17765a5663acf6815bf0e38",
+      "src/org/firefly/tv/LiveActivity.java": "2d37832d91919ecf606f9cfb5e3abbcb816d44f5fc0d00b66707f79a0600b3a8",
+      "src/org/firefly/tv/ParentalActivity.java": "bda1823c685416d26e573d37f398846a814c8c3022cc8c1bc0020daf58b9e649",
+      "src/org/firefly/tv/ParentalBootReceiver.java": "8b0eeb08db70f538edd23db2f7fb8aae343b9fe8b52f7604156d4e3e99fea98b",
+      "src/org/firefly/tv/ParentalPrefs.java": "24570a9012d5cf04a699b4fd31c6be3886eebaacce368203d0918a82cfa55d89",
+      "src/org/firefly/tv/PinDialog.java": "5a2b97756a34b6680431e55d61cf74309b1f812de5fa42eab64388364caf56a8",
+      "src/org/firefly/tv/ProgramGuide.java": "7be6d611417be7fa71bc83ab6515aca0576160a043336d9c552a932da7effa21",
+      "src/org/firefly/tv/PuzzleActivity.java": "90cb93227f87c8fcaaf767429aab08a3f18a27de2439e440aa7a7ad4885a0333",
+      "src/org/firefly/tv/PuzzleRound.java": "646bb3cb37d888693735279f4ffb7d74c80fba7ebcda1d65787a2cd959a59825",
+      "src/org/firefly/tv/RemoteActivity.java": "f27676fddb5c1e73d3d70dd51e89789a6b57c3732da796ccbb5ca89cdcf5074b",
+      "src/org/firefly/tv/SettingsActivity.java": "4e3f03c8e69beb5a75e06a2db7d4054e21abb5e61659c3f47665a88e179984a9",
+      "src/org/firefly/tv/TvActivity.java": "d9f50dd1d95eaaa3b7bb45df5f589ece7a09d29d24e128aac54b19355f8d3257",
+      "src/org/firefly/tv/TvUi.java": "2ff5b5c751014a2b465ab44a3e9555fd8752b73c31e3823a17bf49f725ab2ca5",
+      "src/org/firefly/tv/WatchBudget.java": "68b3958b67bff6d324efa1e9607fbc5d46c851f5f3214844cd3ff2ba14d29496",
+      "src/org/firefly/tv/WatchTimeTracker.java": "01b295b432b16f4d094405e5085fb3d48f5ea611ebb14025b9f4a2e77825b775"
+    },
+    "hardware_installed": false,
+    "binary_not_distributed": true
+  },
+  "audio_component_build": {
+    "status": "isolated_android_arm32_build_passed_hardware_pending",
+    "codecs_added": [
+      "c2.firefly.ac3.decoder",
+      "c2.firefly.mp2.decoder"
+    ],
+    "upstream_audio_revision": "00f6f65c7ef381470efbcfca8c0316bdcdfcffe7",
+    "h264_and_hevc_video_sources_byte_identical": {
+      "C2FFMPEGVideoDecodeComponent.cpp": true,
+      "ffmpeg_hwaccel.cpp": true
+    },
+    "sources": {
+      "C2FFMPEGAudioDecodeComponent.cpp": "75e796626599745bae9e90f1c6524672ab7483a4ac601d74a38f8ed0a0b13331",
+      "C2FFMPEGAudioDecodeComponent.h": "3192f44bb5c841e6522d39a4f5681c402e23459ed67ce8c250b932b65dd5c2b4",
+      "C2FFMPEGAudioDecodeInterface.cpp": "b3f7fb1e6d5311c1e380e019a11d08b627ac380d5cb11fec620d92be00024132",
+      "C2FFMPEGAudioDecodeInterface.h": "1e0cd34df5a71fcaa89565dab6983b814fd03a3d5945fa7fd7bd58d0b26e38ab",
+      "C2FFMPEGComponentStore.cpp": "10e64f0707fe59f730a88e4360da65399a95d16186785fb3ab3b3b305912207e",
+      "C2FFMPEGVideoDecodeComponent.cpp": "1743fd8dd555bddad3bbeb736bd769f54441fdccb9272fcf15f52076f87353fb"
+    },
+    "payloads": {
+      "android.hardware.media.c2-service-firefly": "6c11fc03fa8df2c1cc0c5f7326f7e8bad18879d63b4b6a7088da170712a4b7e3",
+      "media_codecs_firefly.xml": "97372cf5e3117bbcb75028ff7eea464547ec4ccafb8f13a2d8cf310817c02745",
+      "libavcodec.so": "5b46b6b258f2267c2dee2dd013119db7a18241252847cc78c0a3fdefd3ab2339",
+      "libavutil.so": "109753fb830f87253058d7ce01965aa0c20bf7d72c84ea1c7693ecb4e5979852",
+      "libswresample.so": "b77dba4714cdeadf7f1f3aa9e44ccc1374b145ad75d486d7d41535d1d75aa70b",
+      "libswscale.so": "bcc53b4208ace712c7a056889e642989cf5935f259a433fee0d0b24a5be92c8b"
+    },
+    "safety_adaptations": [
+      "Copy audio bitstream into av_new_packet with mandatory zero padding",
+      "Use public swresample API and own cached conversion parameters",
+      "Copy exact PCM bytes with mapped output capacity check",
+      "Do not advertise removed Vorbis or arbitrary other decoders"
+    ],
+    "runtime_decode_tested": false,
+    "ordinary_h264_regression_tested": false,
+    "live_network_channel_tested": false
+  },
+  "elf_validation": {
+    "old_export_compatibility": {
+      "avcodec": {
+        "old_export_count": 161,
+        "new_export_count": 162,
+        "old_exports_missing_from_candidate": []
+      },
+      "avutil": {
+        "old_export_count": 626,
+        "new_export_count": 626,
+        "old_exports_missing_from_candidate": []
+      },
+      "swscale": {
+        "old_export_count": 41,
+        "new_export_count": 41,
+        "old_exports_missing_from_candidate": []
+      }
+    },
+    "elf": {
+      "android.hardware.media.c2-service-firefly": {
+        "arm32": true,
+        "rpath_or_runpath": false,
+        "executable_stack": false,
+        "sha256": "6c11fc03fa8df2c1cc0c5f7326f7e8bad18879d63b4b6a7088da170712a4b7e3",
+        "needed": [
+          "android.hardware.graphics.common@1.0.so",
+          "android.hardware.media.c2-V1-ndk.so",
+          "libavservices_minijail.so",
+          "libbase.so",
+          "libbinder_ndk.so",
+          "libcodec2_aidl.so",
+          "libcodec2_hal_common.so",
+          "libcodec2_soft_common.so",
+          "libcodec2_vndk.so",
+          "liblog.so",
+          "libstagefright_foundation.so",
+          "libutils.so",
+          "libavcodec.so",
+          "libavutil.so",
+          "libswscale.so",
+          "libc++.so",
+          "libc.so",
+          "libm.so",
+          "libdl.so",
+          "libswresample.so"
+        ]
+      },
+      "libavutil.so": {
+        "arm32": true,
+        "rpath_or_runpath": false,
+        "executable_stack": false,
+        "sha256": "109753fb830f87253058d7ce01965aa0c20bf7d72c84ea1c7693ecb4e5979852",
+        "needed": [
+          "libm.so",
+          "libc.so"
+        ]
+      },
+      "libswscale.so": {
+        "arm32": true,
+        "rpath_or_runpath": false,
+        "executable_stack": false,
+        "sha256": "bcc53b4208ace712c7a056889e642989cf5935f259a433fee0d0b24a5be92c8b",
+        "needed": [
+          "libavutil.so",
+          "libm.so",
+          "libc.so"
+        ]
+      },
+      "libswresample.so": {
+        "arm32": true,
+        "rpath_or_runpath": false,
+        "executable_stack": false,
+        "sha256": "b77dba4714cdeadf7f1f3aa9e44ccc1374b145ad75d486d7d41535d1d75aa70b",
+        "needed": [
+          "libavutil.so",
+          "libm.so",
+          "libc.so"
+        ]
+      },
+      "libavcodec.so": {
+        "arm32": true,
+        "rpath_or_runpath": false,
+        "executable_stack": false,
+        "sha256": "5b46b6b258f2267c2dee2dd013119db7a18241252847cc78c0a3fdefd3ab2339",
+        "needed": [
+          "libavutil.so",
+          "libm.so",
+          "libc.so"
+        ]
+      }
+    },
+    "hardware_validated": false
+  },
+  "runtime_acceptance": {
+    "codec_enumeration": false,
+    "ac3_and_mp2_pcm_decode": false,
+    "ordinary_h264_regression": false,
+    "real_live_channel_playback": false,
+    "software_reboot_persistence": false,
+    "whole_candidate_image_clean_flash": false,
+    "whole_public_android_clean_build": false
+  },
+  "source_sha256": {
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeComponent.cpp": "4962d73a7ab98659785a89b391d3c15180a8dd0bbdc1319ce3a30caba8f0f701",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeComponent.h": "3192f44bb5c841e6522d39a4f5681c402e23459ed67ce8c250b932b65dd5c2b4",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeInterface.cpp": "b3f7fb1e6d5311c1e380e019a11d08b627ac380d5cb11fec620d92be00024132",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeInterface.h": "1e0cd34df5a71fcaa89565dab6983b814fd03a3d5945fa7fd7bd58d0b26e38ab",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGComponentStore.cpp": "10e64f0707fe59f730a88e4360da65399a95d16186785fb3ab3b3b305912207e",
+    "device/firefly/rk3288/media/Android.bp": "2670139495570382f27595b5cb9b9483eb829bbb60d1d7c7a65f3f803af06d87",
+    "device/firefly/rk3288/media/build-ffmpeg.py": "ae42dcc542cdca9661aaa4ede8cde53b453ab453bf5d6eb11353a7644834ae7f",
+    "device/firefly/rk3288/media/media_codecs_firefly.xml": "97372cf5e3117bbcb75028ff7eea464547ec4ccafb8f13a2d8cf310817c02745",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/AppLaunch.java": "4eacae651648575ff1a48380e14d281851e98824128e3ae235da0e461951969b",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCatalog.java": "7a115ef9be251d12897241cd32e85a95700044f98410c88f77489033760bccb1",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/LiveActivity.java": "2d37832d91919ecf606f9cfb5e3abbcb816d44f5fc0d00b66707f79a0600b3a8"
+  },
+  "accepted_main_evidence_remains_historical": [
+    "final-public-review.json",
+    "hdmi-audio.json",
+    "public-profile.json"
+  ],
+  "current_packaged_catalog_inventory": {
+    "channels": 200,
+    "source_lines": 268,
+    "catalog_sha256": "17fa616967053b17853fb50d755448c40135fedc2f2ddec6ecf53765c5b591d4",
+    "scope": "Current packaged configuration; inventory count only, not fresh network availability or board playback."
+  },
+  "source_export_normalization": {
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeComponent.cpp": {
+      "compiled_input_sha256": "75e796626599745bae9e90f1c6524672ab7483a4ac601d74a38f8ed0a0b13331",
+      "public_sha256": "4962d73a7ab98659785a89b391d3c15180a8dd0bbdc1319ce3a30caba8f0f701",
+      "change": "Removed one trailing ASCII space after a closing brace; all other bytes unchanged."
+    }
+  }
+}

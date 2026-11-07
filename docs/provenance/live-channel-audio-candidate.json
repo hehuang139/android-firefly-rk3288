@@ -1,0 +1,56 @@
+{
+  "scope": "Uninstalled live-TV internal playback and AC-3/MP2 audio candidate; accepted main baseline retained separately.",
+  "branch": "fix/live-channel-audio",
+  "accepted_main_commit": "6c334b856efd4d76a4ae0588974f6e6225a3216e",
+  "codec2_upstream": {
+    "url": "https://github.com/LineageOS/android_external_ffmpeg_codec2.git",
+    "revision": "00f6f65c7ef381470efbcfca8c0316bdcdfcffe7",
+    "license": "Apache-2.0",
+    "copyright_notices_preserved": true
+  },
+  "ffmpeg": {
+    "url": "https://github.com/Kwiboo/FFmpeg.git",
+    "revision": "b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935",
+    "license": "LGPL-2.1-or-later for these options; individual upstream notices retained",
+    "configure_additions": [
+      "--enable-swresample",
+      "--enable-decoder=h264,hevc,ac3,mp2",
+      "--enable-parser=h264,hevc,ac3,mpegaudio"
+    ],
+    "libraries": [
+      "libavcodec.so",
+      "libavutil.so",
+      "libswscale.so",
+      "libswresample.so"
+    ],
+    "gpl_or_nonfree_enabled": false
+  },
+  "source_sha256": {
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeComponent.cpp": "4962d73a7ab98659785a89b391d3c15180a8dd0bbdc1319ce3a30caba8f0f701",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeComponent.h": "3192f44bb5c841e6522d39a4f5681c402e23459ed67ce8c250b932b65dd5c2b4",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeInterface.cpp": "b3f7fb1e6d5311c1e380e019a11d08b627ac380d5cb11fec620d92be00024132",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeInterface.h": "1e0cd34df5a71fcaa89565dab6983b814fd03a3d5945fa7fd7bd58d0b26e38ab",
+    "device/firefly/rk3288/media/codec2/C2FFMPEGComponentStore.cpp": "10e64f0707fe59f730a88e4360da65399a95d16186785fb3ab3b3b305912207e",
+    "device/firefly/rk3288/media/Android.bp": "2670139495570382f27595b5cb9b9483eb829bbb60d1d7c7a65f3f803af06d87",
+    "device/firefly/rk3288/media/build-ffmpeg.py": "ae42dcc542cdca9661aaa4ede8cde53b453ab453bf5d6eb11353a7644834ae7f",
+    "device/firefly/rk3288/media/media_codecs_firefly.xml": "97372cf5e3117bbcb75028ff7eea464547ec4ccafb8f13a2d8cf310817c02745",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/AppLaunch.java": "4eacae651648575ff1a48380e14d281851e98824128e3ae235da0e461951969b",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ChannelCatalog.java": "7a115ef9be251d12897241cd32e85a95700044f98410c88f77489033760bccb1",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/LiveActivity.java": "2d37832d91919ecf606f9cfb5e3abbcb816d44f5fc0d00b66707f79a0600b3a8"
+  },
+  "video_sources_unchanged": {
+    "C2FFMPEGVideoDecodeComponent.cpp": true,
+    "ffmpeg_hwaccel.cpp": true
+  },
+  "binary_payload_hashes_are_build_evidence_only": true,
+  "public_binaries_or_signing_keys_included": false,
+  "hardware_installed": false,
+  "validation": "../validation/live-channel-audio-candidate.json",
+  "source_export_normalization": {
+    "device/firefly/rk3288/media/codec2/C2FFMPEGAudioDecodeComponent.cpp": {
+      "compiled_input_sha256": "75e796626599745bae9e90f1c6524672ab7483a4ac601d74a38f8ed0a0b13331",
+      "public_sha256": "4962d73a7ab98659785a89b391d3c15180a8dd0bbdc1319ce3a30caba8f0f701",
+      "change": "Removed one trailing ASCII space after a closing brace; all other bytes unchanged."
+    }
+  }
+}

@@ -62,19 +62,6 @@ final class AppLaunch {
         }
     }
 
-    static boolean kodiStream(Activity activity, ChannelCatalog.Source source, String url) {
-        StringBuilder address = new StringBuilder(url);
-        String separator = "|";
-        for (java.util.Map.Entry<String, String> header : source.headers.entrySet()) {
-            address.append(separator).append(android.net.Uri.encode(header.getKey()))
-                    .append('=').append(android.net.Uri.encode(header.getValue()));
-            separator = "&";
-        }
-        Intent intent = new Intent(Intent.ACTION_VIEW).setPackage(KODI[0])
-                .setDataAndType(android.net.Uri.parse(address.toString()), "video/*");
-        return action(activity, intent);
-    }
-
     private static boolean allowed(Activity activity, Intent intent, ParentalPrefs prefs) {
         android.content.ComponentName component = intent.resolveActivity(activity.getPackageManager());
         return component != null && prefs.allowedApps().contains(component.getPackageName())

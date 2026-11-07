@@ -106,8 +106,10 @@ final class ChannelCatalog {
         JSONObject resolver = item.optJSONObject("resolver");
         String provider = resolver == null ? "" : resolver.getString("provider");
         String channelId = resolver == null ? "" : resolver.getString("channelId");
+        // Ignore the historical "player" hint: channel catalogs supply media,
+        // not permission to launch another application.
         return new Source(url, headers, item.optBoolean("requiresProxy", false),
-                "kodi".equals(item.optString("player")), provider, channelId);
+                provider, channelId);
     }
 
     private static void addHeader(Map<String, String> headers, String key, String value)
@@ -143,16 +145,14 @@ final class ChannelCatalog {
         final String url;
         final Map<String, String> headers;
         final boolean requiresProxy;
-        final boolean kodi;
         final String resolverProvider;
         final String resolverChannelId;
 
         Source(String url, Map<String, String> headers, boolean requiresProxy,
-                boolean kodi, String provider, String channelId) {
+                String provider, String channelId) {
             this.url = url;
             this.headers = Collections.unmodifiableMap(headers);
             this.requiresProxy = requiresProxy;
-            this.kodi = kodi;
             resolverProvider = provider;
             resolverChannelId = channelId;
         }

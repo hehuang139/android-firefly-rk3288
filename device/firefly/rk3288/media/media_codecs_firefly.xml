@@ -10,5 +10,15 @@
             <Limit name="concurrent-instances" max="1" />
             <Feature name="adaptive-playback" />
         </MediaCodec>
+        <MediaCodec name="c2.firefly.ac3.decoder" type="audio/ac3">
+            <Limit name="sample-rate" ranges="32000,44100,48000" />
+            <Limit name="channel-count" max="6" />
+            <Limit name="bitrate" range="8000-640000" />
+        </MediaCodec>
+        <MediaCodec name="c2.firefly.mp2.decoder" type="audio/mpeg-L2">
+            <Limit name="sample-rate" ranges="16000,22050,24000,32000,44100,48000" />
+            <Limit name="channel-count" max="2" />
+            <Limit name="bitrate" range="8000-384000" />
+        </MediaCodec>
     </Decoders>
 </MediaCodecs>

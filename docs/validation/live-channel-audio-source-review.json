@@ -1,0 +1,19 @@
+{
+  "scope": "Static candidate source, provenance and isolated-build evidence cross-check. No network requests, board operations, runtime decode or whole product build.",
+  "branch": "fix/live-channel-audio",
+  "accepted_main_commit": "6c334b856efd4d76a4ae0588974f6e6225a3216e",
+  "reviewed_public_file_count": 494,
+  "python_ast_passed": 38,
+  "public_sources_match_compiled_inputs_after_documented_whitespace_normalization": true,
+  "public_launcher_24_sources_match_isolated_build": true,
+  "video_and_hardware_acceleration_sources_unchanged": true,
+  "h264_xml_entry_unchanged": true,
+  "private_data_pattern_hits": [],
+  "binary_archive_or_key_files": [],
+  "crlf_files": [],
+  "markdown_missing_relative_links": [],
+  "stable_main_standalone_document_preserved": true,
+  "candidate_retrospective_sha256": "2c7012a345197ab6c26bef9ab89d9be4c1247d4adbbed76373f842b858031562",
+  "hardware_installed": false,
+  "whole_public_android_clean_build": false
+}

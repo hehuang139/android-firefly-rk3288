@@ -97,9 +97,9 @@ def main():
                '--enable-cross-compile', f'--sysroot={sysroot}', f'--extra-cflags={cflags}',
                f'--extra-cxxflags={cflags}', f'--extra-ldflags={ldflags}', '--disable-autodetect',
                '--disable-everything', '--disable-programs', '--disable-doc', '--disable-network',
-               '--disable-avdevice', '--disable-avfilter', '--disable-avformat', '--disable-swresample',
-               '--enable-avcodec', '--enable-avutil', '--enable-swscale', '--enable-decoder=h264,hevc',
-               '--enable-parser=h264,hevc', '--enable-hwaccel=h264_v4l2request,hevc_v4l2request', '--enable-v4l2-request',
+               '--disable-avdevice', '--disable-avfilter', '--disable-avformat', '--enable-swresample',
+               '--enable-avcodec', '--enable-avutil', '--enable-swscale', '--enable-decoder=h264,hevc,ac3,mp2',
+               '--enable-parser=h264,hevc,ac3,mpegaudio', '--enable-hwaccel=h264_v4l2request,hevc_v4l2request', '--enable-v4l2-request',
                '--enable-shared', '--disable-static', '--enable-pic']
     for flag, exe in [('cc', 'clang'), ('cxx', 'clang++'), ('ar', 'llvm-ar'), ('nm', 'llvm-nm'),
                       ('ranlib', 'llvm-ranlib'), ('strip', 'llvm-strip')]:
@@ -109,7 +109,7 @@ def main():
     run(['make', f'-j{args.jobs}'], build)
     run(['make', 'install'], build)
     (media / 'prebuilts/arm').mkdir(parents=True, exist_ok=True)
-    for lib in ('avcodec', 'avutil', 'swscale'):
+    for lib in ('avcodec', 'avutil', 'swscale', 'swresample'):
         shutil.copyfile(install / f'lib/lib{lib}.so', media / f'prebuilts/arm/lib{lib}.so')
     shutil.copytree(install / 'include', media / 'include', dirs_exist_ok=True)
     manifest_path = media / 'source-manifest.json'
