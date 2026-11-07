@@ -1,14 +1,17 @@
 {
-  "scope": "Final public source inventory, syntax, private-data and document review; no new hardware/full product build",
+  "scope": "Static public source inventory, syntax, private-data and document review. HDMI hardware results are referenced from linked sanitized validation, not produced by this checker; no full product build.",
   "payload_files_before_this_report": 486,
-  "payload_bytes_before_this_report": 22332760,
+  "payload_bytes_before_this_report": 22341804,
   "python_ast_passed": 38,
   "unexpected_binary_archive_or_key_files": [],
   "private_data_pattern_hits": [],
   "crlf_files": [],
   "markdown_missing_relative_links": [],
   "standalone_retrospective_matches": true,
-  "retrospective_sha256": "a49f51841dd1b47c3b8b055376121a6af491de0f4f629c3d114e9e96417a1e39",
+  "retrospective_sha256": "b87d58eb0cc86511af0b9a867b313428a07dd6c4135bcebd645b2aa3eaba0e11",
   "whole_public_android_clean_build": false,
-  "hdmi_audible_validation": false
+  "hdmi_hardware_evidence": "docs/validation/hdmi-audio.json",
+  "hdmi_audible_validation": true,
+  "hdmi_physical_hotplug_recovery_validation": true,
+  "hdmi_cold_power_cycle_validation": false
 }

@@ -1,40 +1,123 @@
 {
+  "scope": "Historical no-audio sink negative test and subsequent HDMI-capable sink listening, software reboot and physical reconnect recovery. Analog playback while unplugged, route-open failure recovery, cold power cycle, clean full-image reflash and clean public product build remain unverified.",
   "software_reboot_verified": true,
-  "audio_services_running": true,
-  "monitor_autostart_system_persistent": true,
-  "payload_hashes_matched": true,
-  "vendor_and_system_ext_readonly": true,
-  "current_sink_no_audio_stays_on_analog": true,
-  "analog_audiotrack": {
-    "sampleRate": 48000,
-    "channels": 2,
-    "pcmBits": 16,
-    "durationSeconds": 4,
-    "peakDbfs": -26,
-    "leftSeconds": 2,
-    "rightSeconds": 2,
-    "frequencyHz": 440,
-    "systemVolumeChanged": false,
-    "audibleConfirmationRequired": true,
-    "bufferCapacityFrames": 4800,
-    "bufferSizeFrames": 4800,
-    "sessionId": 105,
-    "routedDevice": {
-      "id": 2,
-      "type": 21,
-      "address": "firefly-es8323",
-      "productName": "Firefly-RK3288 TV"
+  "hdmi_audible_confirmation": true,
+  "real_hdmi_hotplug_confirmation": true,
+  "historical_no_audio_sink_validation": {
+    "sink_model": "DELL P2017H",
+    "software_reboot_verified": true,
+    "audio_services_running": true,
+    "monitor_autostart_system_persistent": true,
+    "payload_hashes_matched": true,
+    "vendor_and_system_ext_readonly": true,
+    "current_sink_no_audio_stays_on_analog": true,
+    "analog_audiotrack": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "pcmBits": 16,
+      "durationSeconds": 4,
+      "peakDbfs": -26,
+      "leftSeconds": 2,
+      "rightSeconds": 2,
+      "frequencyHz": 440,
+      "systemVolumeChanged": false,
+      "audibleConfirmationRequired": true,
+      "bufferCapacityFrames": 4800,
+      "bufferSizeFrames": 4800,
+      "sessionId": 105,
+      "routedDevice": {
+        "id": 2,
+        "type": 21,
+        "address": "firefly-es8323",
+        "productName": "Firefly-RK3288 TV"
+      },
+      "underrunCount": 1,
+      "playState": 3,
+      "passed": true,
+      "writtenSamples": 384000,
+      "writtenFrames": 192000,
+      "writtenBytes": 768000,
+      "playbackHeadFrames": 192000,
+      "maximumPlaybackHeadFrames": 192000,
+      "elapsedMs": 4235
     },
-    "underrunCount": 1,
-    "playState": 3,
-    "passed": true,
-    "writtenSamples": 384000,
-    "writtenFrames": 192000,
-    "writtenBytes": 768000,
-    "playbackHeadFrames": 192000,
-    "maximumPlaybackHeadFrames": 192000,
-    "elapsedMs": 4235
+    "hdmi_audible_confirmation": false,
+    "real_hdmi_hotplug_confirmation": false
   },
-  "hdmi_audible_confirmation": false,
-  "real_hdmi_hotplug_confirmation": false
+  "hdmi_capable_sink_validation": {
+    "software_reboot_verified": true,
+    "cold_power_cycle_verified": false,
+    "audio_services_running": true,
+    "monitor_autostart_system_persistent": true,
+    "payload_hashes_matched": true,
+    "vendor_and_system_ext_readonly": true,
+    "hdmi_template_address_empty": true,
+    "hdmi_instance_address": "firefly-hdmi",
+    "hdmi_pcm1_running_during_audiotrack": true,
+    "analog_pcm0_closed_during_hdmi_playback": true,
+    "hdmi_audiotrack": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "pcmBits": 16,
+      "durationSeconds": 4,
+      "peakDbfs": -26,
+      "leftSeconds": 2,
+      "rightSeconds": 2,
+      "frequencyHz": 440,
+      "systemVolumeChanged": false,
+      "audibleConfirmationRequired": true,
+      "bufferCapacityFrames": 4800,
+      "bufferSizeFrames": 4800,
+      "sessionId": 113,
+      "routedDevice": {
+        "id": 6,
+        "type": 9,
+        "address": "firefly-hdmi",
+        "productName": "Firefly HDMI"
+      },
+      "underrunCount": 1,
+      "playState": 3,
+      "passed": true,
+      "writtenSamples": 384000,
+      "writtenFrames": 192000,
+      "writtenBytes": 768000,
+      "playbackHeadFrames": 192000,
+      "maximumPlaybackHeadFrames": 192000,
+      "elapsedMs": 4211
+    },
+    "hdmi_sink": {
+      "model": "32V3H-H6A",
+      "lpcm_channels": 2,
+      "sample_rates": [
+        32000,
+        44100,
+        48000
+      ],
+      "sample_bits": [
+        16,
+        20,
+        24
+      ]
+    },
+    "audible_confirmations_before_software_reboot": {
+      "direct_pcm1_left_and_right": true,
+      "android_audiotrack_left_and_right": true,
+      "video_audio_over_hdmi": true
+    },
+    "physical_hotplug_recovery_verified": true,
+    "hdmi_route_open_failure_recovery_verified": false,
+    "physical_hotplug_confirmation": {
+      "requested_procedure": "Unplug HDMI during video, wait 5 seconds, reconnect without reboot",
+      "human_confirmed_picture_and_audio_auto_recovered": true,
+      "same_boot_verified_after_reconnect": true,
+      "policy_connected_after_reconnect": true,
+      "hdmi_pcm1_running_after_reconnect": true,
+      "analog_pcm0_closed_after_reconnect": true,
+      "monitor_disconnect_transition_observed": false,
+      "analog_playback_during_unplug_measured": false
+    },
+    "audible_confirmation_after_software_reboot": {
+      "video_audio_after_physical_reconnect": true
+    }
+  }
 }
