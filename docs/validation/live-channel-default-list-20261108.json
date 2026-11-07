@@ -1,0 +1,56 @@
+{
+  "recordedUtc": "2026-11-07T17:07:56.888098+00:00",
+  "scope": "The filtered app-data catalog was installed on the board. This deployment record supplements the earlier local coverage partition; no whole-disk image was created.",
+  "original_inventory_channels": 200,
+  "added_fujian_channels": 7,
+  "default_channels": 167,
+  "review_channels": 35,
+  "explicit_suspensions": 5,
+  "catalog_sha256": "2aebc8dc2997a814bca9a63210ec77fc72a49fbcc2c140783e7fdee55c766208",
+  "installed_apk_sha256": "1386e29ecc8172d0f7f71037114d61aadd560525b18ba7cd7fae1ade75bb4827",
+  "running_c2_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+  "coverage_report_sha256": "9fa1001e1368d132b3970518d52f559da32bf3d07042312afc987db4a6a349c2",
+  "app_data_catalog_updated": true,
+  "product_catalog_unchanged": true,
+  "previous_cache_backed_up": true,
+  "selection_migrated_by_channel_id": true,
+  "vendor_and_system_ext_readonly": true,
+  "paired_four_ffmpeg_libraries_and_codec_xml_verified": true,
+  "hdmi_audio_policy_unchanged": true,
+  "final_default_catalog_smoke": {
+    "id": "FujianNewsTV.cn",
+    "number": 920,
+    "status": "sustained_playback_confirmed",
+    "observed_seconds": 61.81,
+    "dimensions": "1920 x 1080",
+    "video_codec": "c2.firefly.h264.decoder",
+    "audio_codec": "c2.android.aac.decoder",
+    "interval_frames": 1546,
+    "interval_dropped_frames": 0
+  },
+  "final_smoke_result_sha256": "e6fa96ba1f7a7fc99067bae48dea96366bf4d97a5e5a5626bb3c3e77ef16d672",
+  "physical_listening_in_this_round": false,
+  "all_channels_retested_for_one_minute_on_this_exact_final_build": false,
+  "whole_disk_image_updated": false,
+  "limits": [
+    "National short samples and sustained Fujian samples retain separate build and time scopes.",
+    "Shishi and Jinjiang carried official off-air test patterns in the midnight transport checks.",
+    "Long-term source availability, every fallback source and ticket-expiry continuity were not established."
+  ],
+  "final_default_picker_regression": {
+    "all_checks_passed": true,
+    "checks": {
+      "type_tab": true,
+      "news_category": true,
+      "children_category": true,
+      "dpad_focus_navigation": true,
+      "escape_closes_panel": true,
+      "back_closes_panel": true,
+      "reopen_selects_current_region": true,
+      "mouse_tap_category_switch": true,
+      "single_tap_type_switch": true,
+      "live_activity_preserved": true
+    },
+    "source_result_sha256": "f0ecfdd38a6f9679c010c1fb7a81920097e136489ae474ca73b8fcc0d262e3d2"
+  }
+}
