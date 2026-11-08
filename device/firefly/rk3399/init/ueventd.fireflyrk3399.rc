@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Apps open the Panfrost render node through EGL and the Rockchip primary
+# through the in-process minigbm mapper. Keep AOSP's DRM DAC permissions.
+/dev/dri/*                     0666 root graphics
+/dev/lirc*                     0660 system input
+/dev/cec*                      0660 system input
+/dev/video*                    0660 media media
+/dev/media*                    0660 media media
+# libdmabufheap opens the system heap O_RDONLY before allocating with ioctl.
+/dev/dma_heap/system           0444 system system
+/dev/dma_heap/linux,cma        0660 system graphics
+/dev/dma_heap/reserved         0660 system graphics
+/dev/input/*                   0660 root input
+/dev/uinput                    0660 system input
+/dev/snd/*                     0660 system audio
+/dev/graphics/*                0660 root graphics
+/dev/ttyS2                     0660 root shell
+/dev/block/zram0               0660 root system
+# Root init selects the internal DWC3 UDC; no unverified soft_connect path.

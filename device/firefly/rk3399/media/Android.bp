@@ -1,0 +1,113 @@
+// SPDX-License-Identifier: Apache-2.0
+package {
+    default_applicable_licenses: ["firefly_media_apache_license"],
+}
+
+license {
+    name: "firefly_media_apache_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-Apache-2.0"],
+    license_text: ["COPYING.Apache-2.0"],
+}
+
+license {
+    name: "firefly_ffmpeg_lgpl_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-LGPL-2.1-or-later"],
+    license_text: ["COPYING.LGPLv2.1", "LICENSE.md"],
+}
+
+cc_binary {
+    name: "firefly-vpu-probe",
+    vendor: true,
+    srcs: ["tools/firefly_vpu_probe.c"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    compile_multilib: "64",
+}
+
+cc_prebuilt_library_shared {
+    name: "libfirefly_avutil",
+    licenses: ["firefly_ffmpeg_lgpl_license"],
+    stem: "libavutil",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["prebuilts/arm64/libavutil.so"],
+    export_include_dirs: ["include"],
+    strip: { none: true },
+}
+cc_prebuilt_library_shared {
+    name: "libfirefly_avcodec",
+    licenses: ["firefly_ffmpeg_lgpl_license"],
+    stem: "libavcodec",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["prebuilts/arm64/libavcodec.so"],
+    export_include_dirs: ["include"],
+    shared_libs: ["libfirefly_avutil"],
+    strip: { none: true },
+}
+cc_prebuilt_library_shared {
+    name: "libfirefly_swresample",
+    licenses: ["firefly_ffmpeg_lgpl_license"],
+    stem: "libswresample",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["prebuilts/arm64/libswresample.so"],
+    export_include_dirs: ["include"],
+    shared_libs: ["libfirefly_avutil"],
+    strip: { none: true },
+}
+cc_prebuilt_library_shared {
+    name: "libfirefly_swscale",
+    licenses: ["firefly_ffmpeg_lgpl_license"],
+    stem: "libswscale",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["prebuilts/arm64/libswscale.so"],
+    export_include_dirs: ["include"],
+    shared_libs: ["libfirefly_avutil"],
+    strip: { none: true },
+}
+cc_binary {
+    name: "android.hardware.media.c2-service-firefly",
+    relative_install_path: "hw",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["codec2/*.cpp"],
+    local_include_dirs: ["codec2"],
+    shared_libs: [
+        "android.hardware.graphics.common@1.0",
+        "android.hardware.media.c2-V1-ndk",
+        "libavservices_minijail", "libbase", "libbinder_ndk",
+        "libcodec2_aidl", "libcodec2_hal_common", "libcodec2_soft_common",
+        "libcodec2_vndk", "liblog", "libstagefright_foundation", "libutils",
+        "libfirefly_avcodec", "libfirefly_avutil", "libfirefly_swscale", "libfirefly_swresample",
+    ],
+    init_rc: ["codec2/android.hardware.media.c2-service-firefly.rc"],
+    vintf_fragments: ["codec2/android.hardware.media.c2-service-firefly.xml"],
+    required: [
+        "android.hardware.media.c2-firefly-default-seccomp_policy",
+        "android.hardware.media.c2-firefly-extended-seccomp_policy",
+    ],
+}
+prebuilt_etc {
+    name: "android.hardware.media.c2-firefly-default-seccomp_policy",
+    src: ":android.hardware.media.c2-default-seccomp_policy",
+    sub_dir: "seccomp_policy",
+    vendor: true,
+}
+prebuilt_etc {
+    name: "android.hardware.media.c2-firefly-extended-seccomp_policy",
+    src: "codec2/android.hardware.media.c2-firefly-extended-seccomp_policy",
+    sub_dir: "seccomp_policy",
+    vendor: true,
+}
+
+cc_binary {
+    name: "firefly-hwdecode",
+    vendor: true,
+    srcs: ["tools/firefly_hwdecode.c"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    compile_multilib: "64",
+    shared_libs: ["libfirefly_avcodec", "libfirefly_avutil"],
+}

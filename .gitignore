@@ -34,3 +34,11 @@ board-logs/
 /kernel/downloads/
 /records/
 /device/firefly/rk3288/wifi/prebuilts/
+/device/firefly/rk3399/prebuilts/
+/device/firefly/rk3399/media/prebuilts/
+/device/firefly/rk3399/wifi/prebuilts/
+/device/firefly/rk3399/apps/prebuilts/
+/device/firefly/rk3399/apps/preloads-local.mk
+/kernel/rk3399/out/
+/bootloader/rk3399/out/
+/boot/rk3399/*.dtb

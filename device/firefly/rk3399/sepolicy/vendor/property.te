@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Board-specific drm_hwcomposer defaults, read only by the vendor composer.
+vendor_internal_prop(vendor_firefly_graphics_prop)
+# Changed only by the authenticated vendor remote daemon; init owns service start/stop.
+vendor_restricted_prop(vendor_firefly_cec_prop)
+# init publishes this service state; the vendor remote daemon only reads it.
+vendor_internal_prop(vendor_firefly_cec_status_prop)
+# The USB discovery helper runs in vendor_init; init consumes its ready flag.
+vendor_internal_prop(vendor_firefly_usb_prop)
+set_prop(vendor_init, vendor_firefly_usb_prop)

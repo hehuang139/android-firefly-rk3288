@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Original Firefly-RK3399 only. Keep upstream power, CPU and SDIO definitions.
+#include "rk3399-firefly.dts"
+
+&{/rt5640-sound} {
+    simple-audio-card,name = "FireflyRT5640";
+    simple-audio-card,pin-switches = "Headphone Jack";
+};
+
+&hdmi_sound {
+    simple-audio-card,name = "FireflyHDMI";
+    status = "okay";
+};
+
+// The first candidate dedicates USB-C to USB2 ADB. Upstream lacks a complete
+// TCPM-to-DWC3/Type-C-PHY data-role path, so do not rely on OTG ID or SuperSpeed
+// orientation negotiation. The other USB host controllers remain upstream.
+&usbdrd_dwc3_0 {
+    dr_mode = "peripheral";
+    maximum-speed = "high-speed";
+    phys = <&u2phy0_otg>;
+    phy-names = "usb2-phy";
+};
+
+// TCPM continues managing CC and VBUS with the upstream dual power/try-sink
+// policy. USB2 data does not depend on the SuperSpeed lane orientation.
+&{/i2c@ff3d0000/typec-portc@22/connector} {
+    data-role = "device";
+};

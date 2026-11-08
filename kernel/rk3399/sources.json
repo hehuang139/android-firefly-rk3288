@@ -1,0 +1,14 @@
+{
+  "linux": {
+    "version": "6.18.60",
+    "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.60.tar.xz",
+    "bytes": 154827264,
+    "sha256": "3c2f44ef6acc021a7ad444d9a2e6ec1ef488ff09368793d0004a6080f69d621e"
+  },
+  "upstream_board": {
+    "path": "arch/arm64/boot/dts/rockchip/rk3399-firefly.dts",
+    "sha256": "ebb786f388c8d5aed7abd46ff91bd6937a34ba26a1934e29d879330d5913019d"
+  },
+  "core_kernel_patches": [],
+  "local_dts": "rk3399-firefly-android.dts"
+}

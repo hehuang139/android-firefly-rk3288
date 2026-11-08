@@ -1,0 +1,31 @@
+package {
+    default_applicable_licenses: ["firefly_remote_license"],
+}
+
+license {
+    name: "firefly_remote_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-Apache-2.0"],
+    license_text: ["LICENSE"],
+}
+
+cc_binary {
+    name: "firefly-remote",
+    vendor: true,
+    srcs: ["FireflyRemote.cpp"],
+    shared_libs: [
+        "libbase", "libbinder_ndk", "libjsoncpp", "liblog",
+        "vendor.firefly.hardware.remote-V1-ndk",
+    ],
+    init_rc: ["remote-firefly.rc"],
+    vintf_fragments: ["remote-firefly.xml"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}
+
+cc_binary {
+    name: "firefly-cec-input",
+    vendor: true,
+    srcs: ["FireflyCecInput.cpp"],
+    shared_libs: ["libbase", "liblog"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

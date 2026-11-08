@@ -1,4 +1,16 @@
-# Firefly RK3288 Android TV port
+# Firefly RK3399 ARM64 Android TV adaptation
+
+本分支 `port/firefly-rk3399-arm64` 为原版 Firefly-RK3399 适配同一套
+Android 17 电视系统，使用 ARM64 系统并兼容 ARM32 应用，YouTube 改为
+Google 官方 Android TV 版。**当前处于源码与构建验证阶段，尚未在 RK3399
+实板启动；下面保留的 RK3288 实测结果不适用于新板。**
+
+新板入口为 `build-rk3399.sh`，源码在 `device/firefly/rk3399/`，
+内核在 `kernel/rk3399/`。旧 `build.sh`、`kernel/final/` 和 RK3288 目录保留
+用于追溯，不应作为 RK3399 编译或烧录入口。
+详见 [RK3399 适配记录](docs/rk3399-port-status.md)。
+
+## 继承的 RK3288 历史说明
 
 原版 Firefly-RK3288 的 Android 17 / API 37、ARM32 电视系统源码，基于
 Linux 6.18.60、Mesa Panfrost、V4L2 Request、FFmpeg 和 Codec2。

@@ -1,0 +1,15 @@
+# Original RK3399 candidate. Enforcing policy and hardware tests are pending.
+on post-fs-data
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
+    restorecon_recursive /data/vendor/wifi
+    exec_start firefly-rk3399-wifi-prepare
+
+service firefly-rk3399-wifi-prepare /system/bin/sh /vendor/bin/firefly-wifi-prepare.sh
+    user root
+    group root
+    disabled
+    oneshot
+    timeout_period 30
+    seclabel u:r:vendor_init:s0

@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "backend_source": "https://github.com/Kwiboo/FFmpeg.git",
+  "backend_revision": "b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935",
+  "codec2_source": "https://github.com/LineageOS/android_external_ffmpeg_codec2.git",
+  "codec2_revision": "00f6f65c7ef381470efbcfca8c0316bdcdfcffe7",
+  "target": "aarch64-linux-android37",
+  "cpu": "cortex-a72",
+  "decoders": [
+    "h264",
+    "vp9",
+    "ac3",
+    "mp2"
+  ],
+  "hwaccels": [
+    "h264_v4l2request",
+    "vp9_v4l2request"
+  ],
+  "output": "NV12",
+  "libraries": {},
+  "bitstream_zero_padding": 80,
+  "profile": "rk3399-arm64-bringup",
+  "status": "source_prepared_build_and_hardware_pending",
+  "parsers": [
+    "h264",
+    "vp9",
+    "ac3",
+    "mpegaudio"
+  ],
+  "output_scope": "NV12 is the video path; audio defaults to PCM16",
+  "rk3288_runtime_results_apply": false
+}

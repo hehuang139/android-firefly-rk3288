@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MediaCodecs>
+    <Decoders>
+        <MediaCodec name="c2.firefly.h264.decoder" type="video/avc">
+            <Limit name="size" min="96x96" max="1920x1088" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="block-size" value="16x16" />
+            <Limit name="blocks-per-second" min="1" max="245760" />
+            <Limit name="bitrate" range="1-40000000" />
+            <Limit name="concurrent-instances" max="1" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <!-- Initial RK3399 validation scope: 8-bit VP9 at up to 1080p.
+             Do not infer 4K/HDR acceptance from silicon capabilities. -->
+        <MediaCodec name="c2.firefly.vp9.decoder" type="video/x-vnd.on2.vp9">
+            <Limit name="size" min="96x96" max="1920x1088" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="block-size" value="16x16" />
+            <Limit name="blocks-per-second" min="1" max="489600" />
+            <Limit name="bitrate" range="1-20000000" />
+            <Limit name="concurrent-instances" max="1" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="c2.firefly.ac3.decoder" type="audio/ac3">
+            <Limit name="sample-rate" ranges="32000,44100,48000" />
+            <Limit name="channel-count" max="6" />
+            <Limit name="bitrate" range="8000-640000" />
+        </MediaCodec>
+        <MediaCodec name="c2.firefly.mp2.decoder" type="audio/mpeg-L2">
+            <Limit name="sample-rate" ranges="16000,22050,24000,32000,44100,48000" />
+            <Limit name="channel-count" max="2" />
+            <Limit name="bitrate" range="8000-384000" />
+        </MediaCodec>
+    </Decoders>
+</MediaCodecs>

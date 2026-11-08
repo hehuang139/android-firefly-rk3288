@@ -1,0 +1,12 @@
+{
+  "uboot": {
+    "version": "v2024.01",
+    "url": "https://github.com/u-boot/u-boot/archive/refs/tags/v2024.01.tar.gz",
+    "sha256": "a03c3c2ba9d2bea5176c6406f1f3429a79e1147be242f5a07dbd9e89b3cc83c4"
+  },
+  "tf_a": {
+    "version": "v2.10",
+    "url": "https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/v2.10.tar.gz",
+    "sha256": "2e18b881ada9198173238cca80086c787b1fa3f698944bde1743142823fc511c"
+  }
+}

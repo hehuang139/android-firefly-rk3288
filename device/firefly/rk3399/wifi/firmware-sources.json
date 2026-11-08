@@ -1,0 +1,55 @@
+{
+  "board": "Original Firefly-RK3399 AP6356S as named by upstream DT and linux-firmware board mapping",
+  "hardware_validation": "Not tested on the target board",
+  "packages": {
+    "linux-firmware": {
+      "version": "20220329.git681281e4-0ubuntu3.42",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/linux-firmware_20220329.git681281e4-0ubuntu3.42_all.deb",
+      "sha256": "ca7b1966610574959c044476f905761fb37a2cf2c0ea87778286a6f921afdcf1",
+      "bytes": 316373280
+    },
+    "wireless-regdb": {
+      "version": "2026.05.30-0ubuntu1~22.04.1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/w/wireless-regdb/wireless-regdb_2026.05.30-0ubuntu1~22.04.1_all.deb",
+      "sha256": "0c8f9893f577c890b3dd6d1f2b90a564b1627879dd58b2bf3ce17434d5ca17d0",
+      "bytes": 10178
+    }
+  },
+  "files": [
+    {
+      "package": "linux-firmware",
+      "member": "lib/firmware/cypress/cyfmac4356-sdio.bin",
+      "destination": "brcm/brcmfmac4356-sdio.bin",
+      "sha256": "be355bcc2226930d2d8aa3833d63c29cfd93ed7ed279a33d1a315fb3fc5dc3cc",
+      "bytes": 580258
+    },
+    {
+      "package": "linux-firmware",
+      "member": "lib/firmware/cypress/cyfmac4356-sdio.clm_blob",
+      "destination": "brcm/brcmfmac4356-sdio.clm_blob",
+      "sha256": "b093951c75a4a47fe0c02ee92231edce4bbe4f0b77a192fa3ac4105a200d9929",
+      "bytes": 5750
+    },
+    {
+      "package": "linux-firmware",
+      "member": "lib/firmware/brcm/brcmfmac4356-sdio.AP6356S.txt",
+      "destination": "brcm/brcmfmac4356-sdio.firefly,firefly-rk3399.txt",
+      "sha256": "bdc88ecb0289973d1c784550fa540223bb41f49213b20af59f2267359e0c5a09",
+      "bytes": 2610
+    },
+    {
+      "package": "wireless-regdb",
+      "member": "lib/firmware/regulatory.db",
+      "destination": "regulatory.db",
+      "sha256": "2fb33ca0074db573e05ef7dd50bb45b63c0ff98b7e852e1105ebad536fae8e6b",
+      "bytes": 6380
+    },
+    {
+      "package": "wireless-regdb",
+      "member": "lib/firmware/regulatory.db.p7s",
+      "destination": "regulatory.db.p7s",
+      "sha256": "c941c08f51c93e46722293b85631604c3740d86c3de0c75f79aef50d2e919179",
+      "bytes": 1085
+    }
+  ]
+}

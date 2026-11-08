@@ -1,0 +1,21 @@
+on post-fs-data
+    mkdir /data/vendor/firefly 0700 system system
+    restorecon_recursive /data/vendor/firefly
+
+service vendor.firefly-remote /vendor/bin/firefly-remote
+    class late_start
+    user system
+    group system input
+
+service vendor.firefly-cec-input /vendor/bin/firefly-cec-input
+    class hal
+    user system
+    group system input
+    disabled
+    gentle_kill
+
+on property:persist.vendor.firefly.cec_input=1
+    start vendor.firefly-cec-input
+
+on property:persist.vendor.firefly.cec_input=0
+    stop vendor.firefly-cec-input

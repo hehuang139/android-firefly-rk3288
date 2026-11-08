@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# GPT PARTLABELs on the boot medium selected by its DTB and boot_devices.
+# Boot arguments select the intended controller; never assume mmcblk numbering.
+# first-stage init mounts system and changes root before starting second stage.
+/dev/block/by-name/system      /system      ext4 ro,barrier=1                                         wait,first_stage_mount
+/dev/block/by-name/system_ext  /system_ext  ext4 ro,barrier=1                                         wait,first_stage_mount
+/dev/block/by-name/product     /product     ext4 ro,barrier=1                                         wait,first_stage_mount
+/dev/block/by-name/vendor      /vendor      ext4 ro,barrier=1                                         wait,first_stage_mount
+/dev/block/by-name/metadata    /metadata    ext4 noatime,nosuid,nodev,discard                          wait,check,formattable,first_stage_mount
+/dev/block/by-name/userdata    /data        ext4 noatime,nosuid,nodev,discard,errors=panic              wait,check,formattable,latemount
+/dev/block/zram0               none         swap defaults                                            zramsize=536870912,max_comp_streams=4

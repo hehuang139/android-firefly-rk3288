@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Use the paired AOSP wificond daemon on this ARM32 board. -->
+    <bool name="config_wificondMigrationEnabled">false</bool>
+</resources>

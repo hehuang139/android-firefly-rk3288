@@ -1,0 +1,39 @@
+type firefly_remote, domain;
+type firefly_remote_exec, exec_type, vendor_file_type, file_type;
+type firefly_remote_data, file_type, data_file_type;
+type firefly_lirc_device, dev_type;
+type firefly_cec_device, dev_type;
+init_daemon_domain(firefly_remote)
+hal_attribute(firefly_remote)
+hal_server_domain(firefly_remote, hal_firefly_remote)
+hal_client_domain(system_app, hal_firefly_remote)
+type hal_firefly_remote_service, hal_service_type, service_manager_type;
+hal_attribute_service(hal_firefly_remote, hal_firefly_remote_service)
+binder_use(firefly_remote)
+binder_call(hal_firefly_remote_client, hal_firefly_remote_server)
+set_prop(firefly_remote, vendor_firefly_cec_prop)
+get_prop(firefly_remote, vendor_firefly_cec_status_prop)
+
+allow firefly_remote input_device:dir r_dir_perms;
+allow firefly_remote input_device:chr_file rw_file_perms;
+allow firefly_remote firefly_lirc_device:chr_file rw_file_perms;
+allow firefly_remote firefly_cec_device:chr_file rw_file_perms;
+allow firefly_remote sysfs:dir r_dir_perms;
+allow firefly_remote sysfs:file r_file_perms;
+allow firefly_remote sysfs:lnk_file r_file_perms;
+allow firefly_remote firefly_remote_data:dir create_dir_perms;
+allow firefly_remote firefly_remote_data:file create_file_perms;
+allowxperm firefly_remote input_device:chr_file ioctl { 0x4504 0x4590 };
+allowxperm firefly_remote firefly_lirc_device:chr_file ioctl { 0x6900-0x69ff };
+allowxperm firefly_remote firefly_cec_device:chr_file ioctl { 0x6100-0x61ff };
+# Debug builds permit adb root/su clients; Binder still rejects uid 2000.
+userdebug_or_eng(`
+  hal_client_domain(shell, hal_firefly_remote)
+  hal_client_domain(su, hal_firefly_remote)
+')
+
+type firefly_cec, domain;
+type firefly_cec_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(firefly_cec)
+allow firefly_cec firefly_cec_device:chr_file rw_file_perms;
+allowxperm firefly_cec firefly_cec_device:chr_file ioctl { 0x6100-0x61ff };

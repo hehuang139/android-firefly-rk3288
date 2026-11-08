@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Included only by an explicitly staged, verified optional APK, userdebug/eng.
+service firefly-youtube-first-install /system/bin/sh /product/etc/firefly/preinstall/install-youtube-tv.sh
+    class late_start
+    user root
+    group root shell
+    seclabel u:r:su:s0
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+    start firefly-youtube-first-install

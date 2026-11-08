@@ -1,5 +1,7 @@
 * text=auto eol=lf
 *.patch text eol=lf
+# Empty unified-diff context lines contain one required marker space.
+device/firefly/rk3399/media/patches/*.patch whitespace=-blank-at-eol
 *.png binary
 *.jpg binary
 *.mp4 binary

@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Architecture-neutral extensions; the AOSP arm64 default supplies V4L2/DMABUF.
+eventfd2: 1
+sched_getaffinity: 1
+sysinfo: 1

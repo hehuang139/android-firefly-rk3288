@@ -1,0 +1,18 @@
+service vendor.audio-hal-aidl /vendor/bin/hw/android.hardware.audio.service-aidl.firefly
+    class hal
+    user audioserver
+    group audio media drmrpc inet wakelock
+    capabilities BLOCK_SUSPEND SYS_NICE
+    rlimit rtprio 10 10
+    ioprio rt 4
+    task_profiles ProcessCapacityHigh HighPerformance
+    onrestart restart audioserver
+
+service vendor.audio-effect-hal-aidl /vendor/bin/hw/android.hardware.audio.effect.service-aidl.firefly
+    class hal
+    user audioserver
+    group audio media
+    capabilities BLOCK_SUSPEND
+    rlimit rtprio 10 10
+    ioprio rt 4
+    onrestart restart audioserver

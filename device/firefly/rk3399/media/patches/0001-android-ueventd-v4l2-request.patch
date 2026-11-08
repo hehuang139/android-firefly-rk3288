@@ -1,0 +1,255 @@
+diff --git a/configure b/configure
+index 3d4009f..87d5258 100755
+--- a/configure
++++ b/configure
+@@ -3345,8 +3345,8 @@ dxva2_deps="dxva2api_h DXVA2_ConfigPictureDecode ole32 user32"
+ ffnvcodec_deps_any="libdl LoadLibrary"
+ mediacodec_deps="android mediandk pthreads"
+ nvdec_deps="ffnvcodec"
+-v4l2_request_deps="linux_media_h v4l2_timeval_to_ns v4l2_m2m_hold_capture_buf libdrm libudev"
+-v4l2_request_suggest="libdrm libudev"
++v4l2_request_deps="linux_media_h v4l2_m2m_hold_capture_buf"
++v4l2_request_suggest=""
+ vaapi_x11_deps="xlib_x11"
+ videotoolbox_hwaccel_deps="videotoolbox pthreads"
+ videotoolbox_hwaccel_extralibs="-framework QuartzCore"
+@@ -7607,6 +7607,7 @@ if enabled v4l2_m2m; then
+ fi
+ 
+ if enabled v4l2_request; then
++    check_headers linux/media.h
+     check_cc av1_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_AV1_SEQUENCE"
+     check_cc h264_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_H264_DECODE_MODE"
+     check_cc hevc_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_HEVC_SPS"
+@@ -7614,10 +7615,8 @@ if enabled v4l2_request; then
+     check_cc v4l2_m2m_hold_capture_buf linux/videodev2.h "int i = V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF"
+     check_cc vp8_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_VP8_FRAME"
+     check_cc vp9_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_VP9_FRAME"
+-    check_func_headers "linux/media.h linux/videodev2.h" v4l2_timeval_to_ns
+-    check_pkg_config libudev libudev libudev.h udev_new
+     check_struct linux/videodev2.h "struct v4l2_ctrl_hevc_decode_params" num_delta_pocs_of_ref_rps_idx
+-    v4l2_request_extralibs="$libudev_extralibs"
++    v4l2_request_extralibs=""
+ fi
+ 
+ check_headers sys/videoio.h
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+index 36eec85..7a0516e 100644
+--- a/libavcodec/v4l2_request.c
++++ b/libavcodec/v4l2_request.c
+@@ -59,7 +59,8 @@ uint64_t ff_v4l2_request_get_capture_timestamp(AVFrame *frame)
+         .tv_sec = 0,
+         .tv_usec = v4l2_request_frameindex(frame) + 1,
+     };
+-    return v4l2_timeval_to_ns(&timestamp);
++    return (uint64_t)timestamp.tv_sec * 1000000000ULL +
++           (uint64_t)timestamp.tv_usec * 1000ULL;
+ }
+ 
+ int ff_v4l2_request_query_control(AVCodecContext *avctx,
+@@ -340,7 +341,7 @@ int ff_v4l2_request_append_output(AVCodecContext *avctx,
+     V4L2RequestContext *ctx = v4l2_request_context(avctx);
+ 
+     // Append data to OUTPUT buffer and ensure there is enough space for padding
+-    if (pic->output->bytesused + size + AV_INPUT_BUFFER_PADDING_SIZE <= pic->output->size) {
++    if (pic->output->bytesused + size + AV_INPUT_BUFFER_PADDING_SIZE + 16 <= pic->output->size) {
+         memcpy(pic->output->addr + pic->output->bytesused, data, size);
+         pic->output->bytesused += size;
+         return 0;
+@@ -407,7 +408,7 @@ static int v4l2_request_queue_decode(AVCodecContext *avctx,
+     }
+ 
+     // Ensure there is zero padding at the end of bitstream data
+-    memset(pic->output->addr + pic->output->bytesused, 0, AV_INPUT_BUFFER_PADDING_SIZE);
++    memset(pic->output->addr + pic->output->bytesused, 0, AV_INPUT_BUFFER_PADDING_SIZE + 16);
+ 
+     /*
+      * Use CAPTURE buffer index as base for V4L2 frame reference.
+diff --git a/libavutil/hwcontext_v4l2request.c b/libavutil/hwcontext_v4l2request.c
+index b6633d9..0734674 100644
+--- a/libavutil/hwcontext_v4l2request.c
++++ b/libavutil/hwcontext_v4l2request.c
+@@ -26,7 +26,9 @@
+ #include <unistd.h>
+ 
+ #include <drm_fourcc.h>
+-#include <libudev.h>
++#include <sys/stat.h>
++#include <sys/sysmacros.h>
++#include <stdio.h>
+ 
+ #include "avassert.h"
+ #include "hwcontext_drm.h"
+@@ -543,7 +545,6 @@ fail:
+ }
+ 
+ static int v4l2request_probe_video_devices(AVHWFramesContext *hwfc,
+-                                           struct udev *udev,
+                                            uint32_t pixelformat,
+                                            uint32_t buffersize)
+ {
+@@ -552,8 +553,8 @@ static int v4l2request_probe_video_devices(AVHWFramesContext *hwfc,
+     struct media_device_info device_info;
+     struct media_v2_topology topology = {0};
+     struct media_v2_interface *interfaces;
+-    struct udev_device *device;
+-    const char *path;
++    char path[64];
++    struct stat st;
+     dev_t devnum;
+     int ret;
+ 
+@@ -588,14 +589,15 @@ static int v4l2request_probe_video_devices(AVHWFramesContext *hwfc,
+             continue;
+ 
+         devnum = makedev(interfaces[i].devnode.major, interfaces[i].devnode.minor);
+-        device = udev_device_new_from_devnum(udev, 'c', devnum);
+-        if (!device)
+-            continue;
+-
+-        path = udev_device_get_devnode(device);
+-        if (path)
++        /* Android uses ueventd instead of libudev. Match the topology's
++         * character-device number against real /dev/video nodes. */
++        for (unsigned node = 0; node < 64; node++) {
++            snprintf(path, sizeof(path), "/dev/video%u", node);
++            if (stat(path, &st) < 0 || !S_ISCHR(st.st_mode) || st.st_rdev != devnum)
++                continue;
+             ret = v4l2request_probe_video_device(hwfc, path, pixelformat, buffersize);
+-        udev_device_unref(device);
++            break;
++        }
+ 
+         // Stop when we have found a capable video device
+         if (!ret) {
+@@ -615,107 +617,28 @@ fail:
+     return ret;
+ }
+ 
+-static int v4l2request_probe_media_device(AVHWFramesContext *hwfc,
+-                                          struct udev_device *device,
+-                                          uint32_t pixelformat,
+-                                          uint32_t buffersize)
+-{
+-    AVV4L2RequestFramesContext *fctx = hwfc->hwctx;
+-    AVV4L2RequestFramesContextInternal *fctxi = fctx->internal;
+-    const char *path;
+-    int ret;
+-
+-    path = udev_device_get_devnode(device);
+-    if (!path)
+-        return AVERROR(ENODEV);
+-
+-    // Open enumerated media device
+-    fctxi->media_fd = open(path, O_RDWR);
+-    if (fctxi->media_fd < 0) {
+-        ret = AVERROR(errno);
+-        av_log(hwfc, AV_LOG_ERROR, "Failed to open media device %s: %s (%d)\n",
+-               path, strerror(errno), errno);
+-        return ret;
+-    }
+-
+-    // Probe video devices of current media device
+-    ret = v4l2request_probe_video_devices(hwfc, udev_device_get_udev(device),
+-                                          pixelformat, buffersize);
+-
+-    // Cleanup when no capable video device was found
+-    if (ret < 0) {
+-        close(fctxi->media_fd);
+-        fctxi->media_fd = -1;
+-    }
+-
+-    return ret;
+-}
+-
+-static int v4l2request_probe_media_devices(AVHWFramesContext *hwfc,
+-                                           struct udev *udev,
+-                                           uint32_t pixelformat,
+-                                           uint32_t buffersize)
+-{
+-    struct udev_enumerate *enumerate;
+-    struct udev_list_entry *devices;
+-    struct udev_list_entry *entry;
+-    struct udev_device *device;
+-    int ret;
+-
+-    enumerate = udev_enumerate_new(udev);
+-    if (!enumerate)
+-        return AVERROR(ENOMEM);
+-
+-    udev_enumerate_add_match_subsystem(enumerate, "media");
+-    udev_enumerate_scan_devices(enumerate);
+-    devices = udev_enumerate_get_list_entry(enumerate);
+-
+-    ret = AVERROR(ENOENT);
+-    udev_list_entry_foreach(entry, devices) {
+-        const char *path = udev_list_entry_get_name(entry);
+-        if (!path)
+-            continue;
+-
+-        device = udev_device_new_from_syspath(udev, path);
+-        if (!device)
+-            continue;
+-
+-        // Probe media device for a capable video device
+-        ret = v4l2request_probe_media_device(hwfc, device, pixelformat, buffersize);
+-        udev_device_unref(device);
+-
+-        // Stop when we have found a capable media and video device
+-        if (!ret)
+-            break;
+-    }
+-
+-    udev_enumerate_unref(enumerate);
+-    return ret;
+-}
+-
+ static int v4l2request_open_decoder(AVHWFramesContext *hwfc)
+ {
+     AVV4L2RequestFramesContext *fctx = hwfc->hwctx;
++    AVV4L2RequestFramesContextInternal *fctxi = fctx->internal;
+     uint32_t buffersize;
+-    struct udev *udev;
+-    int ret;
++    int ret = AVERROR(ENODEV);
++    char path[64];
+ 
+-    // Ensure codec pixelformat is set
+     if (!fctx->pixelformat)
+         return AVERROR(EINVAL);
+-
+-    // FIXME: locate a decoder using hwdevice context decoders
+-
+-    udev = udev_new();
+-    if (!udev)
+-        return AVERROR(ENOMEM);
+-
+     buffersize = FFMAX(hwfc->width * hwfc->height * 3 / 2, 256 * 1024);
+-
+-    // Probe all media devices (auto-detection)
+-    ret = v4l2request_probe_media_devices(hwfc, udev, fctx->pixelformat, buffersize);
+-
+-    udev_unref(udev);
++    for (unsigned node = 0; node < 64; node++) {
++        snprintf(path, sizeof(path), "/dev/media%u", node);
++        fctxi->media_fd = open(path, O_RDWR | O_CLOEXEC);
++        if (fctxi->media_fd < 0)
++            continue;
++        ret = v4l2request_probe_video_devices(hwfc, fctx->pixelformat, buffersize);
++        if (!ret)
++            return 0;
++        close(fctxi->media_fd);
++        fctxi->media_fd = -1;
++    }
+     return ret;
+ }
+ 
+@@ -954,7 +877,7 @@ static void v4l2request_frames_uninit(AVHWFramesContext *hwfc)
+         fctxi->video_fd = -1;
+     }
+ 
+-    if (fctxi->media_fd) {
++    if (fctxi->media_fd >= 0) {
+         close(fctxi->media_fd);
+         fctxi->media_fd = -1;
+     }
