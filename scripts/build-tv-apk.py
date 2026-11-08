@@ -64,6 +64,9 @@ try:
         with zipfile.ZipFile(work / 'unsigned.apk', 'a') as apk, zipfile.ZipFile(work / 'dex.zip') as dex:
             for item in dex.infolist():
                 apk.writestr(item, dex.read(item))
+            for asset in sorted((source / 'assets').rglob('*')):
+                if asset.is_file():
+                    apk.write(asset, 'assets/' + asset.relative_to(source / 'assets').as_posix())
         run('zipalign', [aosp / 'prebuilts/build-tools/linux-x86/bin/zipalign',
                          '-f', '4', work / 'unsigned.apk', work / 'aligned.apk'])
         keys = aosp / 'build/target/product/security'

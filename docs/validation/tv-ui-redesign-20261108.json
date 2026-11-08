@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-08",
+  "scope": "Native television UI redesign, original Firefly RK3288, 1600x900 at density 267",
+  "installed_private_apk_sha256": "d8e400fc39ac9d1ab8fbc9278b13f8ca3560bec0712ceb91d7097a402b7b09e8",
+  "public_apk_sha256": "2046b504b9fbfb2de4a381693b189264baa7f8108f4e80d6ef35cbbc86128cdd",
+  "public_apk_installed": false,
+  "full_disk_image_updated": false,
+  "ui_checks": {
+    "home_back_and_escape_remain_home": true,
+    "single_click_home_apps": true,
+    "app_grid_remote_scroll_and_focus": true,
+    "single_click_sound_opens_audio_settings": true,
+    "sound_activity": "com.android.tv.settings/.device.displaysound.DisplaySoundActivity",
+    "display_opens_display_settings": true,
+    "network_opens_tv_network_settings": true,
+    "restart_confirmation_can_be_cancelled": true,
+    "kids_header_back_uses_existing_disabled_mode_exit": true,
+    "home_browse_opens_picker_no_async_banner_overlap": true,
+    "live_escape_closes_picker_then_returns_home": true,
+    "resume_starts_live_without_picker": true,
+    "channel_catalog_and_decoder_preserved": true
+  },
+  "picker_checks": {
+    "type_tab": true,
+    "news_category": true,
+    "children_category": true,
+    "dpad_focus_navigation": true,
+    "escape_closes_panel": true,
+    "back_closes_panel": true,
+    "reopen_selects_current_region": true,
+    "mouse_tap_category_switch": true,
+    "single_tap_type_switch": true,
+    "live_activity_preserved": true
+  },
+  "favorite_checks": {
+    "menu_toggles_exactly_one_channel": true,
+    "second_menu_restores_original_favorites": true
+  },
+  "health": {
+    "app_crash_since_v3_install_found": false,
+    "system_ext_and_vendor_read_only": true
+  },
+  "catalog": {
+    "count": 167,
+    "fujian_count": 10,
+    "sha256": "2aebc8dc2997a814bca9a63210ec77fc72a49fbcc2c140783e7fdee55c766208",
+    "modified_by_ui_update": false
+  },
+  "decoder_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+  "playback": {
+    "number": 920,
+    "name": "福建新闻",
+    "status": "sustained_playback_confirmed",
+    "observed_seconds": 61.28,
+    "dimensions": "1920 x 1080",
+    "video_codec": "c2.firefly.h264.decoder",
+    "audio_codec": "c2.android.aac.decoder",
+    "windows": [
+      {
+        "seconds": 19.12,
+        "frames": 479,
+        "dropped": 0,
+        "progress": true
+      },
+      {
+        "seconds": 21.09,
+        "frames": 527,
+        "dropped": 0,
+        "progress": true
+      },
+      {
+        "seconds": 21.06,
+        "frames": 527,
+        "dropped": 0,
+        "progress": true
+      }
+    ]
+  },
+  "physical_listening_repeated_this_revision": false,
+  "build": {
+    "private_signature_and_content_verified": true,
+    "same_private_platform_certificate": true,
+    "private_manifest_and_old_resources_byte_identical": true,
+    "media_methods_preserved": [
+      "openSource",
+      "openResolvedSource",
+      "createPlayer",
+      "onPlaybackCompleted",
+      "prepare",
+      "playTest",
+      "playKidsVideo",
+      "failover",
+      "refreshExpiringSource",
+      "releasePlayer",
+      "changeChannel",
+      "changeSource",
+      "digit",
+      "selectNumber",
+      "surfaceCreated",
+      "surfaceChanged",
+      "surfaceDestroyed"
+    ],
+    "private_provider_catalog_sources_preserved": true,
+    "public_java_sources": 27,
+    "public_build_stages_passed": 10,
+    "public_private_provider_classes_absent": true,
+    "asset_sha256": "f9e6e81251ba03e34c9b2871e2683cbdcd18a541d1a816b142bae5f8591b93c4"
+  },
+  "not_tested": [
+    "Other display resolutions and overscan",
+    "Full parental PIN and budget combinations",
+    "Long-duration UI performance",
+    "New full image reflash"
+  ],
+  "evidence_note": "Only sanitized results are public; screenshots, raw ADB output and private APK remain in local delivery."
+}

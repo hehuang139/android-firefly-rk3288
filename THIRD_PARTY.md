@@ -28,6 +28,12 @@ The RAM Loader patching/checking utility under tools/ram-loader is Apache-2.0.
 Its license does not grant redistribution rights for any vendor loader binary;
 no vendor loader binary or Windows driver is included.
 
+The TV home includes a downsampled NASA ISS072E159172 photograph, credited to
+NASA. It is not covered by the project's MIT/Apache-2.0 code licenses. Source,
+processing and NASA media usage guidance are recorded in
+[TV artwork attribution](device/firefly/rk3288/tv/ARTWORK.md).
+Installed app banners are read at runtime and are not redistributed here.
+
 Source URLs:
 - https://android.googlesource.com/platform/manifest/+/android-17.0.0_r1/
 - https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.60.tar.xz

@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -21,16 +22,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/** Two-column TV channel browser. Display groups always retain catalog indices. */
+/** Floating channel browser. Every displayed row retains its catalog identity. */
 final class ChannelPicker extends FrameLayout {
     interface Listener {
         void onChannelSelected(int originalIndex);
         void onFavoriteToggle(int originalIndex);
     }
 
-    private static final int WHITE = 0xfff0f6ff;
-    private static final int MUTED = 0xff9eb3cc;
-    private static final int BLUE = 0xff7bd4ff;
+    private static final int WHITE = 0xfff5f5f7;
+    private static final int MUTED = 0xffa0a5b2;
+    private static final int INK = 0xff17191f;
+    private static final int GREEN = 0xffb9dfc1;
     private final ChannelCatalog catalog;
     private final Set<String> favorites;
     private final Listener listener;
@@ -47,6 +49,9 @@ final class ChannelPicker extends FrameLayout {
     private final LinearLayout channelList;
     private final TextView listHeading;
     private final TextView clock;
+    private final TextView nowPlaying;
+    private final LinearLayout panel;
+    private final View outside;
     private ProgramGuide guide;
     private int tabIndex;
     private int currentIndex;
@@ -64,18 +69,27 @@ final class ChannelPicker extends FrameLayout {
         setVisibility(GONE);
         setFocusable(false);
 
-        View outside = new View(context);
-        outside.setBackgroundColor(0x16040b16);
+        setClipChildren(false);
+        setClipToPadding(false);
+        outside = new View(context);
+        outside.setBackground(new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[] {0x70000000, 0x08000000}));
         outside.setFocusable(false);
         outside.setOnClickListener(v -> dismiss());
         addView(outside, new FrameLayout.LayoutParams(-1, -1));
 
-        LinearLayout panel = column();
-        panel.setPadding(px(34), px(28), px(30), px(18));
-        panel.setBackground(new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[] {0xff09192d, 0xff0e223a}));
-        int width = Math.round(context.getResources().getDisplayMetrics().widthPixels * 0.65f);
-        addView(panel, new FrameLayout.LayoutParams(width, -1, Gravity.START));
+        panel = column();
+        panel.setPadding(px(30), px(24), px(30), px(16));
+        GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[] {0xfa20232a, 0xfc0c0e13});
+        glass.setCornerRadius(px(28));
+        glass.setStroke(px(1), 0x20ffffff);
+        panel.setBackground(glass);
+        panel.setElevation(px(24));
+        int width = Math.min(px(1000), Math.round(context.getResources().getDisplayMetrics().widthPixels * 0.65f));
+        FrameLayout.LayoutParams panelPosition = new FrameLayout.LayoutParams(width, -1, Gravity.START);
+        panelPosition.setMargins(px(28), px(28), px(28), px(28));
+        addView(panel, panelPosition);
         panel.setOnClickListener(v -> { });
         panel.setFocusable(false);
 
@@ -83,66 +97,92 @@ final class ChannelPicker extends FrameLayout {
         TextView title = text("电视直播", 34, WHITE);
         title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         header.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
-        clock = text("", 25, WHITE);
+        clock = text("", 21, MUTED);
+        clock.setFontFeatureSettings("tnum");
         header.addView(clock);
-        TextView close = text("关闭 ×", 18, MUTED);
-        close.setPadding(px(22), px(12), 0, px(12));
+        TextView close = text("×", 30, MUTED);
+        close.setContentDescription("关闭选台");
+        close.setGravity(Gravity.CENTER);
+        close.setBackground(background(0x12ffffff, 0, 20));
         close.setOnClickListener(v -> dismiss());
         close.setFocusable(false);
         close.setFocusableInTouchMode(false);
-        header.addView(close);
-        panel.addView(header, new LinearLayout.LayoutParams(-1, px(66)));
+        LinearLayout.LayoutParams closePosition = new LinearLayout.LayoutParams(px(40), px(40));
+        closePosition.leftMargin = px(22);
+        header.addView(close, closePosition);
+        panel.addView(header, new LinearLayout.LayoutParams(-1, px(52)));
 
         LinearLayout tabBar = row();
+        LinearLayout segment = row();
+        segment.setPadding(px(4), px(4), px(4), px(4));
+        segment.setBackground(background(0x66000000, 0x10ffffff, 16));
         for (int i = 0; i < 2; i++) {
             final int index = i;
-            TextView tab = text(i == 0 ? "地区" : "类型", 23, WHITE);
+            TextView tab = text(i == 0 ? "地区" : "类型", 21, WHITE);
             tab.setGravity(Gravity.CENTER);
             focusable(tab, v -> switchTab(index, true));
-            tab.setOnFocusChangeListener((v, focused) -> styleTabs());
-            LinearLayout.LayoutParams position = new LinearLayout.LayoutParams(px(126), px(50));
-            position.rightMargin = px(12);
-            tabBar.addView(tab, position);
+            tab.setOnFocusChangeListener((v, focused) -> {
+                styleTabs();
+                animateFocus(v, focused, 1.025f);
+            });
+            LinearLayout.LayoutParams position = new LinearLayout.LayoutParams(px(114), px(42));
+            if (i == 0) position.rightMargin = px(4);
+            segment.addView(tab, position);
             tabs.add(tab);
         }
-        TextView count = text(catalog.channels.size() + " 个频道", 18, MUTED);
+        tabBar.addView(segment);
+        TextView count = text(catalog.channels.size() + " 个频道", 17, MUTED);
         count.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         tabBar.addView(count, new LinearLayout.LayoutParams(0, -1, 1));
-        panel.addView(tabBar, new LinearLayout.LayoutParams(-1, px(62)));
+        LinearLayout.LayoutParams tabPosition = new LinearLayout.LayoutParams(-1, px(68));
+        tabPosition.topMargin = px(10);
+        panel.addView(tabBar, tabPosition);
         View rule = new View(context);
-        rule.setBackgroundColor(0xff25415e);
+        rule.setBackgroundColor(0x18ffffff);
         panel.addView(rule, new LinearLayout.LayoutParams(-1, px(1)));
 
         LinearLayout columns = row();
         columns.setGravity(Gravity.TOP);
         LinearLayout.LayoutParams contentPosition = new LinearLayout.LayoutParams(-1, 0, 1);
-        contentPosition.topMargin = px(18);
+        contentPosition.topMargin = px(15);
         panel.addView(columns, contentPosition);
         groupScroll = scroll();
         groupList = column();
         groupScroll.addView(groupList, new ScrollView.LayoutParams(-1, -2));
-        columns.addView(groupScroll, new LinearLayout.LayoutParams(px(224), -1));
+        groupScroll.setPadding(px(3), px(35), px(3), px(4));
+        columns.addView(groupScroll, new LinearLayout.LayoutParams(px(174), -1));
         View separator = new View(context);
-        separator.setBackgroundColor(0xff213a54);
+        separator.setBackgroundColor(0x10ffffff);
         LinearLayout.LayoutParams separatorPosition = new LinearLayout.LayoutParams(px(1), -1);
-        separatorPosition.leftMargin = px(14);
-        separatorPosition.rightMargin = px(22);
+        separatorPosition.leftMargin = px(18);
+        separatorPosition.rightMargin = px(18);
         columns.addView(separator, separatorPosition);
 
         LinearLayout channels = column();
         columns.addView(channels, new LinearLayout.LayoutParams(0, -1, 1));
-        listHeading = text("", 20, MUTED);
+        listHeading = text("", 18, MUTED);
         listHeading.setGravity(Gravity.CENTER_VERTICAL);
         channels.addView(listHeading, new LinearLayout.LayoutParams(-1, px(36)));
         channelScroll = scroll();
+        channelScroll.setPadding(px(6), px(5), px(6), px(5));
         channelList = column();
         channelScroll.addView(channelList, new ScrollView.LayoutParams(-1, -2));
         channels.addView(channelScroll, new LinearLayout.LayoutParams(-1, 0, 1));
 
-        TextView help = text("↑↓ 选择    ←→ 分类 / 频道    确定 播放    返回 收起", 17, MUTED);
+        View footerRule = new View(context);
+        footerRule.setBackgroundColor(0x18ffffff);
+        LinearLayout.LayoutParams footerRulePosition = new LinearLayout.LayoutParams(-1, px(1));
+        footerRulePosition.topMargin = px(8);
+        panel.addView(footerRule, footerRulePosition);
+        nowPlaying = text("", 17, GREEN);
+        nowPlaying.setSingleLine(true);
+        nowPlaying.setEllipsize(TextUtils.TruncateAt.END);
+        nowPlaying.setGravity(Gravity.CENTER_VERTICAL);
+        panel.addView(nowPlaying, new LinearLayout.LayoutParams(-1, px(35)));
+        TextView help = text("↑↓ 选择    ←→ 切换区域    确定播放    菜单收藏    返回收起", 15, MUTED);
         help.setGravity(Gravity.CENTER_VERTICAL);
         help.setSingleLine(true);
-        panel.addView(help, new LinearLayout.LayoutParams(-1, px(54)));
+        panel.addView(help, new LinearLayout.LayoutParams(-1, px(28)));
         setContentDescription("电视直播选台，地区和类型分类");
     }
 
@@ -153,6 +193,7 @@ final class ChannelPicker extends FrameLayout {
         focusedIndex = originalIndex;
         guide = currentGuide;
         tabIndex = 0;
+        groupSelection[0] = 0;
         List<ChannelCategories.Group> groups = groups();
         for (int i = 0; i < groups.size(); i++) {
             if (!groups.get(i).key.equals("all") && groups.get(i).indices.contains(originalIndex)) {
@@ -161,13 +202,24 @@ final class ChannelPicker extends FrameLayout {
             }
         }
         setVisibility(VISIBLE);
+        panel.animate().cancel();
+        outside.animate().cancel();
+        panel.setAlpha(0f);
+        panel.setTranslationX(-px(22));
+        outside.setAlpha(0f);
+        panel.animate().alpha(1f).translationX(0f).setDuration(180)
+                .setInterpolator(new DecelerateInterpolator()).start();
+        outside.animate().alpha(1f).setDuration(180).start();
         updateClock();
+        updateNowPlaying();
         rebuildGroups();
         focusChannel(originalIndex);
         announceForAccessibility("电视直播选台");
     }
 
     void dismiss() {
+        panel.animate().cancel();
+        outside.animate().cancel();
         setVisibility(GONE);
         clearFocus();
     }
@@ -186,7 +238,10 @@ final class ChannelPicker extends FrameLayout {
 
     void setCurrentChannel(int index) {
         currentIndex = index;
-        if (isShowing()) for (ChannelRow row : channelViews) styleRow(row);
+        if (isShowing()) {
+            updateNowPlaying();
+            for (ChannelRow row : channelViews) styleRow(row);
+        }
     }
 
     void refreshFavorites() {
@@ -195,6 +250,13 @@ final class ChannelPicker extends FrameLayout {
 
     private void updateClock() {
         clock.setText(new SimpleDateFormat("HH:mm", Locale.ROOT).format(new Date()));
+    }
+
+    private void updateNowPlaying() {
+        if (currentIndex >= 0 && currentIndex < catalog.channels.size()) {
+            ChannelCatalog.Channel channel = catalog.channels.get(currentIndex);
+            nowPlaying.setText("●  当前频道    " + channel.number + "  " + channel.name);
+        } else nowPlaying.setText("选择一个频道开始观看");
     }
 
     private List<ChannelCategories.Group> groups() { return tabIndex == 0 ? regions : types; }
@@ -209,9 +271,11 @@ final class ChannelPicker extends FrameLayout {
         for (int i = 0; i < tabs.size(); i++) {
             TextView tab = tabs.get(i);
             boolean focused = tab.hasFocus();
-            tab.setTextColor(focused ? 0xff09213b : i == tabIndex ? BLUE : MUTED);
-            tab.setBackground(background(focused ? 0xffd7f0ff : i == tabIndex ? 0xff214766 : 0xff10283f,
-                    focused ? BLUE : 0x00000000));
+            boolean selected = i == tabIndex;
+            tab.setTextColor(focused || selected ? INK : MUTED);
+            tab.setTypeface(Typeface.create(selected ? "sans-serif-medium" : "sans-serif", Typeface.NORMAL));
+            tab.setBackground(background(focused ? 0xffffffff : selected ? 0xffdfe1e7 : 0x00000000,
+                    focused ? WHITE : 0, 12));
         }
     }
 
@@ -230,7 +294,7 @@ final class ChannelPicker extends FrameLayout {
         for (int i = 0; i < groups.size(); i++) {
             final int groupIndex = i;
             ChannelCategories.Group group = groups.get(i);
-            TextView view = text(group.label, 23, WHITE);
+            TextView view = text(group.label, 22, WHITE);
             view.setGravity(Gravity.CENTER_VERTICAL);
             view.setPadding(px(16), 0, px(12), 0);
             view.setSingleLine(true);
@@ -243,17 +307,22 @@ final class ChannelPicker extends FrameLayout {
             view.setOnFocusChangeListener((v, focus) -> {
                 if (focus && groupSelection[tabIndex] != groupIndex) selectGroup(groupIndex);
                 styleGroups();
+                animateFocus(v, focus, 1.025f);
             });
-            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, px(59));
-            p.bottomMargin = px(7);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, px(51));
+            p.bottomMargin = px(6);
             groupList.addView(view, p);
             groupViews.add(view);
         }
         styleTabs();
         styleGroups();
         rebuildChannels();
-        groupScroll.post(() -> groupScroll.smoothScrollTo(0,
-                groupViews.get(groupSelection[tabIndex]).getTop() - px(12)));
+        final TextView selectedGroup = groupViews.get(groupSelection[tabIndex]);
+        groupScroll.post(() -> {
+            if (selectedGroup.getParent() == groupList) {
+                groupScroll.smoothScrollTo(0, selectedGroup.getTop());
+            }
+        });
     }
 
     private void selectGroup(int index) {
@@ -267,9 +336,10 @@ final class ChannelPicker extends FrameLayout {
             TextView view = groupViews.get(i);
             boolean focus = view.hasFocus();
             boolean selected = i == groupSelection[tabIndex];
-            view.setTextColor(focus ? 0xff09213b : selected ? BLUE : WHITE);
-            view.setBackground(background(focus ? 0xffd7f0ff : selected ? 0xff173e5b : 0x00000000,
-                    focus ? BLUE : 0x00000000));
+            view.setTextColor(focus ? INK : selected ? WHITE : MUTED);
+            view.setTypeface(Typeface.create(focus || selected ? "sans-serif-medium" : "sans-serif", Typeface.NORMAL));
+            view.setBackground(background(focus ? WHITE : selected ? 0x18ffffff : 0x00000000,
+                    focus ? WHITE : 0, 13));
         }
     }
 
@@ -283,28 +353,34 @@ final class ChannelPicker extends FrameLayout {
             ChannelRow row = new ChannelRow(index);
             row.view = row();
             row.view.setGravity(Gravity.CENTER_VERTICAL);
-            row.view.setPadding(px(14), px(12), px(10), px(12));
-            row.number = text(String.format(Locale.ROOT, "%03d", channel.number), 24, MUTED);
+            row.view.setPadding(px(14), px(10), px(10), px(10));
+            row.number = text(String.format(Locale.ROOT, "%03d", channel.number), 20, MUTED);
             row.number.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-            row.view.addView(row.number, new LinearLayout.LayoutParams(px(65), -2));
+            row.number.setFontFeatureSettings("tnum");
+            row.number.setGravity(Gravity.CENTER);
+            LinearLayout.LayoutParams numberPosition = new LinearLayout.LayoutParams(px(53), px(53));
+            numberPosition.rightMargin = px(16);
+            row.view.addView(row.number, numberPosition);
             LinearLayout words = column();
             LinearLayout headline = row();
-            row.name = text(channel.name, 26, WHITE);
+            row.name = text(channel.name, 25, WHITE);
+            row.name.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
             row.name.setSingleLine(true);
             row.name.setEllipsize(TextUtils.TruncateAt.END);
             headline.addView(row.name, new LinearLayout.LayoutParams(0, -2, 1));
-            row.playing = text("当前", 16, BLUE);
-            row.playing.setPadding(px(10), 0, 0, 0);
+            row.playing = text("●", 12, GREEN);
+            row.playing.setContentDescription("当前频道");
+            row.playing.setPadding(px(12), 0, px(4), 0);
             headline.addView(row.playing);
             words.addView(headline, new LinearLayout.LayoutParams(-1, -2));
-            row.programme = text(programme(index), 19, MUTED);
+            row.programme = text(programme(index), 17, MUTED);
             row.programme.setSingleLine(true);
             row.programme.setEllipsize(TextUtils.TruncateAt.END);
             LinearLayout.LayoutParams epg = new LinearLayout.LayoutParams(-1, -2);
-            epg.topMargin = px(9);
+            epg.topMargin = px(7);
             words.addView(row.programme, epg);
             row.view.addView(words, new LinearLayout.LayoutParams(0, -2, 1));
-            row.star = text("☆", 28, MUTED);
+            row.star = text("☆", 25, MUTED);
             row.star.setGravity(Gravity.CENTER);
             row.star.setContentDescription("收藏" + channel.name);
             row.star.setOnClickListener(v -> {
@@ -313,7 +389,7 @@ final class ChannelPicker extends FrameLayout {
             });
             row.star.setFocusable(false);
             row.star.setFocusableInTouchMode(false);
-            row.view.addView(row.star, new LinearLayout.LayoutParams(px(48), px(52)));
+            row.view.addView(row.star, new LinearLayout.LayoutParams(px(42), px(50)));
             focusable(row.view, v -> {
                 dismiss();
                 listener.onChannelSelected(index);
@@ -321,10 +397,11 @@ final class ChannelPicker extends FrameLayout {
             row.view.setOnFocusChangeListener((v, focus) -> {
                 if (focus) focusedIndex = index;
                 styleRow(row);
+                animateFocus(v, focus, 1.012f);
             });
             row.view.setContentDescription(channel.number + " " + channel.name + "，" + programme(index));
-            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, px(91));
-            p.bottomMargin = px(8);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, px(84));
+            p.bottomMargin = px(7);
             channelList.addView(row.view, p);
             channelViews.add(row);
             styleRow(row);
@@ -333,22 +410,25 @@ final class ChannelPicker extends FrameLayout {
     }
 
     private String programme(int index) {
-        return guide == null ? "正在读取节目单…" : guide.current(catalog.channels.get(index).tvgId);
+        String value = guide == null ? "正在读取节目单…" : guide.current(catalog.channels.get(index).tvgId);
+        return "当前暂无节目单".equals(value) ? "暂无节目单" : value;
     }
 
     private void styleRow(ChannelRow row) {
         boolean focus = row.view.hasFocus();
         boolean current = row.index == currentIndex;
-        row.view.setBackground(background(focus ? 0xffe0f3ff : current ? 0xff173b58 : 0xff102b44,
-                focus ? BLUE : current ? 0xff2e6284 : 0x00000000));
-        row.name.setTextColor(focus ? 0xff09213b : WHITE);
-        row.number.setTextColor(focus ? 0xff164769 : current ? BLUE : MUTED);
-        row.programme.setTextColor(focus ? 0xff36516a : MUTED);
-        row.playing.setTextColor(focus ? 0xff15567c : BLUE);
+        row.view.setBackground(background(focus ? WHITE : current ? 0xff2b3039 : 0x06ffffff,
+                focus ? WHITE : current ? 0x22ffffff : 0, 17));
+        row.name.setTextColor(focus ? INK : WHITE);
+        row.number.setTextColor(focus ? INK : current ? WHITE : 0xffc4c7d1);
+        row.number.setBackground(background(focus ? 0xffe0e2e8 : 0xff343943, 0, 12));
+        row.programme.setTextColor(focus ? 0xff656a76 : MUTED);
+        row.playing.setTextColor(focus ? 0xff377949 : GREEN);
         row.playing.setVisibility(current ? VISIBLE : GONE);
         boolean favorite = favorites.contains(catalog.channels.get(row.index).id);
         row.star.setText(favorite ? "★" : "☆");
-        row.star.setTextColor(focus ? 0xff15567c : favorite ? 0xffffd378 : MUTED);
+        row.star.setTextColor(focus ? 0xff636975 : favorite ? 0xffe2c58b : 0xff747986);
+        row.star.setAlpha(focus || favorite ? 1f : 0.7f);
     }
 
     private void focusChannel(int preferredIndex) {
@@ -359,7 +439,11 @@ final class ChannelPicker extends FrameLayout {
         }
         selected.view.requestFocus();
         final View target = selected.view;
-        channelScroll.post(() -> channelScroll.smoothScrollTo(0, target.getTop() - px(100)));
+        channelScroll.post(() -> {
+            if (target.getParent() == channelList) {
+                channelScroll.smoothScrollTo(0, Math.max(0, target.getTop() - px(91)));
+            }
+        });
     }
 
     /** Consume panel navigation before LiveActivity can change channel/source. */
@@ -383,8 +467,11 @@ final class ChannelPicker extends FrameLayout {
         for (int i = 0; i < channelViews.size(); i++) if (channelViews.get(i).view == focus) channel = i;
         if (key == KeyEvent.KEYCODE_MENU) {
             if (event.getRepeatCount() == 0) {
-                listener.onFavoriteToggle(channel >= 0 ? channelViews.get(channel).index : currentIndex);
-                refreshFavorites();
+                int target = channel >= 0 ? channelViews.get(channel).index : currentIndex;
+                if (target >= 0 && target < catalog.channels.size()) {
+                    listener.onFavoriteToggle(target);
+                    refreshFavorites();
+                }
             }
         } else if (key == KeyEvent.KEYCODE_ENTER || key == KeyEvent.KEYCODE_DPAD_CENTER
                 || key == KeyEvent.KEYCODE_NUMPAD_ENTER) {
@@ -421,18 +508,23 @@ final class ChannelPicker extends FrameLayout {
         v.setText(value);
         v.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * unit);
         v.setTextColor(color);
+        v.setFontFeatureSettings("kern");
         v.setIncludeFontPadding(false);
         return v;
     }
     private LinearLayout column() {
         LinearLayout view = new LinearLayout(getContext());
         view.setOrientation(LinearLayout.VERTICAL);
+        view.setClipChildren(false);
+        view.setClipToPadding(false);
         return view;
     }
     private LinearLayout row() {
         LinearLayout view = new LinearLayout(getContext());
         view.setOrientation(LinearLayout.HORIZONTAL);
         view.setGravity(Gravity.CENTER_VERTICAL);
+        view.setClipChildren(false);
+        view.setClipToPadding(false);
         return view;
     }
     private ScrollView scroll() {
@@ -444,12 +536,18 @@ final class ChannelPicker extends FrameLayout {
         view.setClipToPadding(true);
         return view;
     }
-    private GradientDrawable background(int color, int border) {
+    private GradientDrawable background(int color, int border, int radius) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(color);
-        drawable.setCornerRadius(px(7));
-        if (border != 0) drawable.setStroke(px(2), border);
+        drawable.setCornerRadius(px(radius));
+        if (border != 0) drawable.setStroke(px(1), border);
         return drawable;
+    }
+    private void animateFocus(View view, boolean focused, float scale) {
+        view.animate().cancel();
+        view.animate().scaleX(focused ? scale : 1f).scaleY(focused ? scale : 1f)
+                .translationZ(focused ? px(4) : 0f).setDuration(160)
+                .setInterpolator(new DecelerateInterpolator()).start();
     }
     private void focusable(View view, View.OnClickListener click) {
         view.setFocusable(true);

@@ -75,6 +75,15 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         catalog = ChannelCatalog.load(this);
         channelIndex = Math.max(0, Math.min(preferences.getInt("last_channel", 0),
                 catalog.channels.size() - 1));
+        String requestedChannel = getIntent().getStringExtra("channel_id");
+        if (requestedChannel != null) {
+            for (int index = 0; index < catalog.channels.size(); index++) {
+                if (requestedChannel.equals(catalog.channels.get(index).id)) {
+                    channelIndex = index;
+                    break;
+                }
+            }
+        }
         decoderTest = getIntent().getBooleanExtra("decoder_test", false);
         decoderKind = "hevc".equals(getIntent().getStringExtra("decoder_codec")) ? "hevc" : "h264";
         String requested = getIntent().getStringExtra("kids_video");
@@ -102,21 +111,50 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         surface = new SurfaceView(this);
         surface.getHolder().addCallback(this);
         root.addView(surface, new FrameLayout.LayoutParams(-1, -1));
+        surface.setOnClickListener(v -> chooseChannel());
         banner = TvUi.column(this);
-        banner.setBackgroundColor(0xE60A111E);
-        banner.setPadding(TvUi.dp(this, 34), TvUi.dp(this, 18), TvUi.dp(this, 34),
-                TvUi.dp(this, 18));
-        channelText = TvUi.text(this, "电视直播", 27, TvUi.TEXT);
-        statusText = TvUi.text(this, "正在打开…", 17, TvUi.ACCENT);
-        banner.addView(channelText);
-        banner.addView(statusText);
-        programmeText = TvUi.text(this, "", 16, TvUi.MUTED);
-        banner.addView(programmeText);
-        TextView help = TvUi.text(this,
-                "上下换台 · 确定选台 · 左右换线路 · 菜单收藏 · 返回退出", 15, TvUi.MUTED);
-        help.setPadding(0, TvUi.dp(this, 10), 0, 0);
-        banner.addView(help);
+        banner.setBackground(TvUi.rounded(this, 0xef151820, 15));
+        banner.setElevation(TvUi.dp(this, 12));
+        banner.setPadding(TvUi.dp(this, 24), TvUi.dp(this, 18), TvUi.dp(this, 24),
+                TvUi.dp(this, 16));
+        LinearLayout headline = TvUi.row(this);
+        LinearLayout titles = TvUi.column(this);
+        channelText = TvUi.text(this, "电视直播", 25, TvUi.TEXT);
+        channelText.setTypeface(android.graphics.Typeface.create("sans-serif-medium", 0));
+        channelText.setSingleLine();
+        channelText.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        titles.addView(channelText);
+        programmeText = TvUi.text(this, "", 14, TvUi.MUTED);
+        programmeText.setSingleLine();
+        programmeText.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        LinearLayout.LayoutParams programmePosition = new LinearLayout.LayoutParams(-1, -2);
+        programmePosition.topMargin = TvUi.dp(this, 8);
+        titles.addView(programmeText, programmePosition);
+        headline.addView(titles, new LinearLayout.LayoutParams(0, -2, 1));
+        TextView browse = TvUi.text(this, "选台  ›", 14, TvUi.TEXT);
+        browse.setGravity(Gravity.CENTER);
+        browse.setBackground(TvUi.rounded(this, 0xff30343d, 9));
+        browse.setPadding(TvUi.dp(this, 19), TvUi.dp(this, 12), TvUi.dp(this, 19), TvUi.dp(this, 12));
+        browse.setClickable(true);
+        browse.setFocusable(false);
+        browse.setContentDescription("打开频道选择");
+        browse.setOnClickListener(v -> chooseChannel());
+        browse.setVisibility(decoderTest || kidsVideo != null ? View.GONE : View.VISIBLE);
+        headline.addView(browse);
+        banner.addView(headline);
+        LinearLayout bottom = TvUi.row(this);
+        bottom.setPadding(0, TvUi.dp(this, 13), 0, 0);
+        statusText = TvUi.text(this, "正在打开…", 13, 0xffb8c9be);
+        statusText.setMaxLines(2);
+        bottom.addView(statusText, new LinearLayout.LayoutParams(0, -2, 1));
+        TextView help = TvUi.text(this, "↑↓ 换台     确定 选台     返回 退出", 12, TvUi.MUTED);
+        help.setPadding(TvUi.dp(this, 14), 0, 0, 0);
+        help.setVisibility(decoderTest || kidsVideo != null ? View.GONE : View.VISIBLE);
+        bottom.addView(help);
+        banner.addView(bottom);
         FrameLayout.LayoutParams position = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
+        position.leftMargin = position.rightMargin = TvUi.dp(this, 34);
+        position.bottomMargin = TvUi.dp(this, 24);
         root.addView(banner, position);
         channelPicker = new ChannelPicker(this, catalog, favorites, new ChannelPicker.Listener() {
             @Override public void onChannelSelected(int originalIndex) {
@@ -144,6 +182,10 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         handler.post(guideTick);
         if (surfaceReady) {
             play();
+        }
+        if (getIntent().getBooleanExtra("show_picker", false)) {
+            getIntent().removeExtra("show_picker");
+            handler.postDelayed(this::chooseChannel, 250);
         }
     }
 
@@ -415,7 +457,9 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
     }
 
     private void show(String value, boolean timed) {
-        banner.setVisibility(View.VISIBLE);
+        // Async playback updates must not cover the channel browser.
+        banner.setVisibility(channelPicker != null && channelPicker.isShowing()
+                ? View.GONE : View.VISIBLE);
         statusText.setText(value);
         handler.removeCallbacks(hideBanner);
         if (timed) {
