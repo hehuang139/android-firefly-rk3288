@@ -1,5 +1,10 @@
 # Building the source release
 
+For the RK3399 ARM64 branch, use [the RK3399 build guide](docs/rk3399-build.md)
+and `build-rk3399.sh`. The commands and accepted runtime results below describe
+the historical RK3288 ARM32 product. In particular, its ARM32 NetBpfLoad patch
+must not be applied to RK3399.
+
 This branch carries the live-TV/audio and grouped-picker updates. Paired private
 runtime components have been installed and tested on the board; the separately
 built public APK contains no channel sources and has not been installed. Follow

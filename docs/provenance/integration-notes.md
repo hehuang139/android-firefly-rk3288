@@ -1,5 +1,9 @@
 # Public source integration changes
 
+Scope: this is the historical RK3288 ARM32 export record. The RK3399 ARM64
+installer intentionally excludes the ARM32 NetBpfLoad workaround; its current
+build and validation status is recorded in [the RK3399 notes](../rk3399-port-status.md).
+
 Historical exact inputs are recorded in the adjacent export manifests. This
 public profile intentionally differs where listed below; those changes must
 not be mistaken for byte-identical historical firmware reproduction.
