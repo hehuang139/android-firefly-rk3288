@@ -40,7 +40,7 @@ def main():
         raise SystemExit("Target is not the RK3399 ARM64 candidate; no further probes performed. " + json.dumps(identity))
     a.output.mkdir(parents=True)
     probes = {
-        "boot": "cat /proc/sys/kernel/random/boot_id; cat /proc/uptime; getprop sys.boot_completed; getprop init.svc.zygote; getprop init.svc.zygote_secondary; cat /proc/cmdline",
+        "boot": "cat /proc/sys/kernel/random/boot_id; cat /proc/uptime; getprop sys.boot_completed; getprop bpf.progs_loaded; getprop init.svc.netd; getprop init.svc.surfaceflinger; getprop init.svc.zygote; getprop init.svc.zygote_secondary; cat /proc/cmdline",
         "properties": "getprop",
         "storage": "cat /proc/partitions; cat /proc/mounts; df -k; ls -l /dev/block/by-name",
         "drivers": "cat /proc/modules; ls -l /sys/bus/platform/drivers/rkvdec /sys/bus/platform/drivers/panfrost; ls -l /dev/video* /dev/media* /dev/dri/* /dev/dma_heap/*",
