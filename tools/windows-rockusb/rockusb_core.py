@@ -147,6 +147,9 @@ def whole_image(device, source, expected_sha256, identity, report, *,
                     emit("block_verified" if execute else "block_compared", lba=lba,
                          bytes=len(actual), matches=actual == expected)
                 if not execute:
+                    stat = source.stat()
+                    if (stat.st_size, stat.st_mtime_ns) != stamp or device.snapshot() != identity:
+                        raise RuntimeError("Source or device identity changed at final audit gate")
                     emit("audit_complete", different_bytes=differences, media_written_bytes=0,
                          image_matches=differences == 0, physical_mapping_proven=False)
                     return

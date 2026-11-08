@@ -5,20 +5,20 @@
   "license": "MIT",
   "artifacts": {
     "rockusb_core.py": {
-      "bytes": 9121,
-      "sha256": "ac718b9cb2ee9e63a8dd5ea6198dd28f43855d5d7066c06dccab16fe33c649a2"
+      "bytes": 9361,
+      "sha256": "9378e7df955cb6e9826cfd17b0fa41ddf54f3b7d4f7bf1d72a2ac853b6d49f9c"
     },
     "readonly_probe.py": {
       "bytes": 13295,
       "sha256": "32ac7a94a4e8f5c0f6ad0fbde1f88b023e462c27bfaceb84d52a752e91ac3db9"
     },
     "test_offline.py": {
-      "bytes": 8932,
-      "sha256": "5645b97942ad5a96c018b5cbb83b26cbef238e50008fd9ef273615b46463bd45"
+      "bytes": 9886,
+      "sha256": "2455071acdeb6e798f4db84f850f9e6a9e9c5e71be4216d1d96f03f1164d1553"
     },
     "README.md": {
       "bytes": 9653,
-      "sha256": "b70cf1e1c14caf853c0a5af750cb9140b5192c4aa90a7a1b0a1d4f7933483c23"
+      "sha256": "99992d92218dc981de0e25e6948f79286e9f319e87ef85213ec265db702e4718"
     },
     "LICENSE": {
       "bytes": 1067,

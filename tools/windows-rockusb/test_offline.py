@@ -85,6 +85,29 @@ class WholeImageTests(unittest.TestCase):
         self.assertEqual(self.records()[-1]["stage"], "audit_complete")
         self.assertEqual(self.records()[-1]["different_bytes"], len(self.data))
 
+    def test_audit_rejects_device_change_during_last_read(self):
+        read = self.device.read_lba
+        def changed(lba, count):
+            value = read(lba, count)
+            if lba == 768:
+                self.device.identity["device_address"] += 1
+            return value
+        with mock.patch.object(self.device, "read_lba", side_effect=changed):
+            self.assert_failed(self.run_core)
+        self.assertEqual(self.device.writes, [])
+
+    def test_audit_rejects_source_change_during_last_read(self):
+        read = self.device.read_lba
+        def changed(lba, count):
+            value = read(lba, count)
+            if lba == 768:
+                with self.source.open("ab") as stream:
+                    stream.write(b"changed")
+            return value
+        with mock.patch.object(self.device, "read_lba", side_effect=changed):
+            self.assert_failed(self.run_core)
+        self.assertEqual(self.device.writes, [])
+
     def test_write_immediate_and_full_readback_include_short_final_chunk(self):
         self.execute()
         self.assertEqual(self.device.writes, [256, 512, 768, 0])
