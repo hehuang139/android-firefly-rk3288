@@ -12,8 +12,15 @@ import tempfile
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--aosp", type=Path, required=True)
+    parser.add_argument("--arch", choices=("arm", "arm64"), default="arm")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
+    target = "aarch64-linux-android37" if args.arch == "arm64" else "armv7a-linux-androideabi37"
+    libdir = "lib64" if args.arch == "arm64" else "lib"
+
+    # Replace a path component once, including directory paths ending in /lib.
+    def abi_path(path):
+        return "/".join(libdir if component == "lib" else component for component in path.split("/"))
     aosp = args.aosp.resolve()
     spec = importlib.util.spec_from_file_location("graphics_elf", Path(__file__).with_name("verify-graphics-elf.py"))
     module = importlib.util.module_from_spec(spec)
@@ -26,8 +33,8 @@ def main():
         base = Path(temporary)
         product, apex = base / "product", base / "apex"
         for relative in ("system/bin", "system/lib", "vendor/lib/egl", "vendor/lib/hw"):
-            (product / relative).mkdir(parents=True)
-        (apex / "com.android.runtime/lib/bionic").mkdir(parents=True)
+            (product / abi_path(relative)).mkdir(parents=True)
+        (apex / abi_path("com.android.runtime/lib/bionic")).mkdir(parents=True)
         config = module.parse_namespaces("""
 [system]
 namespace.sphal.isolated = true
@@ -51,22 +58,22 @@ namespace.default.search.paths = /vendor/${LIB}
             serial += 1
             src = base / (str(serial) + ".c")
             src.write_text(source)
-            output = product / relative
+            output = product / abi_path(relative)
             output.parent.mkdir(parents=True, exist_ok=True)
-            command = [str(clang), "--target=armv7a-linux-androideabi37", "-fuse-ld=lld", "-shared", "-nostdlib", "-fPIC",
+            command = [str(clang), "--target=" + target, "-fuse-ld=lld", "-shared", "-nostdlib", "-fPIC",
                        "-Wl,-soname," + soname, str(src), "-o", str(output)]
             if version:
                 script = base / (str(serial) + ".map")
                 script.write_text(version)
                 command.append("-Wl,--version-script=" + str(script))
-            command.extend(str(product / library) for library in libraries)
+            command.extend(str(product / abi_path(library)) for library in libraries)
             command.extend(extra)
             subprocess.run(command, capture_output=True, text=True, check=True)
             return output
 
         def check(relative, section="system", namespace="sphal"):
-            checker = module.GraphicsChecker(module.ProductFiles(product, apex), config, elf_parser, readobj)
-            return checker.check_root("fixture", section, namespace, "/" + relative, ("entry",))
+            checker = module.GraphicsChecker(module.ProductFiles(product, apex), config, elf_parser, readobj, args.arch)
+            return checker.check_root("fixture", section, namespace, "/" + abi_path(relative), ("entry",))
 
         def passes(name, relative):
             assert check(relative)["passed"] is True
@@ -81,7 +88,7 @@ namespace.default.search.paths = /vendor/${LIB}
             else:
                 raise AssertionError("Expected rejection: " + name)
 
-        build("system/bin/linker", "ld-android.so", "int __loader_fixture(void) { return 0; }")
+        build("system/bin/linker64" if args.arch == "arm64" else "system/bin/linker", "ld-android.so", "int __loader_fixture(void) { return 0; }")
         provider = "vendor/lib/libversion.so"
         root = "vendor/lib/egl/libEGL_mesa.so"
         version_one = "V1 { global: dependency; local: *; };"
@@ -102,7 +109,7 @@ namespace.default.search.paths = /vendor/${LIB}
         rejects("missing non-weak symbol is rejected", root, "dependency@V1")
         # A same-named system file must not rescue a missing vendor dependency
         # when the namespace link does not export that filename.
-        (product / provider).rename(product / "system/lib/libversion.so")
+        (product / abi_path(provider)).rename(product / abi_path("system/lib/libversion.so"))
         rejects("unexported same-name system library cannot satisfy vendor DT_NEEDED", root, "Unresolved DT_NEEDED libversion.so")
         build(provider, "libversion.so", "int dependency(void) { return 1; }", version=version_one)
         weak = "vendor/lib/egl/libweak.so"
@@ -125,18 +132,26 @@ namespace.default.search.paths = /vendor/${LIB}
         # An installed absolute symlink must resolve in the extracted Android
         # root, including a real APEX payload; the host /apex is irrelevant.
         bionic = build("system/lib/libbase-payload.so", "libbase.so", "int base_api(void) { return 7; }")
-        payload = apex / "com.android.runtime/lib/bionic/libbase.so"
+        payload = apex / abi_path("com.android.runtime/lib/bionic/libbase.so")
         bionic.rename(payload)
-        (product / "system/lib/libbase.so").symlink_to("/apex/com.android.runtime/lib/bionic/libbase.so")
+        (product / abi_path("system/lib/libbase.so")).symlink_to(abi_path("/apex/com.android.runtime/lib/bionic/libbase.so"))
         source = base / "apex-root.c"
         source.write_text("extern int base_api(void); int entry(void) { return base_api(); }")
-        apex_consumer = product / "vendor/lib/egl/libapex-consumer.so"
-        subprocess.run([str(clang), "--target=armv7a-linux-androideabi37", "-fuse-ld=lld", "-shared", "-nostdlib", "-fPIC", str(source), str(payload), "-o", str(apex_consumer)], capture_output=True, text=True, check=True)
+        apex_consumer = product / abi_path("vendor/lib/egl/libapex-consumer.so")
+        subprocess.run([str(clang), "--target=" + target, "-fuse-ld=lld", "-shared", "-nostdlib", "-fPIC", str(source), str(payload), "-o", str(apex_consumer)], capture_output=True, text=True, check=True)
         passes("installed absolute symlink selects extracted APEX payload", "vendor/lib/egl/libapex-consumer.so")
         payload.rename(payload.with_suffix(".absent"))
         rejects("missing extracted APEX payload cannot fall back to host or stubs", "vendor/lib/egl/libapex-consumer.so", "Unresolved DT_NEEDED libbase.so")
 
-    report = {"scope": "isolated " + module.CLANG_VERSION + " ARM32 shared objects and namespace fixtures; no product output inspected",
+        opposite = "armv7a-linux-androideabi37" if args.arch == "arm64" else "aarch64-linux-android37"
+        wrong = "vendor/lib/egl/libwrong.so"
+        build(wrong, "libwrong.so", "int entry(void) { return 0; }", extra=("--target=" + opposite,))
+        rejects("opposite ELF class is rejected", wrong, "Expected little-endian ELF")
+        wrong_file = product / abi_path(wrong)
+        wrong_file.write_bytes(b"\x7fELF")
+        rejects("truncated ELF header is rejected", wrong, "Expected little-endian ELF")
+
+    report = {"scope": "isolated " + module.CLANG_VERSION + " " + args.arch + " shared objects and namespace fixtures; no product output inspected",
               "result": "PASS", "graphics_verified": False, "cases_passed": len(cases), "cases": cases}
     if args.report:
         args.report.write_text(json.dumps(report, indent=2) + "\n")

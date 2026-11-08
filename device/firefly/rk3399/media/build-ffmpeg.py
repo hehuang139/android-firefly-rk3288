@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import struct
 import subprocess
 
 REVISION = 'b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935'
@@ -86,12 +87,24 @@ def main():
     if not (sysroot / 'usr/include/stdlib.h').exists():
         raise SystemExit('Build the AOSP NDK sysroot first: m ndk_sysroot')
     crt.mkdir(exist_ok=True)
+    crt_inputs = {}
     for name in ('crtbegin_so', 'crtbegin_dynamic', 'crtend_so', 'crtend_android'):
-        candidates = list((out / f'soong/.intermediates/bionic/libc/{name}').glob(
-            f'android_vendor_arm64_armv8-a_*/{name}.o'))
+        base = out / f'soong/.intermediates/bionic/libc/{name}'
+        candidates = sorted(base.glob(f'android_vendor*_arm64_armv8-a*/{name}.o'))
+        if not candidates:
+            generic = base / 'android_arm64_armv8-a' / f'{name}.o'
+            candidates = [generic] if generic.is_file() else []
         if not candidates:
             raise SystemExit(f'Build AOSP ARM64 {name} first (m {name})')
-        shutil.copyfile(candidates[0], crt / f'{name}.o')
+        if len(candidates) != 1:
+            raise SystemExit(f'Ambiguous ARM64 {name} candidates: {candidates}')
+        selected = candidates[0]
+        data = selected.read_bytes()
+        if data[:6] != b'\x7fELF\x02\x01' or struct.unpack_from('<H', data, 18)[0] != 183:
+            raise SystemExit(f'CRT is not ELF64 AArch64: {selected}')
+        crt_inputs[name] = {'path': str(selected.relative_to(out)),
+                            'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+        shutil.copyfile(selected, crt / f'{name}.o')
     target = '--target=aarch64-linux-android37'
     cflags = f'{target} -I{sysroot}/usr/include/aarch64-linux-android -I{aosp}/external/libdrm/include/drm'
     ldflags = f'{target} -B{crt} -L{sysroot}/usr/lib/aarch64-linux-android/37 -fuse-ld=lld'
@@ -119,6 +132,8 @@ def main():
     manifest['backend_revision'] = REVISION
     manifest['bitstream_zero_padding'] = 80
     manifest['target_arch'] = 'aarch64'
+    manifest['status'] = 'built_offline_hardware_pending'
+    manifest['crt_inputs'] = crt_inputs
     manifest['hardware_decoders'] = ['h264', 'vp9']
     manifest['hardware_validation'] = 'pending original Firefly-RK3399 board'
     manifest['libraries'] = {

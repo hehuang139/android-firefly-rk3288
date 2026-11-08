@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Check the final RK3288 graphics ELF files against their linker namespaces.
+"""Check final ARM/ARM64 graphics ELF files against their linker namespaces.
 
 Uses installed product files and freshly extracted installed APEX packages. No
 Soong intermediates or link-time stub libraries participate in resolution.
@@ -70,12 +70,21 @@ def require(condition, message):
         raise VerificationError(message)
 
 
-def requirements(aosp, product):
+def roots_for_arch(arch, libraries_only=False):
+    return tuple((name, section, namespace,
+                  path.replace('/lib/', '/lib64/') if arch == 'arm64' else path, exports)
+                 for name, section, namespace, path, exports in ROOTS
+                 if not libraries_only or '/bin/' not in path)
+
+
+def requirements(aosp, product, architectures=("arm",)):
     host = aosp / "out/host/linux-x86/bin"
     return {
         "product_out": str(product),
-        "graphics_roots": [item[3] for item in ROOTS],
-        "installed_runtime_linker": "/system/bin/linker (including its installed symlink target)",
+        "graphics_roots": [item[3] for arch in architectures
+                           for item in roots_for_arch(arch, len(architectures) > 1 and arch == 'arm')],
+        "installed_runtime_linker": "/system/bin/linker (including its installed symlink target)" if architectures == ("arm",)
+                                    else ["/system/bin/linker64" if arch == 'arm64' else "/system/bin/linker" for arch in architectures],
         "installed_partition_inputs": ["system", "system_ext", "product", "vendor"],
         "namespace_inputs": ["system/etc/linker.config.pb", "system/etc/llndk.libraries.txt", "system/etc/sanitizer.libraries.txt", "partition etc/linker.config.pb and public.libraries.txt when installed"],
         "apex_inputs": "All installed *.apex/*.capex in system, system_ext, product, vendor and odm /apex; each is freshly extracted and hashed.",
@@ -121,7 +130,7 @@ def build_runtime_root(product, scratch, tools, report):
         dest.mkdir()
         source = product / partition
         if source.is_dir():
-            for basename in ("etc", "bin", "lib"):
+            for basename in ("etc", "bin", "lib", "lib64"):
                 if (source / basename).exists():
                     (dest / basename).symlink_to(source / basename, target_is_directory=True)
     apex_root = root / "apex"
@@ -170,7 +179,7 @@ def properties(product):
 
 def generate_namespaces(product, root, scratch, tools, report):
     props = properties(product)
-    require(props.get("ro.treble.enabled") == "true", "Expected the RK3288 Treble product property")
+    require(props.get("ro.treble.enabled") == "true", "Expected the Treble product property")
     (scratch / "linkerconfig").mkdir()
     # Match init's GenerateLinkerConfiguration: global namespace generation
     # does not use --strict. Platform requireLibs includes both release/debug
@@ -256,10 +265,14 @@ class ProductFiles:
 
 
 class GraphicsChecker:
-    def __init__(self, files, sections, parser, readobj):
+    def __init__(self, files, sections, parser, readobj, arch="arm"):
+        require(arch in ("arm", "arm64"), "Unsupported ELF architecture")
+        self.arch = arch
+        self.libdir = "lib64" if arch == "arm64" else "lib"
+        self.linker_path = "/system/bin/linker64" if arch == "arm64" else "/system/bin/linker"
         self.files, self.sections, self.parser, self.readobj = files, sections, parser, readobj
         self.cache = {}
-        self.linker = self.elf("/system/bin/linker")
+        self.linker = self.elf(self.linker_path)
         require(self.linker["elf"].dt_soname == "ld-android.so", "Runtime linker must provide ld-android.so")
 
     def elf(self, virtual):
@@ -268,24 +281,36 @@ class GraphicsChecker:
         canonical, path = found
         if canonical not in self.cache:
             before = identity(path)
+            is64 = self.arch == "arm64"
+            header_size, program_size = (64, 56) if is64 else (52, 32)
             with path.open("rb") as stream:
-                header = stream.read(52)
-            require(len(header) == 52 and header[:7] == b"\x7fELF\x01\x01\x01", "Expected little-endian ELF32: " + canonical)
-            values = struct.unpack("<16sHHIIIIIHHHHHH", header)
-            require(values[1] in (2, 3) and values[2] == 40 and values[3] == 1 and values[7] >> 24 == 5, "Expected ARM EABI5 executable/shared object: " + canonical)
-            require(not values[7] & 0x400, "Hard-float ARM ABI is incompatible with Android: " + canonical)
+                header = stream.read(header_size)
+            magic = b"\x7fELF\x02\x01\x01" if is64 else b"\x7fELF\x01\x01\x01"
+            require(len(header) == header_size and header[:7] == magic,
+                    f"Expected little-endian ELF{64 if is64 else 32}: " + canonical)
+            values = struct.unpack("<16sHHIQQQIHHHHHH" if is64 else "<16sHHIIIIIHHHHHH", header)
+            require(values[1] in (2, 3) and values[2] == (183 if is64 else 40) and values[3] == 1,
+                    "Wrong ELF machine/type/version for " + self.arch + ": " + canonical)
+            if not is64:
+                require(values[7] >> 24 == 5, "Expected ARM EABI5 executable/shared object: " + canonical)
+                require(not values[7] & 0x400, "Hard-float ARM ABI is incompatible with Android: " + canonical)
             phoff, phsize, phcount = values[5], values[9], values[10]
-            require(values[8] == 52 and phsize == 32 and phcount > 0 and phoff + phsize * phcount <= path.stat().st_size,
+            require(values[8] == header_size and phsize == program_size and phcount > 0 and phoff + phsize * phcount <= path.stat().st_size,
                     "Invalid ELF program-header range: " + canonical)
             with path.open("rb") as stream:
                 for index in range(phcount):
                     stream.seek(phoff + index * phsize)
-                    kind, offset, _, _, size, memory, _, _ = struct.unpack("<8I", stream.read(phsize))
+                    fields = struct.unpack("<IIQQQQQQ" if is64 else "<8I", stream.read(phsize))
+                    if is64:
+                        kind, _, offset, _, _, size, memory, _ = fields
+                    else:
+                        kind, offset, _, _, size, memory, _, _ = fields
                     if kind in (1, 3):
                         require(offset + size <= path.stat().st_size and (kind != 1 or size <= memory), "Invalid ELF load/interpreter segment: " + canonical)
                     if kind == 3:
                         stream.seek(offset)
-                        require(stream.read(size).rstrip(b"\0") == b"/system/bin/linker", "Wrong Android ARM32 interpreter: " + canonical)
+                        require(stream.read(size).rstrip(b"\0") == self.linker_path.encode(),
+                                "Wrong Android " + self.arch + " interpreter: " + canonical)
             text = run([self.readobj, "--program-headers", "--dynamic-table", "--dyn-symbols", "--version-info", path])
             require("DynamicSection [" in text and "DynamicSymbols [" in text, "Missing dynamic ELF tables: " + canonical)
             require(not re.search(r"^\s+0x[0-9a-fA-F]+\s+(?:TEXTREL\b|FLAGS\s+.*\bTEXTREL\b)", text, re.M), "Text relocations in " + canonical)
@@ -307,7 +332,7 @@ class GraphicsChecker:
         result = []
         for path in self.value(section, ns, key).split(":"):
             if path:
-                path = path.replace("${LIB}", "lib")
+                path = path.replace("${LIB}", self.libdir)
                 require("$" not in path and path.startswith("/"), "Unsupported namespace path: " + path)
                 result.append(path.rstrip("/"))
         return result
@@ -439,11 +464,13 @@ class GraphicsChecker:
                 "passed": True}
 
 
-def verify_graphics_elf(product_out, aosp, scratch_dir):
+def verify_graphics_elf(product_out, aosp, scratch_dir, architectures=("arm",)):
     product, aosp, scratch = Path(product_out).resolve(), Path(aosp).resolve(), Path(scratch_dir).resolve()
-    report = {"format": 1, "scope": "final installed ARM32 graphics ELF namespace and symbol dependency audit",
+    report = {"format": 1, "scope": "final installed graphics ELF namespace and symbol dependency audit",
+              "architectures": list(architectures),
+              "verification_core_sha256": sha256(Path(__file__)),
               "started_utc": datetime.now(timezone.utc).isoformat(), "passed": False, "graphics_verified": False,
-              "requirements": requirements(aosp, product), "roots": []}
+              "requirements": requirements(aosp, product, architectures), "roots": []}
     try:
         require(scratch.is_dir() and not any(scratch.iterdir()), "Verification scratch directory must be empty")
         tools = check_tools(aosp, product)
@@ -461,16 +488,24 @@ def verify_graphics_elf(product_out, aosp, scratch_dir):
         report["namespace_input_files"] = {key: {"sha256": value["sha256"]} for key, value in metadata.items()}
         root, apex_root = build_runtime_root(product, scratch, tools, report)
         sections = generate_namespaces(product, root, scratch, tools, report)
-        checker = GraphicsChecker(ProductFiles(product, apex_root), sections, load_parser(tools["aosp_elf_parser"]), tools["llvm_readobj"])
-        report["runtime_linker"] = {"path": checker.linker["path"], "sha256": checker.linker["sha256"]}
-        for args in ROOTS:
-            print("Checking graphics ELF " + args[0], file=sys.stderr, flush=True)
-            report["roots"].append(checker.check_root(*args))
-        for item in checker.cache.values():
-            require(identity(item["physical"]) == item["identity"], "Installed ELF changed during the audit: " + item["path"])
+        checkers = []
+        report["runtime_linkers"] = {}
+        for arch in architectures:
+            checker = GraphicsChecker(ProductFiles(product, apex_root), sections,
+                                      load_parser(tools["aosp_elf_parser"]), tools["llvm_readobj"], arch)
+            checkers.append(checker)
+            report["runtime_linkers"][arch] = {"path": checker.linker["path"], "sha256": checker.linker["sha256"]}
+            if len(architectures) == 1:
+                report["runtime_linker"] = report["runtime_linkers"][arch]
+            for args in roots_for_arch(arch, len(architectures) > 1 and arch == "arm"):
+                print("Checking graphics ELF " + arch + " " + args[0], file=sys.stderr, flush=True)
+                report["roots"].append({"architecture": arch, **checker.check_root(*args)})
+        for checker in checkers:
+            for item in checker.cache.values():
+                require(identity(item["physical"]) == item["identity"], "Installed ELF changed during the audit: " + item["path"])
         for relative, value in metadata.items():
             require(identity(product / relative) == value["identity"], "Namespace input changed during the audit: " + relative)
-        report.update(passed=True, graphics_verified=True, result="PASS", unique_elf_files=len(checker.cache))
+        report.update(passed=True, graphics_verified=True, result="PASS", unique_elf_files=sum(len(c.cache) for c in checkers))
     except (OSError, ValueError, subprocess.SubprocessError, VerificationError) as error:
         report.update(result="FAIL", error=str(error))
         raise VerificationError(str(error), report) from error
@@ -483,6 +518,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--aosp", type=Path, required=True)
     parser.add_argument("--product-out", type=Path)
+    parser.add_argument("--arch", choices=("arm", "arm64", "arm64_32"), default="arm",
+                        help="arm64_32 checks ARM64 services and both application graphics ABIs")
     parser.add_argument("--report", type=Path)
     parser.add_argument("--work-dir", type=Path, help="Existing empty directory; preserves extracted payload and generated configuration")
     modes = parser.add_mutually_exclusive_group()
@@ -490,19 +527,20 @@ def main():
     modes.add_argument("--check-tools", action="store_true", help="Check host tools and fixed AOSP ELF parser only")
     args = parser.parse_args()
     aosp = args.aosp.resolve()
-    product = (args.product_out or aosp / "out/target/product/rk3288").resolve()
+    architectures = ("arm64", "arm") if args.arch == "arm64_32" else (args.arch,)
+    product = (args.product_out or aosp / ("out/target/product/rk3288" if args.arch == "arm" else "out/target/product/rk3399")).resolve()
     code = 0
     try:
         if args.requirements:
-            report = {"result": "REQUIREMENTS", "graphics_verified": False, **requirements(aosp, product)}
+            report = {"result": "REQUIREMENTS", "graphics_verified": False, **requirements(aosp, product, architectures)}
         elif args.check_tools:
             tools = check_tools(aosp, product)
             report = {"result": "TOOLS_READY", "graphics_verified": False, "tools": {key: str(value) for key, value in tools.items()}}
         elif args.work_dir:
-            report = verify_graphics_elf(product, aosp, args.work_dir)
+            report = verify_graphics_elf(product, aosp, args.work_dir, architectures)
         else:
             with tempfile.TemporaryDirectory(prefix="firefly-graphics-elf-") as temporary:
-                report = verify_graphics_elf(product, aosp, Path(temporary))
+                report = verify_graphics_elf(product, aosp, Path(temporary), architectures)
     except VerificationError as error:
         report = error.report or {"result": "FAIL", "graphics_verified": False, "error": str(error)}
         code = 1

@@ -8,7 +8,8 @@ Google 官方 Android TV 版。**当前处于源码与构建验证阶段，尚�
 新板入口为 `build-rk3399.sh`，源码在 `device/firefly/rk3399/`，
 内核在 `kernel/rk3399/`。旧 `build.sh`、`kernel/final/` 和 RK3288 目录保留
 用于追溯，不应作为 RK3399 编译或烧录入口。
-详见 [RK3399 适配记录](docs/rk3399-port-status.md)。
+详见 [RK3399 构建流程](docs/rk3399-build.md)和
+[适配记录](docs/rk3399-port-status.md)。
 
 ## 继承的 RK3288 历史说明
 

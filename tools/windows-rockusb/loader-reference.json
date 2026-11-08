@@ -1,0 +1,52 @@
+{
+  "repository": "https://github.com/rockchip-linux/rkbin",
+  "commit": "3e288fe814e059dd06833495f845cab04ac20a5c",
+  "files": {
+    "RKBOOT/RK3399MINIALL.ini": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/RKBOOT/RK3399MINIALL.ini",
+      "bytes": 382,
+      "sha256": "d710ad7c47d1db5f682f94a78ef0ab6121396251e1e870b83d45c3c763276d4f"
+    },
+    "README.md": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/README.md",
+      "bytes": 9249,
+      "sha256": "ae767b4ae3b4fe89269bd3cfda6f048fa3f00edb461b32061d0895dc9bffeaa0"
+    },
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/LICENSE",
+      "bytes": 1359,
+      "sha256": "1b3cfbd212ef0e645b34aa6beee07343ce954a4f512338f12317ab297a9c9829"
+    },
+    "tools/boot_merger": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/tools/boot_merger",
+      "bytes": 2098080,
+      "sha256": "f8e1a2d01bc475e9571ab0aec00e4cca3d85bbd4587f3873970560443a237d0c"
+    },
+    "bin/rk33/rk3399_ddr_800MHz_v1.30.bin": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/bin/rk33/rk3399_ddr_800MHz_v1.30.bin",
+      "bytes": 145916,
+      "sha256": "2c74f7c0a2f7b1a49225fd0dca2fd88f574177e2b87dd4c526d569a94a9bcd92"
+    },
+    "bin/rk33/rk3399_usbplug_v1.30.bin": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/bin/rk33/rk3399_usbplug_v1.30.bin",
+      "bytes": 71700,
+      "sha256": "ac4babf95a79822936236a7c0f8ef4db16582e109a1c5e23c7ded62509cfdff5"
+    },
+    "bin/rk33/rk3399_miniloader_v1.30.bin": {
+      "url": "https://raw.githubusercontent.com/rockchip-linux/rkbin/3e288fe814e059dd06833495f845cab04ac20a5c/bin/rk33/rk3399_miniloader_v1.30.bin",
+      "bytes": 85932,
+      "sha256": "17b4dc35fc88f9c9648a5428c5b6453cdd6759f74e90e8dce25f0b22d2db1c03"
+    }
+  },
+  "status": "PACKAGED_OFFLINE_NOT_DOWNLOADED_TO_BOARD",
+  "artifact": {
+    "name": "rk3399_loader_v1.30.130.bin",
+    "bytes": 454990,
+    "sha256": "1d2330a5eb5f638c7533464ca57018754157e65daf391e4f544befdd2b653929",
+    "header_magic": "BOOT"
+  },
+  "purpose": "RK3399 MaskROM USB RAM DDR/usbplug download candidate",
+  "flash_write_performed": false,
+  "not_idbloader": true,
+  "board_validation": "Original Firefly-RK3399 DDR3 not yet tested"
+}

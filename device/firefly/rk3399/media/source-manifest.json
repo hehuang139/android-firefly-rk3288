@@ -17,10 +17,15 @@
     "vp9_v4l2request"
   ],
   "output": "NV12",
-  "libraries": {},
+  "libraries": {
+    "libavcodec.so": "a02de5c84351fa7203c6056a68a7c1ee0263a710313ab3553924ccc920fca228",
+    "libavutil.so": "66f752429f51c1b6ef0b672c8e769e88cee37ca712183eb3bab14ea0ce7bee81",
+    "libswresample.so": "48f9499574b2208244f8c243529276b6e550d9b0daa35870ede88b5bbef0b7e1",
+    "libswscale.so": "18e5a29ad3e7d1221caa70ff8e0e98fcb65d8c921d77ce20441563d97212bf9a"
+  },
   "bitstream_zero_padding": 80,
   "profile": "rk3399-arm64-bringup",
-  "status": "source_prepared_build_and_hardware_pending",
+  "status": "built_offline_hardware_pending",
   "parsers": [
     "h264",
     "vp9",
@@ -28,5 +33,33 @@
     "mpegaudio"
   ],
   "output_scope": "NV12 is the video path; audio defaults to PCM16",
-  "rk3288_runtime_results_apply": false
+  "rk3288_runtime_results_apply": false,
+  "target_arch": "aarch64",
+  "crt_inputs": {
+    "crtbegin_so": {
+      "path": "soong/.intermediates/bionic/libc/crtbegin_so/android_arm64_armv8-a/crtbegin_so.o",
+      "sha256": "a4d1062890a43a69a9a0ec31d6b180e15bdfdbd16d1248dd38f3b0e3b2315219",
+      "bytes": 8504
+    },
+    "crtbegin_dynamic": {
+      "path": "soong/.intermediates/bionic/libc/crtbegin_dynamic/android_arm64_armv8-a/crtbegin_dynamic.o",
+      "sha256": "a29e10e08a9ebceecebb72258e9f7a080cb64f27914274e4127e97fb28db73ec",
+      "bytes": 10248
+    },
+    "crtend_so": {
+      "path": "soong/.intermediates/bionic/libc/crtend_so/android_arm64_armv8-a/crtend_so.o",
+      "sha256": "67526086a5d71ae54a431a6419a06c5d87cf951e4b5d58f978d4cc378b08855e",
+      "bytes": 912
+    },
+    "crtend_android": {
+      "path": "soong/.intermediates/bionic/libc/crtend_android/android_arm64_armv8-a/crtend_android.o",
+      "sha256": "0e898eaffadea8fabf44fbb02869807ef339e990fbc90937291c1cb3323d3e35",
+      "bytes": 912
+    }
+  },
+  "hardware_decoders": [
+    "h264",
+    "vp9"
+  ],
+  "hardware_validation": "pending original Firefly-RK3399 board"
 }

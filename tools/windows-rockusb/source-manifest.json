@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "scope": "independent RK3399 first-flash preparation tools",
+  "status": "OFFLINE_ONLY_NO_USB_OPERATIONS",
+  "license": "MIT",
+  "artifacts": {
+    "rockusb_core.py": {
+      "bytes": 9121,
+      "sha256": "ac718b9cb2ee9e63a8dd5ea6198dd28f43855d5d7066c06dccab16fe33c649a2"
+    },
+    "readonly_probe.py": {
+      "bytes": 13295,
+      "sha256": "32ac7a94a4e8f5c0f6ad0fbde1f88b023e462c27bfaceb84d52a752e91ac3db9"
+    },
+    "test_offline.py": {
+      "bytes": 8932,
+      "sha256": "5645b97942ad5a96c018b5cbb83b26cbef238e50008fd9ef273615b46463bd45"
+    },
+    "README.md": {
+      "bytes": 9653,
+      "sha256": "b70cf1e1c14caf853c0a5af750cb9140b5192c4aa90a7a1b0a1d4f7933483c23"
+    },
+    "LICENSE": {
+      "bytes": 1067,
+      "sha256": "c52dc1577c980ac47f05428e68f1d9985e16372242c6a407d600cba1d314191d"
+    },
+    "loader-reference.json": {
+      "bytes": 2551,
+      "sha256": "95fffd5a272367520d3d1c2a39e2d354856c2cbf09563aa4e40f90ee5f6af334"
+    }
+  },
+  "protocol_reference": {
+    "repository": "https://github.com/rockchip-linux/rkdeveloptool",
+    "commit": "304f073752fd25c854e1bcf05d8e7f925b1f4e14",
+    "files": {
+      "RKComm.cpp": {
+        "url": "https://raw.githubusercontent.com/rockchip-linux/rkdeveloptool/304f073752fd25c854e1bcf05d8e7f925b1f4e14/RKComm.cpp",
+        "bytes": 20757,
+        "sha256": "f3aac40b9e938ed8b903bb734b9290defe770399336743fb930eaa7ca0cf77a2"
+      },
+      "RKComm.h": {
+        "url": "https://raw.githubusercontent.com/rockchip-linux/rkdeveloptool/304f073752fd25c854e1bcf05d8e7f925b1f4e14/RKComm.h",
+        "bytes": 5632,
+        "sha256": "fe254f525279096bb76730d2789b5f6cb16113abb99ca7bd7680c1d82b560774"
+      },
+      "RKScan.cpp": {
+        "url": "https://raw.githubusercontent.com/rockchip-linux/rkdeveloptool/304f073752fd25c854e1bcf05d8e7f925b1f4e14/RKScan.cpp",
+        "bytes": 15351,
+        "sha256": "61a598582887719d06ebe085e677f76c883c4990800729448ab5cf9848bee287"
+      },
+      "main.cpp": {
+        "url": "https://raw.githubusercontent.com/rockchip-linux/rkdeveloptool/304f073752fd25c854e1bcf05d8e7f925b1f4e14/main.cpp",
+        "bytes": 93904,
+        "sha256": "d3dcfedd874d7d7741400fecd1b3008c24f9d658fb2ab772cc8c61b00678cdaf"
+      },
+      "Readme.txt": {
+        "url": "https://raw.githubusercontent.com/rockchip-linux/rkdeveloptool/304f073752fd25c854e1bcf05d8e7f925b1f4e14/Readme.txt",
+        "bytes": 865,
+        "sha256": "ee0e07b19b6122fb273b84148fe60cbb4ac900ba2038c79ca58f206565e28357"
+      }
+    },
+    "redistributed_source": false
+  },
+  "loader_reference": "loader-reference.json",
+  "documentation_reference": "https://opensource.rock-chips.com/wiki_Rockusb",
+  "live_write_cli_available": false,
+  "tests": {
+    "kind": "offline mock and file tests",
+    "passed": 19,
+    "failed": 0
+  },
+  "privacy_review": {
+    "private_credentials": false,
+    "private_host_addresses": false,
+    "absolute_user_paths": false,
+    "local_USB_hub_paths": false,
+    "old_board_RAM_addresses": false,
+    "old_soc_PID_occurs_only_in_negative_tests": true
+  }
+}

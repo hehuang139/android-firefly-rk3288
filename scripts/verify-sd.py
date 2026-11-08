@@ -1146,21 +1146,22 @@ def verify_system_adbd_apex(system, product, aosp_option, scratch, audit):
     return aosp
 
 
-def bind_graphics_inputs_to_image(result, filesystems, audit):
+def bind_graphics_inputs_to_image(result, filesystems, audit, expected_roots=None):
     """Match the helper's staged-file inputs to actual packaged file content."""
     inputs, apex_dependencies = {}, {}
     report = {"scope": "Packaged file hashes for installed-product graphics ELF audit inputs",
               "namespace_topology_source": "installed product staging directories",
               "image_namespace_topology_verified": False, "files": [], "apex_dependencies": []}
     audit.data["graphics_elf_image_binding"] = report
-    expected_roots = {
-        "/vendor/lib/egl/libEGL_mesa.so", "/vendor/lib/egl/libGLESv1_CM_mesa.so",
-        "/vendor/lib/egl/libGLESv2_mesa.so", "/vendor/lib/libgallium_dri.so",
-        "/vendor/lib/libminigbm_gralloc.so",
-        "/vendor/lib/hw/mapper.minigbm.so",
-        "/vendor/bin/hw/android.hardware.graphics.allocator-service.minigbm",
-        "/vendor/bin/hw/android.hardware.composer.hwc3-service.drm",
-    }
+    if expected_roots is None:
+        expected_roots = {
+            "/vendor/lib/egl/libEGL_mesa.so", "/vendor/lib/egl/libGLESv1_CM_mesa.so",
+            "/vendor/lib/egl/libGLESv2_mesa.so", "/vendor/lib/libgallium_dri.so",
+            "/vendor/lib/libminigbm_gralloc.so",
+            "/vendor/lib/hw/mapper.minigbm.so",
+            "/vendor/bin/hw/android.hardware.graphics.allocator-service.minigbm",
+            "/vendor/bin/hw/android.hardware.composer.hwc3-service.drm",
+        }
     roots = result.get("roots", [])
     audit.check("graphics-helper-complete-root-set", len(roots) == len(expected_roots)
                 and {root.get("root") for root in roots} == expected_roots,
@@ -1192,9 +1193,13 @@ def bind_graphics_inputs_to_image(result, filesystems, audit):
         add_input(root["root"], root_dependency["sha256"], "graphics-root")
         for dependency in dependencies:
             add_input(dependency["path"], dependency["sha256"], "ELF-dependency")
-    linker = result.get("runtime_linker")
-    audit.check("graphics-helper-runtime-linker-evidence", isinstance(linker, dict), linker)
-    add_input(linker["path"], linker["sha256"], "runtime-linker")
+    linkers = result.get("runtime_linkers")
+    if linkers is None:
+        linkers = {"arm": result.get("runtime_linker")}
+    audit.check("graphics-helper-runtime-linker-evidence", isinstance(linkers, dict) and bool(linkers)
+                and all(isinstance(linker, dict) for linker in linkers.values()), linkers)
+    for linker in linkers.values():
+        add_input(linker["path"], linker["sha256"], "runtime-linker")
     for path, info in result.get("namespace_input_files", {}).items():
         add_input("/" + path, info["sha256"], "namespace-input")
     packages = {}

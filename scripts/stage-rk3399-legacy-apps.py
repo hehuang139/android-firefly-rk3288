@@ -25,6 +25,32 @@ APPS = {
     'dev.aaa1115910.bv': 'BV',
 }
 
+# This optional Android 11/12 extension is private to selected platform paths
+# and has max_sdk_version 32. Keep the signed APK declaration, but do not make
+# this Android 17 preprocessed app depend on that inaccessible build module.
+# These imports already disable dexpreopt; this narrow exception must not be
+# applied to a required library or to another application.
+OPTIONAL_BUILD_EXCEPTIONS = {'dev.aaa1115910.bv': {'android.ext.adservices'}}
+
+
+def uses_library_build_properties(package, required, optional):
+    excluded = OPTIONAL_BUILD_EXCEPTIONS.get(package, set())
+    if excluded.intersection(required):
+        raise ValueError('Optional-only exception became a required library: ' + package)
+    omitted = [name for name in optional if name in excluded]
+    included = [name for name in optional if name not in excluded]
+    lines = []
+    for key, value in [('uses_libs', required), ('optional_uses_libs', included)]:
+        if value:
+            lines.append('    ' + key + ': ' + json.dumps(value) + ',')
+    if omitted:
+        lines += [
+            '    // Signed APK keeps optional android.ext.adservices (legacy SDK <=32).',
+            '    // No build dependency on its private module; dexpreopt is disabled.',
+            '    enforce_uses_libs: false,',
+        ]
+    return lines, included, omitted
+
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -190,15 +216,18 @@ def main():
                '    // Existing legacy exception: compressed JNI is installed as exact sidecars.',
                '    // This is not a claim that the preprocessed APK checker passes.',
                '    skip_preprocessed_apk_checks: true,', '    dex_preopt: { enabled: false },']
-        for key, value in [('uses_libs', required), ('optional_uses_libs', optional)]:
-            if value:
-                bp.append('    ' + key + ': ' + json.dumps(value) + ',')
+        library_properties, build_optional, omitted_optional = uses_library_build_properties(
+            package, required, optional)
+        bp += library_properties
         bp += ['    required: ['] + ['        "' + name + '",' for name in dependencies] + ['    ],', '}', '']
         entry = dict(prior)
         entry.pop('jni', None)
         entry.update(module=module, native_sidecars=native, available_abis=sorted(abis),
                      selected_abis=[x[0] for x in selected], required_uses_libraries=required,
-                     optional_uses_libraries=optional)
+                     optional_uses_libraries=optional,
+                     build_optional_uses_libraries=build_optional,
+                     omitted_optional_build_dependencies=omitted_optional,
+                     enforce_uses_libs=not bool(omitted_optional))
         output['apps'].append(entry)
         evidence = prior.get('evidence', package)
         for suffix in ('-signature.txt', '-badging.txt'):
@@ -242,7 +271,10 @@ def main():
         'ELF architecture and DT_NEEDED were inspected; full symbol resolution against the new '
         'ARM64 product output must be checked after that output is built.\n\n'
         'Legacy preprocessed APK checks remain explicitly exempt because matching external JNI sidecars '
-        'are installed. The checker is not claimed to pass. No such exemption is used for official YouTube.\n')
+        'are installed. The checker is not claimed to pass. No such exemption is used for official YouTube.\n\n'
+        'BV retains its optional android.ext.adservices manifest declaration. The Android 17 import '
+        'does not depend on this private legacy SDK <=32 module; only BV disables the build-time '
+        'uses-library comparison, with dexpreopt already disabled. Required libraries are unchanged.\n')
     output['passed'] = True
     output['full_rk3399_symbol_closure_verified'] = False
     output['file_hashes'] = {p.relative_to(stage).as_posix(): sha(p) for p in sorted(stage.rglob('*')) if p.is_file()}

@@ -3,6 +3,50 @@
 这份表用于原版 Firefly-RK3399，不能引用 RK3288 的实测结果填“通过”。
 当前新板未接入，以下项目均为待验收。先记录启动日志和各项证据，再做优化。
 
+## 首刷前按实板容量准备文件
+
+基础候选是 **12 GiB / 12,884,901,888 字节 / 25,165,824 个 512 字节扇区**。
+我先确认原版 RK3399 和 eMMC 目标，再通过下载工具读取真实总扇区数，保留原始
+输出；不能用标称“16 GB”或四舍五入的 MB 反推。少于 25,165,824 扇区时停止，
+不开始写入。若工具只显示近似容量，先补充可靠的精确扇区读取。
+
+基础镜像须先由 `verify-rk3399.py` 完整验证，结果为 `PASS_OFFLINE_NOT_BOOTED`。
+随后使用独立的普通文件工具，将备份 GPT 放到这块 eMMC 的真实末尾：
+
+```sh
+python3 scripts/prepare-rk3399-target.py \
+  --base-image /private/candidate.img \
+  --base-manifest /private/candidate.img.json \
+  --verification /private/candidate-verify.json \
+  --target-sectors EXACT_DECIMAL_512_BYTE_SECTOR_COUNT \
+  --output /private/target-emmc.img
+```
+
+占位符必须替换为实板报告的精确十进制扇区数。Windows 同样可使用 Python 3，
+把路径换为本地路径、将命令写成一行；`python3` 可替换为实际 Python 路径。
+输出目录必须已经存在，镜像及其 `.json` 文件必须是新文件。工具拒绝设备路径、
+符号链接、已有文件、小于基础镜像的容量和超过 128 GiB 的异常容量。
+
+该工具保持全部七个分区的起止位置、UUID 和内容不变，**不扩容 userdata**。
+它只更新保护 MBR 与双 GPT 的容量信息，清除旧镜像尾部的备份 GPT，并把新备份
+放在目标末尾；扩展区域读出为零。输出是具有完整目标长度的 raw 普通文件，
+即使底层文件系统用稀疏区节约空间，刷写工具也必须写出全部逻辑字节，不能跳过
+零块而留下旧盘尾数据。
+
+成功后 `target-emmc.img.json` 的结果为 `PASS_TARGET_FILE_NOT_FLASHED`，包含基础
+镜像、原 manifest、独立验证报告的 SHA-256，以及目标扇区数、目标完整 SHA-256、
+七分区内容哈希和重新打开文件后的双 GPT/零区检查。它不是基础镜像的同一种
+验证报告，也不代表已经刷入或启动；不要对扩容后的文件运行只接受固定 12 GiB
+布局的 `verify-rk3399.py`。
+
+实际首刷应在同一目标的 RAM Loader 会话内再次确认容量，从 **LBA 0** 写入准备好
+的目标容量 raw 文件，再回读同样数量的全部扇区，比较目标完整 SHA-256，并核对
+主 GPT、物理盘尾备份 GPT 和七分区。不要把 raw 文件当成 Rockchip `update.img`，
+不要仅校验前 12 GiB。具体 Windows 下载工具操作应使用单独的首刷说明。
+当前实板容量未知，这一步仅交付工具和离线测试，不预先生成任意假定容量的交付镜像。
+
+## 上板验收记录
+
 | 项目 | 我会核对的实际结果 |
 | --- | --- |
 | 身份和存储 | 原版板型、AArch64、eMMC容量、镜像哈希和实际写入位置 |

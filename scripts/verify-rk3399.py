@@ -190,6 +190,34 @@ def android(filesystems, audit):
     audit.data["android"] = {"sdk": 37, "architecture": "arm64", "secondary_apps": "arm", "hardware_tested": False}
 
 
+def bind_native_reports(a, filesystems, audit):
+    library_names = ("egl/libEGL_mesa.so", "egl/libGLESv1_CM_mesa.so", "egl/libGLESv2_mesa.so",
+                     "libgallium_dri.so", "libminigbm_gralloc.so", "hw/mapper.minigbm.so")
+    graphics = {"/vendor/" + lib + "/" + name for lib in ("lib", "lib64") for name in library_names}
+    graphics.update(("/vendor/bin/hw/android.hardware.graphics.allocator-service.minigbm",
+                     "/vendor/bin/hw/android.hardware.composer.hwc3-service.drm"))
+    media = {"/vendor/lib64/lib" + name + ".so" for name in ("avcodec", "avutil", "swscale", "swresample")}
+    media.update("/vendor/bin/" + name for name in (
+        "hw/android.hardware.media.c2-service-firefly", "firefly-vpu-probe", "firefly-hwdecode",
+        "hw/android.hardware.audio.service-aidl.firefly", "hw/android.hardware.audio.effect.service-aidl.firefly",
+        "firefly-remote", "firefly-cec-input"))
+    helper_hash = v.digest(Path(__file__).with_name("verify-graphics-elf.py"))
+    for label, path, roots, architectures, success_field in (
+            ("graphics", a.graphics_report, graphics, ["arm64", "arm"], "graphics_verified"),
+            ("media", a.media_report, media, ["arm64"], "tv_vendor_elf_verified")):
+        audit.stage = "packaged-native-dependencies:" + label
+        result = json.loads(path.read_text(), object_pairs_hook=v.unique_json)
+        audit.check("native-report-passed:" + label,
+                    result.get("result") == "PASS" and result.get("passed") is True
+                    and result.get(success_field) is True and result.get("architectures") == architectures
+                    and result.get("verification_core_sha256") == helper_hash)
+        audit.check("native-report-product:" + label,
+                    Path(result["requirements"]["product_out"]).resolve() == a.product.resolve())
+        v.bind_graphics_inputs_to_image(result, filesystems, audit, roots)
+        audit.data[label + "_native_image_binding"] = audit.data.pop("graphics_elf_image_binding")
+        audit.data[label + "_native_report_sha256"] = v.digest(path)
+
+
 def verify(a, audit, scratch):
     a.image = v.regular(a.image)
     manifest_path = v.regular(a.manifest or a.image.with_suffix(a.image.suffix + ".json"))
@@ -201,7 +229,7 @@ def verify(a, audit, scratch):
     inputs = [a.idbloader, a.uboot, a.loader_manifest, a.kernel_manifest, *[a.boot_files / name for name in BOOT_FILES],
               *[a.product / (name + ".img") for name in ("system", "system_ext", "product", "vendor", "userdata")]]
     inputs = [v.regular(path) for path in inputs]
-    observations = {p: v.snapshot(p) for p in [a.image, manifest_path, *inputs]}
+    observations = {p: v.snapshot(p) for p in [a.image, manifest_path, a.graphics_report, a.media_report, *inputs]}
     for path in inputs:
         v.source_manifest_hash(path, manifest, audit)
     kernel = json.loads(a.kernel_manifest.read_text(), object_pairs_hook=v.unique_json)
@@ -245,8 +273,10 @@ def verify(a, audit, scratch):
             audit.check("userdata-tree-preserved", v.Ext4(source, scratch, "data").inventory() == v.Ext4(path, scratch, "data").inventory())
         else:
             audit.check("aosp-payload-identical:" + name, source.stat().st_size == size and v.digest(source) == actual)
-    android({name: v.Ext4(payloads[name], scratch, None if name == "system" else name)
-             for name in ("system", "system_ext", "product", "vendor")}, audit)
+    filesystems = {name: v.Ext4(payloads[name], scratch, None if name == "system" else name)
+                   for name in ("system", "system_ext", "product", "vendor")}
+    android(filesystems, audit)
+    bind_native_reports(a, filesystems, audit)
     audit.stage = "delivery"
     actual = v.digest(a.image)
     audit.check("whole-image-sha256", actual == manifest["image_sha256"], actual)
@@ -256,7 +286,7 @@ def verify(a, audit, scratch):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    for name in ("image", "product", "boot-files", "idbloader", "uboot", "loader-manifest", "kernel-manifest", "report"):
+    for name in ("image", "product", "boot-files", "idbloader", "uboot", "loader-manifest", "kernel-manifest", "graphics-report", "media-report", "report"):
         p.add_argument("--" + name, type=Path, required=True)
     p.add_argument("--manifest", type=Path)
     p.add_argument("--simg2img", type=Path)

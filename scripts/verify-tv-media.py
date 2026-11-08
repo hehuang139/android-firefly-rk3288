@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Audit installed TV media ELF dependencies in their vendor linker namespace.
 
-Reuses the existing ARM32 namespace/symbol checker without changing its core.
+Uses the ARM/ARM64 namespace/symbol checker.
 Fresh installed APEX payloads provide runtime libraries; Soong intermediates and
 link-time stubs are excluded. This audit does not decode video or test audio.
 """
@@ -51,8 +51,8 @@ def roots_for(args, parser):
     for index, path in enumerate(args.extra_vendor_root):
         parts = PurePosixPath(path).parts
         if (len(parts) < 4 or parts[:2] != ("/", "vendor")
-                or parts[2] not in ("bin", "lib") or ".." in parts):
-            parser.error("Extra roots must be absolute /vendor/bin or /vendor/lib paths")
+                or parts[2] not in ("bin", "lib", "lib64") or ".." in parts):
+            parser.error("Extra roots must be absolute /vendor/bin, /vendor/lib or /vendor/lib64 paths")
         if path in paths:
             parser.error("Duplicate extra root: " + path)
         paths.add(path)
@@ -60,14 +60,14 @@ def roots_for(args, parser):
     return tuple((name, "vendor", "default", path, ()) for name, path in roots)
 
 
-def describe(report, core_path, roots):
+def describe(report, core_path, roots, arch="arm"):
     report.pop("graphics_verified", None)
-    report["scope"] = "final installed ARM32 TV vendor ELF namespace and symbol dependency audit"
+    report["scope"] = "final installed " + arch + " TV vendor ELF namespace and symbol dependency audit"
     report["tv_vendor_elf_verified"] = report.get("passed", False)
     report["hardware_decode_verified"] = False
     report["audio_playback_verified"] = False
     report["verification_core_sha256"] = hashlib.sha256(core_path.read_bytes()).hexdigest()
-    report["selected_elf_roots"] = [item[3] for item in roots]
+    report["selected_elf_roots"] = [item[3].replace('/lib/', '/lib64/') if arch == 'arm64' else item[3] for item in roots]
     requirements = report.get("requirements")
     if requirements:
         requirements["elf_roots"] = requirements.pop("graphics_roots")
@@ -78,6 +78,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--aosp", type=Path, required=True)
     parser.add_argument("--product-out", type=Path)
+    parser.add_argument("--arch", choices=("arm", "arm64"), default="arm")
     parser.add_argument("--report", type=Path)
     parser.add_argument("--work-dir", type=Path,
                         help="Existing empty directory for extracted APEX and linker configuration")
@@ -92,23 +93,23 @@ def main():
     core, core_path = load_core()
     core.ROOTS = roots
     aosp = args.aosp.resolve()
-    product = (args.product_out or aosp / "out/target/product/rk3288").resolve()
+    product = (args.product_out or aosp / ("out/target/product/rk3288" if args.arch == "arm" else "out/target/product/rk3399")).resolve()
     code = 0
     try:
         if args.requirements:
-            report = {"result": "REQUIREMENTS", "requirements": core.requirements(aosp, product)}
+            report = {"result": "REQUIREMENTS", "requirements": core.requirements(aosp, product, (args.arch,))}
         elif args.check_tools:
             tools = core.check_tools(aosp, product)
             report = {"result": "TOOLS_READY", "tools": {key: str(value) for key, value in tools.items()}}
         elif args.work_dir:
-            report = core.verify_graphics_elf(product, aosp, args.work_dir)
+            report = core.verify_graphics_elf(product, aosp, args.work_dir, (args.arch,))
         else:
             with tempfile.TemporaryDirectory(prefix="firefly-tv-elf-") as temporary:
-                report = core.verify_graphics_elf(product, aosp, Path(temporary))
+                report = core.verify_graphics_elf(product, aosp, Path(temporary), (args.arch,))
     except core.VerificationError as error:
         report = error.report or {"result": "FAIL", "error": str(error)}
         code = 1
-    report = describe(report, core_path, roots)
+    report = describe(report, core_path, roots, args.arch)
     text = json.dumps(report, indent=2) + "\n"
     if args.report:
         args.report.write_text(text)
