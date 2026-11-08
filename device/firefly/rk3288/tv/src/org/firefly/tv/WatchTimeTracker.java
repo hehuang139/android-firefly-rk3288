@@ -18,20 +18,28 @@ import java.util.List;
 /** System-UID watchdog enforces the budget across external apps and launcher changes. */
 public final class WatchTimeTracker extends Service {
     private static final String TAG = "FireflyParent";
+    private static volatile boolean internalVideoActive;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private ParentalPrefs prefs;
     private long reservedUntil;
     private String previousVideo = "";
+    private boolean monitoring;
+    private boolean suspended;
+    private long lastRedirect = Long.MIN_VALUE;
+    private long lastInspectionFailure = Long.MIN_VALUE;
     private final Runnable tick = new Runnable() {
         @Override
         public void run() {
             try {
                 enforce();
             } catch (RuntimeException error) {
-                Log.e(TAG, "Cannot inspect foreground task; returning to child home", error);
+                long now = SystemClock.elapsedRealtime();
+                if (lastInspectionFailure == Long.MIN_VALUE || now - lastInspectionFailure >= 10_000) {
+                    Log.e(TAG, "Cannot inspect foreground task; suspending external child videos", error);
+                    lastInspectionFailure = now;
+                }
                 if (prefs.enabled()) {
-                    stopAllowedApps();
-                    show(KidsActivity.class);
+                    suspendVideos();
                 }
             } finally {
                 handler.postDelayed(this, 1000);
@@ -43,22 +51,24 @@ public final class WatchTimeTracker extends Service {
         context.startService(new Intent(context, WatchTimeTracker.class));
     }
 
+    /** Set by the internal player's foreground lifecycle, never by an incoming intent alone. */
+    static void setInternalVideoActive(boolean active) {
+        internalVideoActive = active;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         prefs = new ParentalPrefs(this);
-        if (prefs.enabled()) {
-            // A restarted watchdog has no in-memory record of background playback.
-            stopManagedVideoApps();
-        }
+        syncMode();
         handler.post(tick);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (prefs.enabled()) {
-            stopManagedVideoApps();
-        }
+        // Home and child screens may start the existing service again. Do not kill
+        // a currently permitted video just because another start command arrived.
+        syncMode();
         return START_STICKY;
     }
 
@@ -72,32 +82,60 @@ public final class WatchTimeTracker extends Service {
     }
 
     private void enforce() {
+        syncMode();
         if (!prefs.enabled()) {
-            previousVideo = "";
-            reservedUntil = 0;
             return;
         }
         ComponentName top = foreground();
         if (top == null) {
-            stopAllowedApps();
+            // No task during transitions/lockscreen is not evidence of an escape.
+            // Stop external playback once, without repeatedly launching child home.
+            suspendVideos();
             return;
         }
         String name = top.getPackageName();
-        boolean externalVideo = prefs.allowedApps().contains(name)
-                || top.getClassName().equals(LiveActivity.class.getName());
-        stopBackgroundVideo(externalVideo ? name : "");
+        boolean ownPackage = getPackageName().equals(name);
+        boolean permittedVideo = (!ownPackage && prefs.allowedApps().contains(name))
+                || (ownPackage && internalVideoActive
+                && top.getClassName().equals(LiveActivity.class.getName()));
+        stopBackgroundVideo(permittedVideo ? name : "");
         if (!getSystemService(PowerManager.class).isInteractive()) {
-            stopAllowedApps();
+            suspendVideos();
             return;
         }
-        if (externalVideo) {
+        suspended = false;
+        if (permittedVideo) {
             watch(name);
-        } else if (!getPackageName().equals(name)) {
+        } else if (!ownPackage) {
             stopUnapprovedVideo(name);
             show(KidsActivity.class);
         } else if (!childScreen(top.getClassName())) {
             show(KidsActivity.class);
         }
+    }
+
+    private void syncMode() {
+        boolean enabled = prefs.enabled();
+        if (enabled && !monitoring) {
+            // A new watchdog or a new protected session cannot trust old background players.
+            stopManagedVideoApps();
+        } else if (!enabled) {
+            previousVideo = "";
+            reservedUntil = 0;
+            suspended = false;
+            lastRedirect = Long.MIN_VALUE;
+        }
+        monitoring = enabled;
+    }
+
+    private void suspendVideos() {
+        if (!suspended) {
+            stopAllowedApps();
+            // Own-package playback cannot be force-stopped without killing the
+            // watchdog. Leaving its page releases it, once for this suspension.
+            if (internalVideoActive) show(KidsActivity.class);
+        }
+        suspended = true;
     }
 
     private boolean childScreen(String name) {
@@ -180,6 +218,9 @@ public final class WatchTimeTracker extends Service {
     }
 
     private void show(Class<?> activity) {
+        long now = SystemClock.elapsedRealtime();
+        if (lastRedirect != Long.MIN_VALUE && now - lastRedirect < 2000) return;
+        lastRedirect = now;
         startActivity(new Intent(this, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
     }

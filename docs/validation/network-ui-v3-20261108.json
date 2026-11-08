@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-08",
+  "scope": "Actual board UI with Ethernet connected; no credentials entered or wireless association attempted.",
+  "tvsettings_apk_sha256": "0db3ed09ee7c487fe2b857d952f96cc5519acf861df5898e358e43cc5ad890f0",
+  "wifi_scan": {
+    "real_scan_result_count": 8,
+    "frequency_mhz": [
+      2412,
+      2417,
+      2422,
+      2437,
+      2452,
+      2462,
+      5180
+    ],
+    "band_2_4ghz_count": 6,
+    "band_5ghz_count": 2,
+    "connected": false,
+    "raw_result_sha256": "5d80a878d933eec3adbc6a3da7c77724936242f4b1c5b6df2b86bd30498ba9cd",
+    "privacy": "SSID and BSSID omitted from shared summary"
+  },
+  "network_ui": {
+    "real_wifi_list_visible_with_ethernet": true,
+    "secured_network_password_editor_opened": true,
+    "password_input_masked": true,
+    "password_cancel_returned_to_network_page": true,
+    "password_cancel_back_presses": 3,
+    "add_network_ssid_editor_opened": true,
+    "add_network_cancel_returned": true,
+    "quick_connect_qr_rendered": true,
+    "quick_connect_back_cancelled": true,
+    "phone_pairing_tested": false,
+    "toggle_off_on": true,
+    "real_secured_network_rows_after_toggle": 3,
+    "ethernet_carrier_preserved": true,
+    "password_or_ssid_entered": false,
+    "connection_attempted": false
+  },
+  "previous_v2_ui_regression": {
+    "ethernet_static_ip_editor_open_cancel": true,
+    "ethernet_manual_proxy_editor_open_cancel": true,
+    "supported_resolution_list_populated": true,
+    "saved_ip_proxy_or_display_mode_changes": false
+  },
+  "limits": [
+    "Wi-Fi credentials, association, DHCP and reconnect are untested.",
+    "No cold power cycle or long duration wireless test.",
+    "Quick-connect QR page is verified; phone-assisted provisioning is untested.",
+    "Static IP, proxy and resolution editing were cancelled without applying changes."
+  ],
+  "privacy": "Raw SSID/BSSID/IP/XML/screenshots remain local; this report excludes their values."
+}

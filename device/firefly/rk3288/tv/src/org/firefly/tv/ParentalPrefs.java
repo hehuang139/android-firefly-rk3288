@@ -16,6 +16,7 @@ import java.security.spec.InvalidKeySpecException;
 /** Device-protected, synchronous budget checkpoints and salted parent credentials. */
 final class ParentalPrefs {
     private static final long MINUTE = 60_000L;
+    private static final long DAY = 86_400_000L;
     private final SharedPreferences prefs;
 
     ParentalPrefs(Context context) {
@@ -25,10 +26,12 @@ final class ParentalPrefs {
 
     boolean enabled() { return prefs.getBoolean("enabled", false); }
     boolean hasPin() { return prefs.contains("pin_hash"); }
-    int sessionMinutes() { return prefs.getInt("session_minutes", 15); }
-    int dailyMinutes() { return prefs.getInt("daily_minutes", 60); }
-    int bonusMinutes() { return prefs.getInt("bonus_minutes", 5); }
-    int difficulty() { return prefs.getInt("difficulty", 0); }
+    int sessionMinutes() { return validOrDefault(prefs.getInt("session_minutes", 15), 15, 5, 10, 15, 20, 30); }
+    int dailyMinutes() { return validOrDefault(prefs.getInt("daily_minutes", 60), 60, 15, 30, 45, 60, 90); }
+    int bonusMinutes() { return validOrDefault(prefs.getInt("bonus_minutes", 5), 5, 3, 5, 10, 15); }
+    int difficulty() { return validOrDefault(prefs.getInt("difficulty", 0), 0, 0, 1); }
+    int mathLimit() { return validOrDefault(prefs.getInt("math_limit", 10), 10, 5, 10, 20); }
+    int mathQuestions() { return validOrDefault(prefs.getInt("math_questions", 5), 5, 5, 10); }
     String resumePackage() { return prefs.getString("resume_package", ""); }
     void setResumePackage(String name) { prefs.edit().putString("resume_package", name).commit(); }
 
@@ -39,8 +42,28 @@ final class ParentalPrefs {
     }
 
     void setLimits(int session, int daily, int bonus, int difficulty) {
+        requireChoice(session, 5, 10, 15, 20, 30);
+        requireChoice(daily, 15, 30, 45, 60, 90);
+        requireChoice(bonus, 3, 5, 10, 15);
+        requireChoice(difficulty, 0, 1);
         prefs.edit().putInt("session_minutes", session).putInt("daily_minutes", daily)
                 .putInt("bonus_minutes", bonus).putInt("difficulty", difficulty).commit();
+    }
+
+    void setMathOptions(int limit, int questions) {
+        requireChoice(limit, 5, 10, 20);
+        requireChoice(questions, 5, 10);
+        prefs.edit().putInt("math_limit", limit).putInt("math_questions", questions).commit();
+    }
+
+    private static int validOrDefault(int value, int fallback, int... choices) {
+        for (int choice : choices) if (value == choice) return value;
+        return fallback;
+    }
+
+    private static void requireChoice(int value, int... choices) {
+        for (int choice : choices) if (value == choice) return;
+        throw new IllegalArgumentException("Unsupported parental setting");
     }
 
     private void rollover() {
@@ -55,21 +78,30 @@ final class ParentalPrefs {
     long remaining() {
         rollover();
         int minutes = prefs.getBoolean("bonus_session", false) ? bonusMinutes() : sessionMinutes();
-        return WatchBudget.remaining(dailyMinutes() * MINUTE, prefs.getLong("daily_spent", 0),
-                minutes * MINUTE, prefs.getLong("session_spent", 0));
+        return WatchBudget.remaining(dailyMinutes() * MINUTE, dailyUsed(),
+                minutes * MINUTE, Math.max(0, Math.min(DAY, prefs.getLong("session_spent", 0))));
     }
 
     boolean dailyExhausted() {
+        return dailyRemaining() == 0;
+    }
+
+    long dailyUsed() {
         rollover();
-        return prefs.getLong("daily_spent", 0) >= dailyMinutes() * MINUTE;
+        return Math.max(0, Math.min(DAY, prefs.getLong("daily_spent", 0)));
+    }
+
+    long dailyRemaining() {
+        return Math.max(0, dailyMinutes() * MINUTE - dailyUsed());
     }
 
     void charge(long milliseconds) {
         rollover();
+        long charge = Math.max(0, Math.min(DAY, milliseconds));
         prefs.edit().putLong("daily_spent", WatchBudget.charge(
-                prefs.getLong("daily_spent", 0), milliseconds))
+                dailyUsed(), charge))
                 .putLong("session_spent", WatchBudget.charge(
-                prefs.getLong("session_spent", 0), milliseconds)).commit();
+                Math.max(0, Math.min(DAY, prefs.getLong("session_spent", 0))), charge)).commit();
     }
 
     boolean puzzlePassed() {
@@ -95,6 +127,9 @@ final class ParentalPrefs {
     }
 
     void setPin(String pin) {
+        if (pin == null || !pin.matches("[0-9]{4,8}")) {
+            throw new IllegalArgumentException("PIN must contain 4 to 8 digits");
+        }
         byte[] salt = new byte[16];
         new SecureRandom().nextBytes(salt);
         prefs.edit().putString("pin_salt", Base64.encodeToString(salt, Base64.NO_WRAP))
@@ -106,9 +141,15 @@ final class ParentalPrefs {
         if (lockSeconds() > 0 || !hasPin()) {
             return false;
         }
-        byte[] salt = Base64.decode(prefs.getString("pin_salt", ""), Base64.NO_WRAP);
-        byte[] expected = Base64.decode(prefs.getString("pin_hash", ""), Base64.NO_WRAP);
-        boolean valid = MessageDigest.isEqual(expected, derive(pin, salt));
+        boolean valid = false;
+        try {
+            byte[] salt = Base64.decode(prefs.getString("pin_salt", ""), Base64.NO_WRAP);
+            byte[] expected = Base64.decode(prefs.getString("pin_hash", ""), Base64.NO_WRAP);
+            valid = pin != null && pin.matches("[0-9]{4,8}") && salt.length == 16
+                    && expected.length == 32 && MessageDigest.isEqual(expected, derive(pin, salt));
+        } catch (IllegalArgumentException error) {
+            // Corrupt credentials must reject access, not crash or allow PIN replacement.
+        }
         int failures = valid ? 0 : prefs.getInt("pin_failures", 0) + 1;
         prefs.edit().putInt("pin_failures", failures % 5).putLong("pin_lock_until",
                 failures >= 5 ? System.currentTimeMillis() + 30_000 : 0).commit();

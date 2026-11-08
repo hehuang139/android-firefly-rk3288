@@ -27,6 +27,7 @@ final class ChannelPicker extends FrameLayout {
     interface Listener {
         void onChannelSelected(int originalIndex);
         void onFavoriteToggle(int originalIndex);
+        void onDismissed();
     }
 
     private static final int WHITE = 0xfff5f5f7;
@@ -90,7 +91,7 @@ final class ChannelPicker extends FrameLayout {
         FrameLayout.LayoutParams panelPosition = new FrameLayout.LayoutParams(width, -1, Gravity.START);
         panelPosition.setMargins(px(28), px(28), px(28), px(28));
         addView(panel, panelPosition);
-        panel.setOnClickListener(v -> { });
+        panel.setOnClickListener(v -> focusChannel(focusedIndex));
         panel.setFocusable(false);
 
         LinearLayout header = row();
@@ -218,10 +219,12 @@ final class ChannelPicker extends FrameLayout {
     }
 
     void dismiss() {
+        if (!isShowing()) return;
         panel.animate().cancel();
         outside.animate().cancel();
         setVisibility(GONE);
         clearFocus();
+        listener.onDismissed();
     }
 
     void setGuide(ProgramGuide value) {
@@ -264,7 +267,7 @@ final class ChannelPicker extends FrameLayout {
     private void switchTab(int index, boolean focusTab) {
         tabIndex = index;
         rebuildGroups();
-        if (focusTab) tabs.get(index).requestFocus();
+        if (focusTab) requestPickerFocus(tabs.get(index));
     }
 
     private void styleTabs() {
@@ -386,6 +389,7 @@ final class ChannelPicker extends FrameLayout {
             row.star.setOnClickListener(v -> {
                 listener.onFavoriteToggle(index);
                 refreshFavorites();
+                requestPickerFocus(row.view);
             });
             row.star.setFocusable(false);
             row.star.setFocusableInTouchMode(false);
@@ -432,12 +436,12 @@ final class ChannelPicker extends FrameLayout {
     }
 
     private void focusChannel(int preferredIndex) {
-        if (channelViews.isEmpty()) { tabs.get(tabIndex).requestFocus(); return; }
+        if (channelViews.isEmpty()) { requestPickerFocus(tabs.get(tabIndex)); return; }
         ChannelRow selected = channelViews.get(0);
         for (ChannelRow row : channelViews) {
             if (row.index == preferredIndex) { selected = row; break; }
         }
-        selected.view.requestFocus();
+        requestPickerFocus(selected.view);
         final View target = selected.view;
         channelScroll.post(() -> {
             if (target.getParent() == channelList) {
@@ -480,29 +484,35 @@ final class ChannelPicker extends FrameLayout {
             if (key == KeyEvent.KEYCODE_DPAD_LEFT || key == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 switchTab(key == KeyEvent.KEYCODE_DPAD_LEFT ? 0 : 1, true);
             } else if (key == KeyEvent.KEYCODE_DPAD_DOWN && !groupViews.isEmpty()) {
-                groupViews.get(groupSelection[tabIndex]).requestFocus();
+                requestPickerFocus(groupViews.get(groupSelection[tabIndex]));
             }
         } else if (category >= 0) {
             if (key == KeyEvent.KEYCODE_DPAD_RIGHT) focusChannel(focusedIndex);
-            else if (key == KeyEvent.KEYCODE_DPAD_UP && category == 0) tabs.get(tabIndex).requestFocus();
+            else if (key == KeyEvent.KEYCODE_DPAD_UP && category == 0) requestPickerFocus(tabs.get(tabIndex));
             else if (key == KeyEvent.KEYCODE_DPAD_UP || key == KeyEvent.KEYCODE_DPAD_DOWN) {
                 int next = Math.max(0, Math.min(groupViews.size() - 1,
                         category + (key == KeyEvent.KEYCODE_DPAD_UP ? -1 : 1)));
-                groupViews.get(next).requestFocus();
+                requestPickerFocus(groupViews.get(next));
             }
         } else if (channel >= 0) {
-            if (key == KeyEvent.KEYCODE_DPAD_LEFT) groupViews.get(groupSelection[tabIndex]).requestFocus();
-            else if (key == KeyEvent.KEYCODE_DPAD_UP && channel == 0) tabs.get(tabIndex).requestFocus();
+            if (key == KeyEvent.KEYCODE_DPAD_LEFT) requestPickerFocus(groupViews.get(groupSelection[tabIndex]));
+            else if (key == KeyEvent.KEYCODE_DPAD_UP && channel == 0) requestPickerFocus(tabs.get(tabIndex));
             else if (key == KeyEvent.KEYCODE_DPAD_UP || key == KeyEvent.KEYCODE_DPAD_DOWN) {
                 int next = Math.max(0, Math.min(channelViews.size() - 1,
                         channel + (key == KeyEvent.KEYCODE_DPAD_UP ? -1 : 1)));
-                channelViews.get(next).view.requestFocus();
+                requestPickerFocus(channelViews.get(next).view);
             }
         } else focusChannel(currentIndex);
         return true;
     }
 
     private int px(int value) { return Math.max(1, Math.round(value * unit)); }
+
+    private void requestPickerFocus(View view) {
+        // Pointer clicks activate immediately; retain a keyboard target afterward
+        // without making the first click merely focus a touch-focusable button.
+        view.requestFocusFromTouch();
+    }
     private TextView text(String value, int size, int color) {
         TextView v = new TextView(getContext());
         v.setText(value);
@@ -555,7 +565,7 @@ final class ChannelPicker extends FrameLayout {
         view.setClickable(true);
         view.setOnClickListener(click);
         view.setOnHoverListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_HOVER_ENTER) v.requestFocus();
+            if (event.getAction() == MotionEvent.ACTION_HOVER_ENTER) requestPickerFocus(v);
             return false;
         });
     }

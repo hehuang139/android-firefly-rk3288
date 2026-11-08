@@ -28,7 +28,8 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
     private static final String TAG = "FireflyLive";
     private static final int PREPARE_TIMEOUT_MS = 18_000;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Runnable sourceRefresh = this::refreshProgramme;
+    private Runnable pendingRetry;
+    private final LiveReconnectPolicy reconnectPolicy = new LiveReconnectPolicy();
     private final Runnable hideBanner = () -> this.banner.setVisibility(View.GONE);
     private final Runnable numberSelection = this::selectNumber;
     private final java.util.concurrent.ExecutorService guideWorker =
@@ -48,6 +49,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
     private ChannelCatalog catalog;
     private SharedPreferences preferences;
     private Set<String> favorites;
+    private FrameLayout playbackRoot;
     private SurfaceView surface;
     private LinearLayout banner;
     private TextView channelText;
@@ -107,6 +109,11 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
 
     private void createPlayerView() {
         FrameLayout root = new FrameLayout(this);
+        playbackRoot = root;
+        // Keep a real focus target after pointer use so the first TV key is not
+        // consumed by ViewRootImpl merely to leave touch mode and restore focus.
+        root.setFocusableInTouchMode(true);
+        root.setDescendantFocusability(android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         root.setBackgroundColor(android.graphics.Color.BLACK);
         surface = new SurfaceView(this);
         surface.getHolder().addCallback(this);
@@ -158,6 +165,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         root.addView(banner, position);
         channelPicker = new ChannelPicker(this, catalog, favorites, new ChannelPicker.Listener() {
             @Override public void onChannelSelected(int originalIndex) {
+                reconnectPolicy.reset();
                 channelIndex = originalIndex;
                 sourceIndex = 0;
                 play();
@@ -165,9 +173,13 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             @Override public void onFavoriteToggle(int originalIndex) {
                 toggleFavorite(originalIndex);
             }
+            @Override public void onDismissed() {
+                if (!stopped) playbackRoot.requestFocus();
+            }
         });
         root.addView(channelPicker, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
+        root.requestFocus();
     }
 
     @Override
@@ -178,7 +190,9 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             finish();
             return;
         }
+        WatchTimeTracker.setInternalVideoActive(kidsVideo != null);
         stopped = false;
+        if (!channelPicker.isShowing()) playbackRoot.requestFocus();
         handler.post(guideTick);
         if (surfaceReady) {
             play();
@@ -191,6 +205,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
 
     @Override
     protected void onStop() {
+        WatchTimeTracker.setInternalVideoActive(false);
         stopped = true;
         channelPicker.dismiss();
         handler.removeCallbacksAndMessages(null);
@@ -307,14 +322,15 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         }
     }
 
-    private void refreshProgramme() {
-        releasePlayer();
-        int generation = playbackGeneration;
-        handler.postDelayed(() -> {
-            if (generation == playbackGeneration && !stopped) {
-                play();
-            }
-        }, 1000);
+    private void scheduleRetry(int delayMs) {
+        final int generation = playbackGeneration;
+        if (pendingRetry != null) handler.removeCallbacks(pendingRetry);
+        pendingRetry = () -> {
+            if (generation != playbackGeneration || stopped) return;
+            pendingRetry = null;
+            play();
+        };
+        handler.postDelayed(pendingRetry, delayMs);
     }
 
     private MediaPlayer createPlayer() {
@@ -356,6 +372,16 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         } else if (decoderTest) {
             long seconds = (SystemClock.elapsedRealtime() - playbackStarted) / 1000;
             show("样片播放完成，耗时 " + seconds + " 秒。可返回运行指定解码器的硬解测试。", false);
+        } else {
+            long playedMs = playbackStarted == 0 ? 0 : SystemClock.elapsedRealtime() - playbackStarted;
+            boolean retry = reconnectPolicy.allowCompletion(playedMs);
+            releasePlayer();
+            if (retry) {
+                show("直播连接已结束，正在重新连接…", false);
+                scheduleRetry(1000);
+            } else {
+                show("直播线路反复结束，已停止自动重连。可按左右切换线路，或按确定选择其他频道。", false);
+            }
         }
     }
 
@@ -415,9 +441,10 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         }
         ChannelCatalog.Channel channel = catalog.channels.get(channelIndex);
         if (sourceIndex + 1 < channel.sources.size()) {
+            reconnectPolicy.reset();
             sourceIndex++;
             show(reason + "，正在切换备用线路…", false);
-            handler.postDelayed(this::play, 400);
+            scheduleRetry(400);
         } else {
             show(reason + "。可按左右切换线路，或按确定键选择其他频道。", false);
         }
@@ -435,12 +462,15 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         playbackStarted = 0;
         releasePlayer();
         show("正在重新连接频道…", false);
-        handler.postDelayed(this::play, 400);
+        scheduleRetry(400);
         return true;
     }
 
     private void releasePlayer() {
-        handler.removeCallbacks(sourceRefresh);
+        if (pendingRetry != null) {
+            handler.removeCallbacks(pendingRetry);
+            pendingRetry = null;
+        }
         playbackGeneration++;
         playbackStarted = 0;
         if (pendingPlayback != null) {
@@ -472,6 +502,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             return;
         }
         channelIndex = Math.floorMod(channelIndex + delta, catalog.channels.size());
+        reconnectPolicy.reset();
         sourceIndex = 0;
         play();
     }
@@ -481,6 +512,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
             return;
         }
         int count = catalog.channels.get(channelIndex).sources.size();
+        reconnectPolicy.reset();
         sourceIndex = Math.floorMod(sourceIndex + delta, count);
         play();
     }
@@ -554,6 +586,7 @@ public final class LiveActivity extends TvActivity implements SurfaceHolder.Call
         digits = "";
         for (int index = 0; index < catalog.channels.size(); index++) {
             if (catalog.channels.get(index).number == requested) {
+                reconnectPolicy.reset();
                 channelIndex = index;
                 sourceIndex = 0;
                 play();

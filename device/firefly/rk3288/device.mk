@@ -36,7 +36,7 @@ PRODUCT_VENDOR_PROPERTIES += \
     ro.com.android.dataroaming=false
 
 # The board uses USB keyboard/mouse and Ethernet during first bring-up.
-# No Wi-Fi/Bluetooth/camera feature is advertised before its HAL is adapted.
+# The Wi-Fi candidate advertises station mode only; Bluetooth/camera remain absent.
 PRODUCT_PACKAGES += \
     android.hardware.health-service.example \
     android.hardware.power-service.example \
@@ -102,3 +102,5 @@ PRODUCT_PACKAGES += FireflyAdblockCMFA FireflyAdblockNotice
 
 # External HDMI route monitor; analog remains the attached fallback.
 PRODUCT_PACKAGES += FireflyHdmiAudio
+
+$(call inherit-product, $(FIREFLY_DEVICE_PATH)/wifi/wifi-product.mk)

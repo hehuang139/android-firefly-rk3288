@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Station Wi-Fi only. Other wireless features await hardware validation. -->
+<permissions>
+    <feature name="android.hardware.wifi" />
+</permissions>

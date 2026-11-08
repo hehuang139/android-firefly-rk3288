@@ -1,0 +1,38 @@
+--- a/Settings/src/com/android/tv/settings/connectivity/NetworkFragment.java
++++ b/Settings/src/com/android/tv/settings/connectivity/NetworkFragment.java
+@@ -516,11 +516,12 @@
+         final boolean ethernetConnected = mConnectivityListener.isEthernetConnected();
+         mEnableWifiPref.setChecked(wifiEnabled);
+ 
+-        mWifiNetworksCategory.setVisible(wifiEnabled && !ethernetConnected);
++        // Keep Wi-Fi setup available while Ethernet remains the default network.
++        mWifiNetworksCategory.setVisible(wifiEnabled);
+         mCollapsePref.setVisible(wifiEnabled && mWifiNetworksCategory.shouldShowCollapsePref());
+-        mAddPref.setVisible(wifiEnabled && !ethernetConnected);
++        mAddPref.setVisible(wifiEnabled);
+         if (mAddEasyConnectPref != null) {
+-            mAddEasyConnectPref.setVisible(isEasyConnectEnabled() && !ethernetConnected);
++            mAddEasyConnectPref.setVisible(isEasyConnectEnabled());
+         }
+ 
+         if (!wifiEnabled) {
+@@ -576,8 +577,7 @@
+             mEthernetStatusPref.setSummary(mConnectivityListener.getEthernetIpAddress());
+         }
+ 
+-        mEnableWifiPref.setSummary(ethernetConnected ?
+-                getString(R.string.unplug_ethernet_to_use_wifi) : null);
++        mEnableWifiPref.setSummary(null);
+     }
+ 
+     private void updateWifiList() {
+@@ -585,8 +585,7 @@
+             return;
+         }
+ 
+-        if (!mIsWifiHardwarePresent || !mConnectivityListener.isWifiEnabledOrEnabling()
+-            || mConnectivityListener.isEthernetConnected()) {
++        if (!mIsWifiHardwarePresent || !mConnectivityListener.isWifiEnabledOrEnabling()) {
+             mWifiNetworksCategory.removeAll();
+             mNoWifiUpdateBeforeMillis = 0;
+             return;

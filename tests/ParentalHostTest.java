@@ -27,6 +27,7 @@ public final class ParentalHostTest {
         Context context = new Context();
         ParentalPrefs prefs = new ParentalPrefs(context);
         check(!prefs.enabled() && !prefs.hasPin(), "no default PIN and opt-in mode");
+        mathPreferences();
         prefs.setEnabled(true);
         check(!prefs.enabled(), "cannot enable mode without a PIN");
         prefs.setPin("482619");
@@ -35,8 +36,12 @@ public final class ParentalHostTest {
         prefs.setEnabled(true);
         check(prefs.enabled(), "mode enabled after setup");
         check(prefs.remaining() == 15 * 60_000L, "default 15 minute first session");
+        check(prefs.dailyUsed() == 0 && prefs.dailyRemaining() == 60 * 60_000L,
+                "status shows a fresh daily budget without consuming it");
         check(!prefs.puzzlePassed(), "early quiz cannot replenish a running session");
         prefs.charge(15 * 60_000L);
+        check(prefs.dailyUsed() == 15 * 60_000L && prefs.dailyRemaining() == 45 * 60_000L,
+                "daily status separates the total from the exhausted session");
         check(prefs.remaining() == 0, "session exhaustion");
         ParentalPrefs restarted = new ParentalPrefs(context);
         check(restarted.enabled() && restarted.remaining() == 0, "restart preserves exhaustion");
@@ -77,9 +82,57 @@ public final class ParentalHostTest {
         check(WatchBudget.remaining(3000, 1000, 1500, 1600) == 0,
                 "lowering a session limit takes effect immediately");
         puzzles();
+        checks += WatchTimeTrackerHostTest.run();
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info("PASS " + checks + " assertions");
         }
+    }
+
+    private static void mathPreferences() {
+        Context context = new Context();
+        ParentalPrefs prefs = new ParentalPrefs(context);
+        check(prefs.mathLimit() == 10 && prefs.mathQuestions() == 5, "math defaults");
+        prefs.setPin("1357");
+        prefs.setLimits(10, 30, 3, 1);
+        prefs.charge(12_000);
+        prefs.setMathOptions(20, 10);
+        ParentalPrefs reopened = new ParentalPrefs(context);
+        check(reopened.mathLimit() == 20 && reopened.mathQuestions() == 10, "math persists");
+        check(reopened.sessionMinutes() == 10 && reopened.dailyMinutes() == 30
+                && reopened.bonusMinutes() == 3 && reopened.difficulty() == 1
+                && reopened.dailyUsed() == 12_000 && reopened.verifyPin("1357"),
+                "math changes cannot alter video budget difficulty or PIN");
+        reopened.setLimits(15, 60, 5, 0);
+        check(reopened.mathLimit() == 20 && reopened.mathQuestions() == 10,
+                "video changes cannot alter math options");
+        boolean rejected = false;
+        try { reopened.setMathOptions(7, 5); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected && reopened.mathLimit() == 20 && reopened.mathQuestions() == 10,
+                "unsupported math range rejected atomically");
+        rejected = false;
+        try { reopened.setMathOptions(5, 3); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected && reopened.mathLimit() == 20, "unsupported math length rejected atomically");
+        reopened.setMathOptions(5, 5);
+        check(reopened.mathLimit() == 5 && reopened.mathQuestions() == 5, "small math option supported");
+        rejected = false;
+        try { reopened.setLimits(-1, 60, 5, 0); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected && reopened.sessionMinutes() == 15, "negative video setting rejected");
+        context.getSharedPreferences("parental", Context.MODE_PRIVATE).edit()
+                .putInt("math_limit", 99).putInt("math_questions", 0).commit();
+        check(reopened.mathLimit() == 10 && reopened.mathQuestions() == 5,
+                "invalid stored math options fall back to supported defaults");
+        reopened.charge(Long.MAX_VALUE);
+        check(reopened.dailyExhausted() && reopened.dailyUsed() == 86_400_000L,
+                "large charge cannot overflow into a credit");
+        reopened.charge(-60_000);
+        check(reopened.dailyExhausted(), "negative input cannot refund spent time");
+        context.getSharedPreferences("parental", Context.MODE_PRIVATE).edit()
+                .putString("pin_salt", "not-base64!").commit();
+        check(!reopened.verifyPin("1357") && reopened.hasPin(),
+                "corrupt credentials fail closed without resetting the PIN gate");
+        rejected = false;
+        try { reopened.setPin("1"); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected, "PIN shape enforced outside dialog too");
     }
 
     private static void puzzles() {

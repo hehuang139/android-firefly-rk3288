@@ -53,6 +53,27 @@ def apply_release_patches(aosp, source):
         "347fbd34b368d19f0d87e908ea101eed3601a731",
         "3438d20ed7c0510e3ee1f11777c7d134e6571129269556964a5fe6dfeb107055",
         "b5d279f14235e9c04cd622fa0430fb19eeed8f098ee494d2d3a075810b7ace63")
+    apply_tvsettings_patches(aosp, source)
+
+
+def apply_tvsettings_patches(aosp, source):
+    """Repair network setup and modes on boards without a boot-preferred display mode."""
+    base = "d726afd01e0189180f2e4c61b6c47c556db372da"
+    apply_release_patch(aosp, source, "packages/apps/TvSettings",
+        "Settings/src/com/android/tv/settings/connectivity/ConnectivityListener.java",
+        "tvsettings/0001-track-ethernet-without-wifi.patch", base,
+        "da114ecbb4aadd426c9d23e2d8bfb42ce63b9f41c5d2b721a35c29ca87d1640c",
+        "404295e4a1b6e044adcb030faab63a0096ab571970a94ceb5f9de57c307bb0dd")
+    apply_release_patch(aosp, source, "packages/apps/TvSettings",
+        "Settings/src/com/android/tv/settings/device/displaysound/ResolutionSelectionFragment.java",
+        "tvsettings/0002-show-modes-without-boot-preference.patch", base,
+        "1143bf2fb18c6da5f0003931ed28e10e3bbcc1baad423f5b7d8dc6d9147996d0",
+        "d18e04f59d4b0aaf69f3825ad319b6d008e4d07ef3839800638c4a25173e56bf")
+    apply_release_patch(aosp, source, "packages/apps/TvSettings",
+        "Settings/src/com/android/tv/settings/connectivity/NetworkFragment.java",
+        "tvsettings/0003-configure-wifi-while-ethernet-connected.patch", base,
+        "7cb681c7b6abdbe331dd7b18c8023720b8c9c228f3e2e8482d7151bf4fa37e62",
+        "eaea44970db1330d2a1f15b0808f5c6676c5824183b6dba8c323e221a2ba98a7")
 
 
 def copy_build_input(source, destination):

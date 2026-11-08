@@ -10,7 +10,8 @@ firmware and the bounded candidate runtime validation are recorded separately.
 Use x86_64 Linux, Docker, Git/repo, Python 3, make, patch, curl, xz, ripgrep,
 dtc and an ARM hard-float cross compiler (`arm-linux-gnueabihf-*`). The Android
 build uses its pinned Clang/Bionic toolchain. Budget roughly 64 GB RAM and
-400 GB free storage. Commands below create ordinary files; they do not flash.
+400 GB free storage. Wi-Fi input preparation additionally uses `kmod` (`modinfo`
+and `modprobe`) and `dpkg-deb`. Commands below create ordinary files; they do not flash.
 
 ## 1. Source layout
 
@@ -46,8 +47,9 @@ bash variants/emmc/rebuild.sh
 
 `kernel-release` must not exist beforehand. `kernel/final/build-kernel.sh`
 checks the upstream tar hash, applies the cumulative patch once, checks the
-complete .config, compiles zImage and reconstructs the final DTS. The entry
-stages zImage and the eMMC DTB into device build inputs. The small Hantro DMA
+complete .config, compiles zImage and modules, and reconstructs the final DTS.
+The entry stages zImage, the Wi-Fi DTB for both boot paths, and six matching
+Wi-Fi modules into device build inputs. The small Hantro DMA
 patch under patches/kernel is explanatory and already included; do not apply
 it again. The DTS is decompiled corresponding source, not original labels.
 DTC round-trip was byte-identical with DTC 1.7.2-g52f07dcc but gives warnings;
@@ -56,6 +58,54 @@ it is not DT schema validation. Kernel full rebuild reproducibility is untested.
 The old TF scripts/configuration are retained for reference. The final tested
 profile is eMMC and uses the standalone final DTS. Do not substitute the old
 HEVC-enabled DTS or claim TF final-image testing from these instructions.
+
+### 2.1. Wi-Fi firmware and matching modules
+
+The original-board Wi-Fi integration uses mainline `brcmfmac`, NL80211, the
+AOSP AIDL supplicant, `wificond`, and one static Wi-Fi resource overlay. It
+does not use the old `bcmdhd` vendor HAL. The public tree contains source and
+pinned download metadata; firmware, kernel modules and board calibration are
+generated locally under the ignored `device/firefly/rk3288/wifi/prebuilts/`.
+
+After the kernel command above, obtain firmware with your module's calibration
+file before `build.sh install` or generating the Android build graph:
+
+```bash
+cd "$PORT_ROOT"
+python3 scripts/fetch-wifi-firmware.py \
+  --cache "$FIREFLY_WORK_ROOT/downloads/wifi" \
+  --nvram-file /private/path/to/module-calibration.txt
+```
+
+The script checks fixed package and member SHA256 values, retains Broadcom,
+Cypress and regulatory database licenses, and refuses an existing output
+directory. The first firmware package download is about 316 MB. The pinned
+AP6335 evaluation template can instead be explicitly requested with
+`--fetch-unlicensed-nvram-template`; its redistribution permission is unconfirmed,
+so it is neither included in this repository nor a promise of suitability for
+another board. Do not invent shared MAC addresses or RF calibration values.
+
+`build.sh kernel` already calls `scripts/prepare-wifi-kernel.py` and stages its
+output. To inspect an existing matching kernel build separately, use a new
+output directory:
+
+```bash
+python3 scripts/prepare-wifi-kernel.py \
+  --kernel-build "$FIREFLY_KERNEL_OUTPUT/build" \
+  --output "$FIREFLY_WORK_ROOT/wifi-export-review"
+```
+
+This checks the exact configuration and kernel release, ELF32 ARM modules,
+vermagic, imported symbol CRCs and the baseline/candidate DTB hashes. Do not
+substitute `.ko` files from a different build. The performed export verified
+517 imported CRCs across six modules; this is not a new clean kernel rebuild.
+
+On the board, a software reboot followed by real 2.4/5 GHz scanning passed.
+Association, DHCP, reconnect, cold power-on, Bluetooth, hotspot/P2P and enforcing
+SELinux remain unvalidated. Initial SDIO enumeration still uses one bounded
+controller recovery; the power-up timing root cause is not established. See
+[Wi-Fi bring-up and limits](docs/wifi-bringup.md) and the
+[sanitized validation record](docs/validation/wifi-bringup-20261108.json).
 
 ## 3. Android graphics and FFmpeg prerequisites
 
@@ -66,8 +116,11 @@ bash build.sh install
 ```
 
 `install` copies the board/graphics source and applies pinned adbd, Soong, hosts,
-minigbm and NetBpfLoad patches. It rejects unrelated edits and verifies the exact
-minigbm/NetBpfLoad before and after hashes. Existing private overlays are not
+minigbm, NetBpfLoad and TvSettings patches. It rejects unrelated edits and verifies
+the exact minigbm/NetBpfLoad/TvSettings before and after hashes. The TvSettings
+patches restore Ethernet configuration without a Wi-Fi service and populate
+display modes without a boot-preferred mode; see [the settings repair notes](docs/tvsettings-repair.md).
+Existing private overlays are not
 an acceptable substitute for these sources.
 
 FFmpeg libraries are built separately before the full product. In the Android

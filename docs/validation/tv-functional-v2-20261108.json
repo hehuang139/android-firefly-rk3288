@@ -1,0 +1,179 @@
+{
+  "scope": "Versioned feature observations. Independent parent fixture is separate from production data. Physical audio/IR/CEC and third-party account flows not certified.",
+  "installed_at_v2": "efa5a04b6dda175c83b7ea4611185ba47b1d3f570a4ec348c40b70e4738e3864",
+  "groups": {
+    "home-settings-v2": {
+      "home_back_and_escape_remain_home": true,
+      "single_click_home_apps": true,
+      "app_grid_remote_scroll_and_focus": true,
+      "single_click_sound_opens_audio_settings": true,
+      "sound_activity": "com.android.tv.settings/.device.displaysound.DisplaySoundActivity",
+      "display_opens_display_settings": true,
+      "network_opens_tv_network_settings": true,
+      "restart_confirmation_can_be_cancelled": true,
+      "kids_header_back_uses_existing_disabled_mode_exit": true,
+      "home_browse_opens_picker_no_async_banner_overlap": true,
+      "live_escape_closes_picker_then_returns_home": true,
+      "resume_starts_live_without_picker": true,
+      "channel_catalog_and_decoder_preserved": true,
+      "apk_sha256": "efa5a04b6dda175c83b7ea4611185ba47b1d3f570a4ec348c40b70e4738e3864",
+      "catalog_sha256": "2aebc8dc2997a814bca9a63210ec77fc72a49fbcc2c140783e7fdee55c766208",
+      "c2_sha256": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475"
+    },
+    "device-extra-v2": {
+      "app_management_opened": true,
+      "full_system_settings_opened": true,
+      "ad_filter_explanation_dismissed": true,
+      "usb_maintenance_cancel_no_reboot": true,
+      "android_dpad_input_visible_not_physical_ir_test": true,
+      "remote_reset_cancelled": true,
+      "leave_during_ir_capture": true,
+      "h264_explicit_decoder_complete": {
+        "completed": true,
+        "frames": 300,
+        "outputBytes": 933120000,
+        "elapsedMs": 6315,
+        "component": "c2.firefly.h264.decoder",
+        "sample": "/product/etc/firefly-tv/h264-1080p.mp4",
+        "mime": "video/avc",
+        "width": 1920,
+        "height": 1080,
+        "hardwareAccelerated": true,
+        "observedEpochMs": 1794123349125
+      },
+      "unavailable_hevc_not_advertised_as_testable": true,
+      "no_late_ir_capture_save": true,
+      "practice_and_progress_tabs": true
+    },
+    "fixture-device-v2": {
+      "temporary_pin_creation_unlocks_fixture_only": true,
+      "leaving_parent_panel_requires_fresh_pin": true,
+      "cancel_does_not_reveal_controls": true
+    },
+    "fixture-device-v4": {
+      "configured_math_options_applied": true,
+      "protected_back_requires_pin_cancel_stays_kids": true,
+      "protected_escape_requires_pin": true,
+      "protected_header_return_requires_pin": true,
+      "arithmetic_does_not_charge_video_budget": true,
+      "internal_child_video_charges_budget": true,
+      "repeated_watchdog_start_does_not_interrupt_child_video": true,
+      "mode_can_be_disabled_after_pin": true,
+      "production_parental_preferences_unchanged": true
+    },
+    "arithmetic-device-v1": {
+      "package": "org.firefly.tv",
+      "modes": [
+        {
+          "mode": "count",
+          "full_5_questions": true,
+          "wrong_answer_retry": true,
+          "first_try_score": "4/5",
+          "summary_return": true
+        },
+        {
+          "mode": "add",
+          "full_5_questions": true,
+          "wrong_answer_retry": true,
+          "first_try_score": "4/5",
+          "summary_return": true
+        },
+        {
+          "mode": "sub",
+          "full_5_questions": true,
+          "wrong_answer_retry": true,
+          "first_try_score": "4/5",
+          "summary_return": true
+        },
+        {
+          "mode": "compare",
+          "full_5_questions": true,
+          "wrong_answer_retry": true,
+          "first_try_score": "4/5",
+          "summary_return": true
+        },
+        {
+          "mode": "mixed",
+          "full_5_questions": true,
+          "wrong_answer_retry": true,
+          "first_try_score": "4/5",
+          "summary_return": true
+        }
+      ],
+      "parent_preferences_unchanged": true,
+      "physical_remote_used": false
+    },
+    "audio-v2": {
+      "before": 15,
+      "after_volume_down": 14,
+      "after_volume_up": 15,
+      "mute_toggle": "true",
+      "mute_restored": "false",
+      "final_volume": 15,
+      "physical_listening_verified": false
+    },
+    "offline-v2": [
+      {
+        "clip": "colors",
+        "player_opened_and_returned": true,
+        "physical_audio": false,
+        "frame_evidence_pending": false,
+        "frame_counts": [
+          [
+            49,
+            0
+          ],
+          [
+            172,
+            0
+          ]
+        ],
+        "hardware_component": "c2.firefly.h264.decoder",
+        "dimensions": "1280x720",
+        "observed_progress": true
+      },
+      {
+        "clip": "counting",
+        "player_opened_and_returned": true,
+        "physical_audio": false,
+        "frame_evidence_pending": false,
+        "frame_counts": [
+          [
+            48,
+            0
+          ],
+          [
+            172,
+            0
+          ]
+        ],
+        "hardware_component": "c2.firefly.h264.decoder",
+        "dimensions": "1280x720",
+        "observed_progress": true
+      }
+    ],
+    "playback-controls-v2": {
+      "numeric_existing_selects_920": true,
+      "numeric_unknown_keeps_channel": [
+        "920  福建新闻",
+        "正在播出：新闻午报",
+        "选台  ›",
+        "没有这个频道编号",
+        "↑↓ 换台     确定 选台     返回 退出"
+      ],
+      "up_down_change_channel_and_restore": true,
+      "left_right_preserve_channel_identity": true,
+      "favorite_toggle_restore_exact": true,
+      "outside_click_closes_picker": true,
+      "escape_returns_home": true,
+      "home_resume_matches_920": true
+    },
+    "home-clock-v2": {
+      "before": "15:42",
+      "after": "15:43",
+      "system_time": "15:43",
+      "minute_refresh": true,
+      "system_clock_unchanged": true
+    }
+  }
+}

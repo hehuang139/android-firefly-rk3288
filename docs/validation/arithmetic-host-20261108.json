@@ -1,0 +1,14 @@
+{
+  "scope": "Production arithmetic question/session logic, picture-challenge input guard, and local progress, using a SharedPreferences test double. Android layout, lifecycle callbacks and physical remote interaction are not emulated.",
+  "compile_exit": 0,
+  "compile_output": "",
+  "run_exit": 0,
+  "run_output": "Arithmetic questions verified: 10500\nSession restorations verified: 600\nCompleted-round statistics, repeated submission, retry after failed commit, and concurrency: passed\nPicture challenge cooldown, stale callbacks, retries, and duplicate confirmation: passed\n",
+  "passed": true,
+  "inputs": {
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ArithmeticRound.java": "6bd3735b22fac17ad295504cbfb788021d37e2b1b3d42d8c51f622a88ec37b51",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/KidsProgress.java": "fca2ac2076f86dd2d211fa81f4160072f474da72dc81b64d0226276c5cec3ef7",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/PuzzleInputGate.java": "41766292d2b246f74ff9e18421a8bc38432fea989075c9c8583ee0efa40a02b7",
+    "tests/ArithmeticHostTest.java": "479ae397318c53cc904b77690f357fd618a63116429e556c2fc17dbee898c3ec"
+  }
+}

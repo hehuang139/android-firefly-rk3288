@@ -28,6 +28,8 @@ public final class DecoderActivity extends TvActivity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private TextView progress;
+    private Button h264Preview;
+    private Button hevcPreview;
     private boolean checking;
 
     @Override
@@ -60,18 +62,26 @@ public final class DecoderActivity extends TvActivity {
         content.addView(progress);
         addCheck(content, "H.264 硬件解码测试", "h264");
         addCheck(content, "H.265 硬件解码测试", "hevc");
-        TvUi.addButton(content, TvUi.button(this, "播放 H.264 检查样片",
-                view -> startActivity(new Intent(this, LiveActivity.class)
-                        .putExtra("decoder_test", true))));
-        TvUi.addButton(content, TvUi.button(this, "播放 H.265 检查样片",
-                view -> startActivity(new Intent(this, LiveActivity.class)
-                        .putExtra("decoder_test", true).putExtra("decoder_codec", "hevc"))));
+        h264Preview = TvUi.button(this, "播放 H.264 检查样片", view -> preview("h264"));
+        hevcPreview = TvUi.button(this, "播放 H.265 检查样片", view -> preview("hevc"));
+        TvUi.addButton(content, h264Preview);
+        TvUi.addButton(content, hevcPreview);
         scroll.addView(content);
         page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
     }
 
     private void addCheck(LinearLayout parent, String label, String kind) {
         Button button = TvUi.button(this, label, view -> check(kind));
+        String component = "hevc".equals(kind) ? "c2.firefly.hevc.decoder" : "c2.firefly.h264.decoder";
+        boolean available = false;
+        for (MediaCodecInfo codec : new MediaCodecList(MediaCodecList.REGULAR_CODECS).getCodecInfos()) {
+            if (component.equals(codec.getName()) && !codec.isEncoder()) available = true;
+        }
+        if (!available) {
+            button.setText(("hevc".equals(kind) ? "H.265" : "H.264") + " 硬件解码未启用");
+            button.setEnabled(false);
+            button.setAlpha(.55f);
+        }
         TvUi.addButton(parent, button);
     }
 
@@ -80,6 +90,8 @@ public final class DecoderActivity extends TvActivity {
             return;
         }
         checking = true;
+        h264Preview.setEnabled(false);
+        hevcPreview.setEnabled(false);
         progress.setText("正在检查 " + ("hevc".equals(kind) ? "H.265" : "H.264") + " 硬解…");
         worker.execute(() -> {
             String message;
@@ -117,8 +129,16 @@ public final class DecoderActivity extends TvActivity {
     private void finishCheck(String message) {
         checking = false;
         if (!isDestroyed() && !isFinishing()) {
+            h264Preview.setEnabled(true);
+            hevcPreview.setEnabled(true);
             progress.setText(message);
         }
+    }
+
+    private void preview(String kind) {
+        if (checking) return;
+        startActivity(new Intent(this, LiveActivity.class)
+                .putExtra("decoder_test", true).putExtra("decoder_codec", kind));
     }
 
     @Override

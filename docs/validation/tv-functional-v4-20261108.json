@@ -1,0 +1,403 @@
+{
+  "scope": "Production v4 pointer/key interaction and independent same-Java EOS MediaPlayer fixture. Does not certify all live sources.",
+  "private_apk_sha256": "a88a54b8a402772f20607b0616891825409d1efc19ba093c93979de0f4866e47",
+  "public_apk_sha256": "4efa7c0c9c2ad3f19decb0947114012b3b400e54fc2baa3361ebcfefcd468ba5",
+  "fixture_apk_sha256": "816d981ce8147b693b2f777404a201803e57f9ca1a2dcbf4f9990be233001f7b",
+  "focus": {
+    "pointer_launch_first_up_changes_channel": true,
+    "pointer_picker_first_down_changes_focus": true,
+    "pointer_dismiss_first_up_changes_channel": true,
+    "original_channel_restored": true
+  },
+  "picker": {
+    "type_tab": true,
+    "news_category": true,
+    "children_category": true,
+    "dpad_focus_navigation": true,
+    "escape_closes_panel": true,
+    "back_closes_panel": true,
+    "reopen_selects_current_region": true,
+    "mouse_tap_category_switch": true,
+    "single_tap_type_switch": true,
+    "live_activity_preserved": true
+  },
+  "eos": {
+    "clean_eos_initial_plus_three_reconnects": {
+      "connections": 4,
+      "stop_message": true,
+      "observations": [
+        {
+          "seconds": 0.12,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "0"
+          ]
+        },
+        {
+          "seconds": 1.28,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "43"
+          ]
+        },
+        {
+          "seconds": 2.42,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "77"
+          ]
+        },
+        {
+          "seconds": 3.58,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "112"
+          ]
+        },
+        {
+          "seconds": 4.72,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "146"
+          ]
+        },
+        {
+          "seconds": 5.86,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "180"
+          ]
+        },
+        {
+          "seconds": 7.02,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "215"
+          ]
+        },
+        {
+          "seconds": 8.16,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "249"
+          ]
+        },
+        {
+          "seconds": 9.31,
+          "connection_ids": [
+            "1"
+          ],
+          "frames": [
+            "284"
+          ]
+        },
+        {
+          "seconds": 10.44,
+          "connection_ids": [],
+          "frames": []
+        },
+        {
+          "seconds": 11.56,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "0"
+          ]
+        },
+        {
+          "seconds": 12.72,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "43"
+          ]
+        },
+        {
+          "seconds": 13.88,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "78"
+          ]
+        },
+        {
+          "seconds": 15.02,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "112"
+          ]
+        },
+        {
+          "seconds": 16.17,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "147"
+          ]
+        },
+        {
+          "seconds": 17.33,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "182"
+          ]
+        },
+        {
+          "seconds": 18.47,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "216"
+          ]
+        },
+        {
+          "seconds": 19.61,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "250"
+          ]
+        },
+        {
+          "seconds": 20.75,
+          "connection_ids": [
+            "2"
+          ],
+          "frames": [
+            "285"
+          ]
+        },
+        {
+          "seconds": 21.88,
+          "connection_ids": [],
+          "frames": []
+        },
+        {
+          "seconds": 23.03,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "0"
+          ]
+        },
+        {
+          "seconds": 24.17,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "46"
+          ]
+        },
+        {
+          "seconds": 25.33,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "81"
+          ]
+        },
+        {
+          "seconds": 26.47,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "115"
+          ]
+        },
+        {
+          "seconds": 27.61,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "150"
+          ]
+        },
+        {
+          "seconds": 28.75,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "184"
+          ]
+        },
+        {
+          "seconds": 29.91,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "219"
+          ]
+        },
+        {
+          "seconds": 31.05,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "253"
+          ]
+        },
+        {
+          "seconds": 32.19,
+          "connection_ids": [
+            "3"
+          ],
+          "frames": [
+            "287"
+          ]
+        },
+        {
+          "seconds": 33.34,
+          "connection_ids": [],
+          "frames": []
+        },
+        {
+          "seconds": 34.47,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "0"
+          ]
+        },
+        {
+          "seconds": 35.63,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "48"
+          ]
+        },
+        {
+          "seconds": 36.78,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "83"
+          ]
+        },
+        {
+          "seconds": 37.92,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "117"
+          ]
+        },
+        {
+          "seconds": 39.06,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "151"
+          ]
+        },
+        {
+          "seconds": 40.2,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "185"
+          ]
+        },
+        {
+          "seconds": 41.34,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "220"
+          ]
+        },
+        {
+          "seconds": 42.48,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "254"
+          ]
+        },
+        {
+          "seconds": 43.64,
+          "connection_ids": [
+            "4"
+          ],
+          "frames": [
+            "288"
+          ]
+        },
+        {
+          "seconds": 44.78,
+          "connection_ids": [],
+          "frames": []
+        }
+      ]
+    },
+    "manual_channel_change_recovers": true,
+    "switch_cancels_previous_eos_retry": {
+      "new_connection_stable": true
+    },
+    "leave_releases_player": true
+  },
+  "fixture_uninstalled": true,
+  "network_editor_back": {
+    "static_ip_editor": {
+      "first_back": "leaves_text_editing",
+      "second_back": "DHCP/static choice",
+      "third_back": "network page"
+    },
+    "manual_proxy_editor": {
+      "first_back": "leaves_text_editing",
+      "second_back": "none/manual choice",
+      "third_back": "network page"
+    },
+    "saved_configuration": false
+  },
+  "iqiyi": {
+    "official_host_apk_matches": true,
+    "historical_dynamic_plugin_resource_crash": true,
+    "downgrade_observed": true,
+    "new_45s_start_background_resume_same_pid": true,
+    "new_crash_observed": false,
+    "playback_account_and_long_run_verified": false
+  }
+}

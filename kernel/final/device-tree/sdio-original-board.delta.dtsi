@@ -1,0 +1,26 @@
+
+// Original Firefly-RK3288 AP6335 wiring, corroborated by vendor 4.4 DTS.
+// This candidate preserves the final audio/NPLL/HEVC changes.
+/ {
+    firefly_wifi_pwrseq: wifi-pwrseq {
+        compatible = "mmc-pwrseq-simple";
+        clocks = <&{/i2c@ff650000/rtc@51}>;
+        clock-names = "ext_clock";
+        reset-gpios = <&{/pinctrl/gpio@ff7b0000} 28 1>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&firefly_wifi_enable>;
+    };
+};
+&{/pinctrl} {
+    wifi {
+        firefly_wifi_enable: wifi-enable {
+            rockchip,pins = <4 28 0 0x7f>;
+        };
+    };
+};
+&{/mmc@ff0d0000} {
+    max-frequency = <50000000>;
+    cap-sd-highspeed;
+    cap-sdio-irq;
+    mmc-pwrseq = <&firefly_wifi_pwrseq>;
+};

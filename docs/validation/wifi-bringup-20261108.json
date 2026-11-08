@@ -1,0 +1,191 @@
+{
+  "date": "2026-11-08",
+  "scope": "Original Firefly-RK3288, ARM32 Android 17 development image; station scan only",
+  "status": "SOFTWARE_REBOOT_AND_FRAMEWORK_SCAN_VERIFIED",
+  "privacy": "No SSID, BSSID, MAC address, IP address, credentials, board identity or raw logs included",
+  "kernel": {
+    "release": "6.18.60-firefly-tvbox",
+    "zimage_sha256": "8c044786118434fc737d9c17b32bdbe4206fcd4112b625d30f29a4ba3124317a",
+    "config_sha256": "96f53bfe2007da3beabcec566e16cdc3425cc065c4f043316a67b1482b5498eb",
+    "dtb_sha256": "8a737a9b2ed1b4808837a3c739a05ed8ae62c378b5e242decb69d5394a48b7d1",
+    "baseline_dtb_sha256": "2021fedaf9241b18d8184191c24a740f05beaceac0aeffb80c41376e1c815c5b",
+    "matching_module_count": 6,
+    "imported_symbol_crcs_checked": 517,
+    "modules": {
+      "cfg80211.ko": {
+        "sha256": "7ec7264d74224f05ea07623a9170785b3e7cba0f50dd414430373b9ced255931",
+        "bytes": 1094800,
+        "vermagic": "6.18.60-firefly-tvbox SMP preempt mod_unload modversions ARMv7 p2v8",
+        "import_crcs_checked": 198
+      },
+      "brcmutil.ko": {
+        "sha256": "e86b0f99e88135edea1ebc61702bab8502df35541d90db3e8e39c80b0cf31674",
+        "bytes": 14980,
+        "vermagic": "6.18.60-firefly-tvbox SMP preempt mod_unload modversions ARMv7 p2v8",
+        "import_crcs_checked": 13
+      },
+      "brcmfmac.ko": {
+        "sha256": "c2238646b7f5c149bdbc69572b84924e2f51e4bcdbd00829870d34fd50a37076",
+        "bytes": 357276,
+        "vermagic": "6.18.60-firefly-tvbox SMP preempt mod_unload modversions ARMv7 p2v8",
+        "import_crcs_checked": 264
+      },
+      "brcmfmac-wcc.ko": {
+        "sha256": "249fdc92b7f64ee955fdff2772c35490eed883fa62d2ddd147eac4e95af137c3",
+        "bytes": 5824,
+        "vermagic": "6.18.60-firefly-tvbox SMP preempt mod_unload modversions ARMv7 p2v8",
+        "import_crcs_checked": 7
+      },
+      "brcmfmac-cyw.ko": {
+        "sha256": "fe4f6ab8ea509b26f0b56d15fc92796a75eb4dedb6e2866b991cd4550b1e1a83",
+        "bytes": 13972,
+        "vermagic": "6.18.60-firefly-tvbox SMP preempt mod_unload modversions ARMv7 p2v8",
+        "import_crcs_checked": 29
+      },
+      "brcmfmac-bca.ko": {
+        "sha256": "983716b6732e60821ca98e0c2d511a4c99c6e2ba3966dca1259d65f165007426",
+        "bytes": 5720,
+        "vermagic": "6.18.60-firefly-tvbox SMP preempt mod_unload modversions ARMv7 p2v8",
+        "import_crcs_checked": 6
+      }
+    },
+    "dt_roundtrip_hashes_match": true,
+    "dt_schema_validation": false,
+    "dtc_warnings_present": true,
+    "clean_kernel_rebuild_repeated_for_public_tree": false
+  },
+  "software_reboot": {
+    "final_candidate_automatic_recovery_runs_verified": 1,
+    "manual_rebind_after_reboot": false,
+    "initial_sdio_error": -84,
+    "automatic_recovery_limit": 1,
+    "recovery_target": "ff0d0000.mmc",
+    "emmc_recovery": false,
+    "recovery_at_boot_seconds": 16.897925,
+    "sdio_enumerated_at_boot_seconds": 18.077869,
+    "firmware_ready_at_boot_seconds": 19.951774,
+    "chip": "BCM4339 revision 2",
+    "firmware_version": "6.37.39.113",
+    "wlan0_present": true,
+    "wificond_running": true,
+    "supplicant_running": true,
+    "wifi_framework_enabled": true,
+    "wifinl80211_binder_present": true,
+    "supplicant_aidl_binder_present": true,
+    "config_wificondMigrationEnabled": false,
+    "otp_address_assignment_type": 0,
+    "ethernet_carrier": true,
+    "system_ext_and_vendor_read_only_at_handoff": true,
+    "early_sdio_timing_root_cause_established": false
+  },
+  "scan": {
+    "real_result_count": 8,
+    "band_2_4ghz_count": 6,
+    "band_5ghz_count": 2,
+    "connected": false,
+    "raw_private_result_sha256": "5d80a878d933eec3adbc6a3da7c77724936242f4b1c5b6df2b86bd30498ba9cd"
+  },
+  "runtime_dependency_audit": {
+    "supplicant": {
+      "status": "PASS",
+      "elf_files": 28,
+      "dependency_edges": 144,
+      "unresolved": 0
+    },
+    "wificond": {
+      "status": "PASS",
+      "elf_files": 23,
+      "dependency_edges": 114,
+      "unresolved": 0
+    }
+  },
+  "rro": {
+    "package": "org.firefly.wifi.overlay",
+    "target_package": "com.android.wifi.resources",
+    "target_overlayable": "WifiCustomization",
+    "only_resource": "bool/config_wificondMigrationEnabled=false",
+    "sha256": "4236993741edc2d1be4f65e50676d00264e0ac0e354f39f128529a1e7d9e7285",
+    "bytes": 8542,
+    "signature_and_final_zipalign_verified": true
+  },
+  "reproduction": {
+    "matching_kernel_export_executed": true,
+    "pinned_firmware_download_and_extraction_executed": true,
+    "supplicant_and_wificond_isolated_builds_executed": true,
+    "shared_aosp_build_inputs_read_only": true,
+    "public_clean_product_build_completed": false,
+    "new_whole_disk_image_validation_completed": false,
+    "source_overlay_files_verified_after_merge": 18,
+    "python_syntax": "PASS",
+    "xml_parse": "PASS",
+    "firmware_manifest_json_parse": "PASS",
+    "shell_syntax": {
+      "build.sh": "PASS",
+      "kernel/final/build-kernel.sh": "PASS",
+      "device/firefly/rk3288/wifi/firefly-wifi-prepare.sh": "PASS"
+    },
+    "source_file_sha256": {
+      ".gitignore": "491bb2ae365a2387ccda12ff08cf262a8255af27e2582277c4f0cb9fb260c810",
+      "build.sh": "85f13e7c8ca2dc1d1648cc6ff3ac559de6fc9767289d71dd9fe8ca318568063e",
+      "scripts/fetch-wifi-firmware.py": "7c1c93731b417fa1abacde7f1b1e280e804956657e1a1e4b01190113a4c3e2dc",
+      "scripts/prepare-wifi-kernel.py": "dd1db7e60bb1143ca435472414aa3e252fd52fce5b9be9b639358990f790905f",
+      "device/firefly/rk3288/BoardConfig.mk": "43a72d9c84d54e37520fc805a128e4fc003b4bb10f42477b0f82c308bbd59156",
+      "device/firefly/rk3288/device.mk": "4430486dcd0d74075bcd8359fc4bd923e63ec602b32854c7a09ad4a759988ff6",
+      "device/firefly/rk3288/wifi/android.hardware.wifi.xml": "1ec03762090dfc86f054aef605b0c6c76e7ba8b94be24e637e1168094a162443",
+      "device/firefly/rk3288/wifi/BoardConfigWifi.mk": "c9a6de99b58e0d1eae77f101e9ed109b87c4ffa552185093a2847f99c16e4c7f",
+      "device/firefly/rk3288/wifi/firefly-wifi-prepare.sh": "1e4f43b69657b121be5fc241755d066454ad683716aa7a167e44467ea8eeb483",
+      "device/firefly/rk3288/wifi/firmware-sources.json": "be0f1f9030f3629a0d8adef2e7c6bbfed4511844626b70dcaea88480bdb8aacd",
+      "device/firefly/rk3288/wifi/init.firefly-wifi.rc": "b8aff320937cc69a1b9353df842684134abdb3c7fb9b5e42c21ec9ac7ac0036b",
+      "device/firefly/rk3288/wifi/wifi-product.mk": "ad83411707f2c6f04a3dbc759c400ca814e36f5e91109d4bd11864d154f64163",
+      "device/firefly/rk3288/wifi/wpa_supplicant.conf": "14383d8fcc3b2f62f4553bc841f9d103e917c99772242a33b07ba4ea87fcd6fa",
+      "device/firefly/rk3288/wifi/overlay/Android.bp": "f1d2ab37c76a002a295c9dc2a218dfec1f4114afa94ccaa12d7facfc6f67a7d4",
+      "device/firefly/rk3288/wifi/overlay/AndroidManifest.xml": "ca26e53d0ea67d4115a0976651b64cd0d8e503f64a9bc4acf0246a02b2447697",
+      "device/firefly/rk3288/wifi/overlay/res/values/config.xml": "7d0b12c311db43eba7acf41690f9784f5b5fb28892ee53a5ea6cd7553ccbb0b3",
+      "kernel/final/build-kernel.sh": "091867650b201e8997269612abf86070b526ffd8bb3af43f7b097033ba46947b",
+      "kernel/final/device-tree/sdio-original-board.delta.dtsi": "a617e25aa9518c85152f28c7e59dcccd86809e5e4ac0cc47c91b00e2c8864174"
+    },
+    "approved_post_merge_review_amendment": {
+      "file": "device/firefly/rk3288/wifi/wifi-product.mk",
+      "reason": "Install all four fetched firmware license files alongside redistributed firmware",
+      "baseline_sha256": "0b4c200878fc8157ca09a1dd2d7e0f84d7b30fc6d0661527178d2badd4dbda3d",
+      "amended_sha256": "ad83411707f2c6f04a3dbc759c400ca814e36f5e91109d4bd11864d154f64163",
+      "only_change_is_four_license_copy_rules": true,
+      "fetch_output_to_product_install": {
+        "$(FIREFLY_WIFI_PATH)/prebuilts/firmware/licenses/LICENCE.broadcom_bcm43xx": "$(TARGET_COPY_OUT_VENDOR)/etc/wifi/licenses/LICENCE.broadcom_bcm43xx",
+        "$(FIREFLY_WIFI_PATH)/prebuilts/firmware/licenses/LICENCE.cypress": "$(TARGET_COPY_OUT_VENDOR)/etc/wifi/licenses/LICENCE.cypress",
+        "$(FIREFLY_WIFI_PATH)/prebuilts/firmware/licenses/linux-firmware-copyright": "$(TARGET_COPY_OUT_VENDOR)/etc/wifi/licenses/linux-firmware-copyright",
+        "$(FIREFLY_WIFI_PATH)/prebuilts/firmware/licenses/wireless-regdb-copyright": "$(TARGET_COPY_OUT_VENDOR)/etc/wifi/licenses/wireless-regdb-copyright"
+      }
+    }
+  },
+  "unvalidated": [
+    "network selection and password authentication",
+    "association",
+    "DHCP",
+    "Wi-Fi Internet connectivity and routing",
+    "disconnect and reconnect",
+    "cold power-on",
+    "long-duration stability and throughput",
+    "roaming and suspend/resume",
+    "all regional channels",
+    "hotspot/AP",
+    "P2P",
+    "Passpoint",
+    "Bluetooth",
+    "SELinux enforcing"
+  ],
+  "known_limits": [
+    "One bounded internal SDIO controller recovery is a workaround; initial timing cause is unknown",
+    "Optional clm_blob and txcap_blob are absent; scanning does not prove every regulatory channel",
+    "Pinned AP6335 evaluation calibration redistribution permission is unconfirmed; no calibration bytes in source",
+    "A successful scan does not prove network association or DHCP"
+  ],
+  "evidence_sha256": {
+    "scan-result-summary.json": "0e224c3d1b26e6b6e96063132dee206ee055a6328ee4492a99767d873776c611",
+    "second-boot-native-result.json": "3fe4f7f77f41b0e6588357856d8f5db52f32fab7fa894c5b7b3871e2bd60750b",
+    "second-boot-framework.json": "faa4d525393f1e04bd137855ae96a167d307681077ae27883ef53db1e726f811",
+    "final-handoff-state.json": "ea2a55a936486c7c9186703f552dfcff1d1f9cc4e30a34d46c5afca91f0d8d03",
+    "live-elf-dependency-report.json": "03bd0f3eb569fee5ff27f59cc5184b7f62ac78edda7aef96441481aea7306b43",
+    "live-wificond-elf-dependency-report.json": "78cff7c093139797ba331d4f4cf4174e563335023b28f81824dd25289f1b38f6"
+  }
+}

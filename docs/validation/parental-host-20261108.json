@@ -1,0 +1,16 @@
+{
+  "scope": "JVM production budget/PIN/puzzle/watchdog decisions; preferences, tasks and service test doubles",
+  "compile_exit": 0,
+  "compile_output": "",
+  "run_exit": 0,
+  "run_output": "Nov 08, 2026 7:04:12 AM org.firefly.tv.ParentalHostTest main\nINFO: PASS 14072 assertions\n",
+  "passed": true,
+  "inputs": {
+    "device/firefly/rk3288/tv/src/org/firefly/tv/WatchBudget.java": "68b3958b67bff6d324efa1e9607fbc5d46c851f5f3214844cd3ff2ba14d29496",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/ParentalPrefs.java": "6dbf04faf671efcc257404dd3454d6268650d9601fe1c1730df5e835c55a4c77",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/PuzzleRound.java": "646bb3cb37d888693735279f4ffb7d74c80fba7ebcda1d65787a2cd959a59825",
+    "device/firefly/rk3288/tv/src/org/firefly/tv/WatchTimeTracker.java": "20abddeb1b8eced81b074af06a281c19464a6a3f0bd29924a05e5797b9c5038a",
+    "tests/ParentalHostTest.java": "8815b7815bf2a3f0305c946799a32a284a1c90e99f9bf6f102132c214b4e908e",
+    "tests/WatchTimeTrackerHostTest.java": "18eda1b375ed0592d45edc9973119877861cb8daa308eccfd1c396451bd99f0d"
+  }
+}

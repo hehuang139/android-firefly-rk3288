@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-08",
+  "installed_hashes": {
+    "firefly_apk": "a88a54b8a402772f20607b0616891825409d1efc19ba093c93979de0f4866e47",
+    "settings_apk": "0db3ed09ee7c487fe2b857d952f96cc5519acf861df5898e358e43cc5ad890f0",
+    "codec2": "cbba313166460b915db742efa079c07e168abb04ee02939fcce795b5a4199475",
+    "catalog": "2aebc8dc2997a814bca9a63210ec77fc72a49fbcc2c140783e7fdee55c766208",
+    "wifi_prepare": "1e4f43b69657b121be5fc241755d066454ad683716aa7a167e44467ea8eeb483"
+  },
+  "boot_completed": true,
+  "home_foreground": true,
+  "system_ext_and_vendor_read_only": true,
+  "boot_partition_not_mounted": true,
+  "wifi_enabled": true,
+  "wifi_connected": false,
+  "wificond_running": true,
+  "supplicant_running": true,
+  "ethernet_carrier_present": true,
+  "ethernet_framework_validated": true,
+  "current_boot_crash_buffer": {
+    "java_fatal_count": 0,
+    "native_sigsegv_count": 0
+  },
+  "test_cleanup": {
+    "test_only_five_rounds_cleared": true,
+    "production_parental_preferences_unchanged": true,
+    "backup_private_local": true,
+    "validation_fixture_absent": true
+  },
+  "production_playback": {
+    "number": 920,
+    "name": "福建新闻",
+    "status": "sustained_playback_confirmed",
+    "observed_seconds": 65.31,
+    "dimensions": "1920 x 1080",
+    "video_codec": "c2.firefly.h264.decoder",
+    "audio_codec": "c2.android.aac.decoder",
+    "windows": [
+      {
+        "seconds": 23.16,
+        "frames": 580,
+        "dropped": 0,
+        "progress": true
+      },
+      {
+        "seconds": 21.06,
+        "frames": 526,
+        "dropped": 0,
+        "progress": true
+      },
+      {
+        "seconds": 21.09,
+        "frames": 527,
+        "dropped": 0,
+        "progress": true
+      }
+    ]
+  },
+  "playback_startup_accumulated_dropped_frames": 7,
+  "new_physical_audio_listening_test": false,
+  "scope": "Final installed state and one sustained live channel regression; not a repeat of all 167 channels or all hardware acceptance."
+}

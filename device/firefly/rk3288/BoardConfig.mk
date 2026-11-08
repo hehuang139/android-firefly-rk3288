@@ -75,3 +75,5 @@ DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += $(FIREFLY_DEVICE_PATH)/media/frame
 BOARD_VENDOR_SEPOLICY_DIRS += $(FIREFLY_DEVICE_PATH)/sepolicy/vendor
 
 include $(FIREFLY_DEVICE_PATH)/graphics/BoardConfigGraphics.mk
+
+include $(FIREFLY_DEVICE_PATH)/wifi/BoardConfigWifi.mk

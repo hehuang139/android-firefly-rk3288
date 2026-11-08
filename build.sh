@@ -15,7 +15,12 @@ case "$action" in
     sh "$port_root/kernel/final/build-kernel.sh" "$archive" "$output" "${FIREFLY_KERNEL_JOBS:-8}"
     mkdir -p "$port_root/device/firefly/rk3288/prebuilts" "$port_root/variants/emmc/boot"
     install -m 644 "$output/build/arch/arm/boot/zImage" "$port_root/device/firefly/rk3288/prebuilts/zImage"
-    install -m 644 "$output/rk3288-firefly-es8323-npll216.dtb" "$port_root/variants/emmc/boot/rk3288-firefly-android.dtb"
+    install -m 644 "$output/wifi/rk3288-firefly-wifi.dtb" "$port_root/variants/emmc/boot/rk3288-firefly-android.dtb"
+    install -m 644 "$output/wifi/rk3288-firefly-wifi.dtb" "$port_root/device/firefly/rk3288/prebuilts/rk3288-firefly-android.dtb"
+    mkdir -p "$port_root/device/firefly/rk3288/wifi/prebuilts/modules"
+    for module in "$output"/wifi/modules/*.ko; do
+      install -m 644 "$module" "$port_root/device/firefly/rk3288/wifi/prebuilts/modules/"
+    done
     ;;
   install)
     python3 "$port_root/scripts/install-port.py" "$work_root/aosp"

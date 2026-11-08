@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import vendor.firefly.hardware.remote.IRemote;
 
 /** Learns IR scancodes through the board daemon and displays received Android keys. */
@@ -27,9 +28,11 @@ public final class RemoteActivity extends TvActivity {
     private static final int[] LINUX_KEYS = {103, 108, 105, 106, 28, 158, 102, 139,
             115, 114, 116};
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final AtomicInteger generation = new AtomicInteger();
     private TextView status;
     private TextView lastKey;
-    private boolean learning;
+    private boolean busy;
+    private volatile boolean active;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -53,11 +56,26 @@ public final class RemoteActivity extends TvActivity {
         scroll.addView(actions);
         page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
         actions.getChildAt(0).requestFocus();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        active = true;
+        busy = false;
         refreshStatus();
     }
 
+    @Override
+    protected void onStop() {
+        active = false;
+        generation.incrementAndGet();
+        busy = false;
+        super.onStop();
+    }
+
     private void selectLearningKey() {
-        if (learning) {
+        if (busy) {
             return;
         }
         new AlertDialog.Builder(this).setTitle("选择要学习的功能")
@@ -65,27 +83,32 @@ public final class RemoteActivity extends TvActivity {
     }
 
     private void learn(int index) {
-        learning = true;
+        int operation = beginOperation();
+        if (operation < 0) return;
         status.setText("请在 15 秒内对准板载红外接收器，按下“" + LABELS[index] + "”键。");
         executor.execute(() -> {
             try {
+                if (!current(operation)) return;
                 JSONObject captured = request(new JSONObject().put("command", "capture")
                         .put("timeout", 15));
                 requireOk(captured);
+                // Binder capture is synchronous and cannot be interrupted by shutdownNow.
+                // Never apply a key captured after the user left this page.
+                if (!current(operation)) return;
                 JSONObject command = new JSONObject().put("command", "set")
                         .put("scancode", captured.getLong("scancode"))
                         .put("keycode", LINUX_KEYS[index]);
                 requireOk(request(command));
-                show("已保存“" + LABELS[index] + "”，可以立即试按。", false);
+                show(operation, "已保存“" + LABELS[index] + "”，可以立即试按。");
             } catch (IOException | JSONException error) {
                 Log.w(TAG, "IR learning failed", error);
-                show("学习未完成：" + error.getMessage(), false);
+                show(operation, "学习未完成：" + error.getMessage());
             }
         });
     }
 
     private void confirmReset() {
-        if (learning) {
+        if (busy) {
             return;
         }
         new AlertDialog.Builder(this).setTitle("恢复红外键位")
@@ -95,22 +118,25 @@ public final class RemoteActivity extends TvActivity {
     }
 
     private void refreshStatus() {
-        if (!learning) {
+        if (!busy) {
             command("status");
         }
     }
 
     private void command(String name) {
+        int operation = beginOperation();
+        if (operation < 0) return;
         executor.execute(() -> {
             try {
+                if (!current(operation)) return;
                 JSONObject result = request(new JSONObject().put("command", name));
                 requireOk(result);
                 String description = "reset".equals(name) ? "已恢复 Firefly 原配红外键位。"
                         : receiverStatus(result);
-                show(description, false);
+                show(operation, description);
             } catch (IOException | JSONException error) {
                 Log.w(TAG, "Remote service unavailable", error);
-                show("红外接收器暂不可用；USB 遥控器仍可使用。", false);
+                show(operation, "红外接收器暂不可用；USB 遥控器仍可使用。");
             }
         });
     }
@@ -126,18 +152,19 @@ public final class RemoteActivity extends TvActivity {
     }
 
     private void setCec(boolean enabled) {
-        if (learning) {
-            return;
-        }
+        int operation = beginOperation();
+        if (operation < 0) return;
         executor.execute(() -> {
             try {
+                if (!current(operation)) return;
                 requireOk(request(new JSONObject().put("command", "cec").put("enabled", enabled)));
+                if (!current(operation)) return;
                 JSONObject result = request(new JSONObject().put("command", "status"));
                 requireOk(result);
-                show(receiverStatus(result), false);
+                show(operation, receiverStatus(result));
             } catch (IOException | JSONException error) {
                 Log.w(TAG, "Cannot change CEC receiver", error);
-                show("CEC 设置失败：" + error.getMessage(), false);
+                show(operation, "CEC 设置失败：" + error.getMessage());
             }
         });
     }
@@ -164,10 +191,21 @@ public final class RemoteActivity extends TvActivity {
         }
     }
 
-    private void show(String message, boolean busy) {
+    private int beginOperation() {
+        if (!active || busy || executor.isShutdown()) return -1;
+        busy = true;
+        return generation.incrementAndGet();
+    }
+
+    private boolean current(int operation) {
+        return active && generation.get() == operation && !isFinishing() && !isDestroyed()
+                && !Thread.currentThread().isInterrupted();
+    }
+
+    private void show(int operation, String message) {
         runOnUiThread(() -> {
-            if (!isFinishing() && !isDestroyed()) {
-                learning = busy;
+            if (current(operation) && !isFinishing() && !isDestroyed()) {
+                busy = false;
                 status.setText(message);
             }
         });
@@ -184,6 +222,8 @@ public final class RemoteActivity extends TvActivity {
 
     @Override
     protected void onDestroy() {
+        active = false;
+        generation.incrementAndGet();
         executor.shutdownNow();
         super.onDestroy();
     }

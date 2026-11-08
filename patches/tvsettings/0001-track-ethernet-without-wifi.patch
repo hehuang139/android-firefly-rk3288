@@ -1,0 +1,41 @@
+--- a/Settings/src/com/android/tv/settings/connectivity/ConnectivityListener.java
++++ b/Settings/src/com/android/tv/settings/connectivity/ConnectivityListener.java
+@@ -104,18 +104,6 @@
+         mEthernetManager = mContext.getSystemService(EthernetManager.class);
+         mListener = listener;
+         if (mWifiManager != null) {
+-            lifecycle.addObserver(new DefaultLifecycleObserver() {
+-                @Override
+-                public void onStart(LifecycleOwner owner) {
+-                    start();
+-                }
+-
+-                @Override
+-                public void onStop(@NonNull LifecycleOwner owner) {
+-                    stop();
+-                }
+-            });
+-
+             mWifiTracker = new WifiTracker(context, this, lifecycle, mWifiManager,
+                     mConnectivityManager);
+         }
+@@ -130,6 +118,19 @@
+                 mListener.onConnectivityChange();
+             }
+         };
++        // Ethernet and default-network tracking must also work without Wi-Fi hardware.
++        lifecycle.addObserver(new DefaultLifecycleObserver() {
++            @Override
++            public void onStart(LifecycleOwner owner) {
++                start();
++            }
++
++            @Override
++            public void onStop(@NonNull LifecycleOwner owner) {
++                stop();
++            }
++        });
++
+         updateConnectivityStatus();
+     }
+ 

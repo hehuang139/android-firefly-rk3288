@@ -1,0 +1,72 @@
+--- a/Settings/src/com/android/tv/settings/device/displaysound/ResolutionSelectionFragment.java
++++ b/Settings/src/com/android/tv/settings/device/displaysound/ResolutionSelectionFragment.java
+@@ -117,7 +117,7 @@
+     @Override
+     public void onStart() {
+         super.onStart();
+-        if (mDisplay.getSystemPreferredDisplayMode() != null) {
++        if (mDisplay != null) {
+             mDisplayManager.registerDisplayListener(this, null);
+         }
+     }
+@@ -125,7 +125,7 @@
+     @Override
+     public void onStop() {
+         super.onStop();
+-        if (mDisplay.getSystemPreferredDisplayMode() != null) {
++        if (mDisplay != null) {
+             mDisplayManager.unregisterDisplayListener(this);
+         }
+     }
+@@ -138,6 +138,7 @@
+ 
+     @Override
+     public void onDisplayChanged(int displayId) {
++        if (displayId != Display.DEFAULT_DISPLAY || mDisplay == null) return;
+         Display.Mode[] newModes = mDisplay.getSupportedModes();
+         Arrays.sort(newModes, DisplayModeComparator());
+         if (!Arrays.equals(mModes, newModes)) {
+@@ -226,15 +227,17 @@
+ 
+         mDisplay = mDisplayManager.getDisplay(Display.DEFAULT_DISPLAY);
+         mAutoMode = mDisplay.getSystemPreferredDisplayMode();
+-        if(mAutoMode == null) {
+-            // System preferred display mode is not set, so we wait for it to be set.
+-            return;
++        final boolean hasSystemPreferredMode = mAutoMode != null;
++        if (mAutoMode == null) {
++            // Mainline display stacks can expose valid modes without a boot preferred mode.
++            // Keep the supported-mode choices available and use the default for rollback UI.
++            mAutoMode = mDisplay.getDefaultMode();
+         }
+         final String summary = getResources().getString(R.string.resolution_display_mode,
+                 ResolutionSelectionUtils.getResolutionString(
+                         mAutoMode.getPhysicalWidth(), mAutoMode.getPhysicalHeight()),
+                 ResolutionSelectionUtils.getRefreshRateString(mAutoMode.getRefreshRate()));
+-        pref.setSummary(summary);
++        pref.setSummary(hasSystemPreferredMode ? summary : null);
+         configureResolutionPreference(pref);
+         pref.getExtras().putIntArray(HDR_TYPES_ARRAY, mAutoMode.getSupportedHdrTypes());
+         mResolutionPreferenceCategory.addPreference(pref);
+@@ -305,6 +308,7 @@
+ 
+             Display.Mode newMode = null;
+             Display.Mode previousMode = mDisplayManager.getGlobalUserPreferredDisplayMode();
++            Display.Mode previousDisplayMode = mDisplay.getMode();
+             mPrevModeIsAuto = previousMode == null;
+             if (key.equals(KEY_RESOLUTION_SELECTION_AUTO)) {
+                 mDisplayManager.clearGlobalUserPreferredDisplayMode();
+@@ -317,11 +321,12 @@
+             }
+             // if newMode is null, it means it is the automatic mode
+             mFinalNewMode = Objects.requireNonNullElse(newMode, mAutoMode);
+-            mFinalPreviousMode = Objects.requireNonNullElse(previousMode, mAutoMode);
++            mFinalPreviousMode = Objects.requireNonNullElse(previousMode, previousDisplayMode);
+             // Show the dialog after a delay of 1 second. If the dialog or any UX
+             // is shown when the resolution change is under process, the dialog is lost.
+             new Handler().postDelayed(new Runnable() {
+                 public void run() {
++                    if (mNewModeisAuto) mFinalNewMode = mDisplay.getMode();
+                     showWarningDialogOnResolutionChange(
+                         mFinalNewMode, mNewModeisAuto, mFinalPreviousMode, mPrevModeIsAuto
+                     );

@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Run production budget/PIN/puzzle logic on a JVM with a preferences test double.
 
-This does not emulate Android task management, playback or background services.
+Task inspection, service scheduling and playback are controlled test doubles;
+this checks decisions and bookkeeping, not the Android runtime or real playback.
 """
 import argparse
 import hashlib
@@ -41,11 +42,19 @@ public final class SharedPreferences {
  }
 }''',
     'android/content/Context.java': '''package android.content;
-public final class Context {
+public class Context {
  public static final int MODE_PRIVATE=0;
  private final SharedPreferences prefs = new SharedPreferences();
  public Context createDeviceProtectedStorageContext() {return this;}
  public SharedPreferences getSharedPreferences(String name,int mode) {return prefs;}
+ public String getPackageName() {return "org.firefly.tv";}
+ public ComponentName startService(Intent intent) {return null;}
+ public android.content.pm.PackageManager getPackageManager() {return new android.content.pm.PackageManager();}
+ public <T> T getSystemService(Class<T> type) {
+   if (type == android.app.ActivityManager.class) return type.cast(new android.app.ActivityManager());
+   if (type == android.os.PowerManager.class) return type.cast(new android.os.PowerManager());
+   throw new IllegalArgumentException(type.getName());
+ }
 }''',
     'android/util/Base64.java': '''package android.util;
 public final class Base64 {
@@ -53,10 +62,104 @@ public final class Base64 {
  public static byte[] decode(String s,int flags) {return java.util.Base64.getDecoder().decode(s);}
  public static String encodeToString(byte[] v,int flags) {
    return java.util.Base64.getEncoder().encodeToString(v);}
+}''',
+    'android/content/ComponentName.java': '''package android.content;
+public final class ComponentName {
+ private final String pkg, cls;
+ public ComponentName(String pkg,String cls) {this.pkg=pkg;this.cls=cls;}
+ public String getPackageName() {return pkg;}
+ public String getClassName() {return cls;}
+}''',
+    'android/content/Intent.java': '''package android.content;
+public final class Intent {
+ public static final int FLAG_ACTIVITY_NEW_TASK=1, FLAG_ACTIVITY_CLEAR_TOP=2, FLAG_ACTIVITY_SINGLE_TOP=4;
+ public final Class<?> target;
+ public Intent(Context context,Class<?> target) {this.target=target;}
+ public Intent addFlags(int flags) {return this;}
+}''',
+    'android/content/pm/ApplicationInfo.java': '''package android.content.pm;
+public final class ApplicationInfo { public int uid=10001; }''',
+    'android/content/pm/PackageManager.java': '''package android.content.pm;
+public final class PackageManager {
+ public ApplicationInfo getApplicationInfo(String name,int flags) throws NameNotFoundException {
+   return new ApplicationInfo();
+ }
+ public static final class NameNotFoundException extends Exception { }
+}''',
+    'android/app/ActivityManager.java': '''package android.app;
+public final class ActivityManager {
+ public static final java.util.List<String> stopped=new java.util.ArrayList<>();
+ public void forceStopPackage(String name) {stopped.add(name);}
+ public static final class RunningTaskInfo {
+   public android.content.ComponentName topActivity;
+ }
+}''',
+    'android/app/ActivityTaskManager.java': '''package android.app;
+public final class ActivityTaskManager {
+ public static android.content.ComponentName top;
+ public static boolean failure;
+ public static ActivityTaskManager getInstance() {return new ActivityTaskManager();}
+ public java.util.List<ActivityManager.RunningTaskInfo> getTasks(int count) {
+   if (failure) throw new IllegalStateException("fixture task lookup failure");
+   if (top==null) return java.util.Collections.emptyList();
+   ActivityManager.RunningTaskInfo task=new ActivityManager.RunningTaskInfo();
+   task.topActivity=top;
+   return java.util.Collections.singletonList(task);
+ }
+}''',
+    'android/app/Service.java': '''package android.app;
+public class Service extends android.content.Context {
+ public static final int START_STICKY=1;
+ public static final java.util.List<android.content.Intent> started=new java.util.ArrayList<>();
+ public void onCreate() { }
+ public int onStartCommand(android.content.Intent intent,int flags,int startId) {return START_STICKY;}
+ public android.os.IBinder onBind(android.content.Intent intent) {return null;}
+ public void onDestroy() { }
+ public void startActivity(android.content.Intent intent) {started.add(intent);}
+}''',
+    'android/os/Handler.java': '''package android.os;
+public final class Handler {
+ public Handler(Looper looper) { }
+ public void post(Runnable action) { }
+ public void postDelayed(Runnable action,long delay) { }
+ public void removeCallbacksAndMessages(Object token) { }
+}''',
+    'android/os/IBinder.java': 'package android.os; public interface IBinder { }',
+    'android/os/Looper.java': '''package android.os;
+public final class Looper { public static Looper getMainLooper() {return new Looper();} }''',
+    'android/os/PowerManager.java': '''package android.os;
+public final class PowerManager {
+ public static boolean interactive=true;
+ public boolean isInteractive() {return interactive;}
+}''',
+    'android/os/SystemClock.java': '''package android.os;
+public final class SystemClock {
+ public static long now=10000;
+ public static long elapsedRealtime() {return now;}
+}''',
+    'android/os/UserHandle.java': '''package android.os;
+public final class UserHandle { public static int getAppId(int uid) {return uid;} }''',
+    'android/os/Process.java': '''package android.os;
+public final class Process { public static final int FIRST_APPLICATION_UID=10000; }''',
+    'android/util/Log.java': '''package android.util;
+public final class Log {
+ public static int e(String tag,String text,Throwable error) {return 0;}
+ public static int w(String tag,String text,Throwable error) {return 0;}
+}''',
+    'org/firefly/tv/ActivityFixtures.java': '''package org.firefly.tv;
+final class KidsActivity { }
+final class PuzzleActivity { }
+final class ParentalActivity { }
+final class LiveActivity { }
+final class AppLaunch {
+ static final String[] NETWORK={"fixture.tunnel"};
+ static final String[] KODI={"fixture.kodi"}, YOUTUBE={"fixture.youtube"},
+   BILIBILI={"fixture.bilibili"}, IQIYI={"fixture.iqiyi"}, YOUKU={"fixture.youku"};
 }'''
 }
-inputs = [sources / (name + '.java') for name in ['WatchBudget', 'ParentalPrefs', 'PuzzleRound']]
+inputs = [sources / (name + '.java') for name in ['WatchBudget', 'ParentalPrefs', 'PuzzleRound', 'WatchTimeTracker']]
 inputs.append(port / 'tests/ParentalHostTest.java')
+inputs.append(port / 'tests/WatchTimeTrackerHostTest.java')
 with tempfile.TemporaryDirectory() as directory:
     work = Path(directory)
     generated = []
@@ -71,7 +174,7 @@ with tempfile.TemporaryDirectory() as directory:
     if compile_result.returncode == 0:
         run_result = subprocess.run([str(args.jdk / 'bin/java'), '-ea', '-cp',
             str(work / 'classes'), 'org.firefly.tv.ParentalHostTest'], capture_output=True, text=True)
-    report = {'scope': 'JVM production budget/PIN/puzzle logic; SharedPreferences test double',
+    report = {'scope': 'JVM production budget/PIN/puzzle/watchdog decisions; preferences, tasks and service test doubles',
               'compile_exit': compile_result.returncode,
               'compile_output': compile_result.stdout + compile_result.stderr,
               'run_exit': None if run_result is None else run_result.returncode,

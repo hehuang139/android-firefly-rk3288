@@ -24,8 +24,10 @@ export KBUILD_BUILD_HOST=builder
 export KBUILD_BUILD_VERSION=1
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O="$out_dir" olddefconfig
 cmp "$package_dir/firefly-rk3288-final.config" "$out_dir/.config"
-make -j"$jobs" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O="$out_dir" zImage
+make -j"$jobs" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O="$out_dir" zImage modules
 dtc -I dts -O dtb -b 0 -o "$build_root/rk3288-firefly-es8323-npll216.dtb" "$package_dir/device-tree/rk3288-firefly-es8323-npll216.decompiled.dts"
 printf '%s  %s\n' '2021fedaf9241b18d8184191c24a740f05beaceac0aeffb80c41376e1c815c5b' "$build_root/rk3288-firefly-es8323-npll216.dtb" | sha256sum -c -
+python3 "$package_dir/../../scripts/prepare-wifi-kernel.py" \
+    --kernel-build "$out_dir" --output "$build_root/wifi"
 sha256sum "$out_dir/arch/arm/boot/zImage" "$out_dir/.config"
 echo 'Build completed. No board was written. Compare zImage with the recorded tested hash; see README for reproducibility limits.'

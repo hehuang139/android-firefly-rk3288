@@ -1,0 +1,12 @@
+{
+  "scope": "Production clean-EOS recovery policy. MediaPlayer callbacks, delayed Handler generation checks, and device playback require separate integration verification.",
+  "compile_exit": 0,
+  "compile_output": "",
+  "run_exit": 0,
+  "run_output": "Live EOS: bounded rapid retries, exact stable-playback boundary, channel reset, and long-session recovery passed\n",
+  "passed": true,
+  "inputs": {
+    "device/firefly/rk3288/tv/src/org/firefly/tv/LiveReconnectPolicy.java": "ade5d627b7b4fae912e4e1218dcb42ee12373924c42bdf215d9cec09b9e8315c",
+    "tests/LiveReconnectHostTest.java": "36f49b577ef853c29c43ae975a609bb3a2b5a9f0bbcb612759efa4d57ad499b4"
+  }
+}

@@ -33,3 +33,4 @@ board-logs/
 /bootloader/source/uboot-manifest.json
 /kernel/downloads/
 /records/
+/device/firefly/rk3288/wifi/prebuilts/

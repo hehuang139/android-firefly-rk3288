@@ -1,0 +1,26 @@
+{
+  "scope": "Exact pinned patch replay and installer rejection behavior; no hardware operation",
+  "base_commit": "d726afd01e0189180f2e4c61b6c47c556db372da",
+  "passed": true,
+  "cases": [
+    "initial application",
+    "idempotent repeat",
+    "local edit in every patched file rejected",
+    "wrong upstream commit rejected",
+    "original checkout unchanged"
+  ],
+  "files": {
+    "Settings/src/com/android/tv/settings/connectivity/ConnectivityListener.java": {
+      "before_sha256": "da114ecbb4aadd426c9d23e2d8bfb42ce63b9f41c5d2b721a35c29ca87d1640c",
+      "after_sha256": "404295e4a1b6e044adcb030faab63a0096ab571970a94ceb5f9de57c307bb0dd"
+    },
+    "Settings/src/com/android/tv/settings/device/displaysound/ResolutionSelectionFragment.java": {
+      "before_sha256": "1143bf2fb18c6da5f0003931ed28e10e3bbcc1baad423f5b7d8dc6d9147996d0",
+      "after_sha256": "d18e04f59d4b0aaf69f3825ad319b6d008e4d07ef3839800638c4a25173e56bf"
+    },
+    "Settings/src/com/android/tv/settings/connectivity/NetworkFragment.java": {
+      "before_sha256": "7cb681c7b6abdbe331dd7b18c8023720b8c9c228f3e2e8482d7151bf4fa37e62",
+      "after_sha256": "eaea44970db1330d2a1f15b0808f5c6676c5824183b6dba8c323e221a2ba98a7"
+    }
+  }
+}

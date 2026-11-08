@@ -1,0 +1,52 @@
+{
+  "packages": {
+    "linux-firmware": {
+      "version": "20220329.git681281e4-0ubuntu3.42",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/linux-firmware_20220329.git681281e4-0ubuntu3.42_all.deb",
+      "sha256": "ca7b1966610574959c044476f905761fb37a2cf2c0ea87778286a6f921afdcf1",
+      "bytes": 316373280
+    },
+    "wireless-regdb": {
+      "version": "2026.05.30-0ubuntu1~22.04.1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/w/wireless-regdb/wireless-regdb_2026.05.30-0ubuntu1~22.04.1_all.deb",
+      "sha256": "0c8f9893f577c890b3dd6d1f2b90a564b1627879dd58b2bf3ce17434d5ca17d0",
+      "bytes": 10178
+    }
+  },
+  "files": [
+    {
+      "package": "linux-firmware",
+      "member": "lib/firmware/brcm/brcmfmac4335-sdio.bin",
+      "destination": "brcm/brcmfmac4335-sdio.bin",
+      "sha256": "1551fd7680db31d230c70f55860ca071331a37eeb54c9229307b8fa475f9d6e7",
+      "bytes": 569291
+    },
+    {
+      "package": "linux-firmware",
+      "member": "lib/firmware/cypress/cyfmac4339-sdio.bin",
+      "destination": "brcm/brcmfmac4339-sdio.bin",
+      "sha256": "c366f88569dab307dc04aca88dabca74b5333fcf5968f5b36ab96a154fb7718e",
+      "bytes": 574096
+    },
+    {
+      "package": "wireless-regdb",
+      "member": "lib/firmware/regulatory.db",
+      "destination": "regulatory.db",
+      "sha256": "2fb33ca0074db573e05ef7dd50bb45b63c0ff98b7e852e1105ebad536fae8e6b",
+      "bytes": 6380
+    },
+    {
+      "package": "wireless-regdb",
+      "member": "lib/firmware/regulatory.db.p7s",
+      "destination": "regulatory.db.p7s",
+      "sha256": "c941c08f51c93e46722293b85631604c3740d86c3de0c75f79aef50d2e919179",
+      "bytes": 1085
+    }
+  ],
+  "nvram_template": {
+    "url": "https://raw.githubusercontent.com/radxa/rkwifibt/bf5f91cb0e641962630979a8b73f668ae8bd8ed9/firmware/broadcom/AP6335/wifi/nvram_ap6335.txt",
+    "sha256": "9f6dbebb3f0b078831de6d0998e8bdbae421015beeabb22d3774f5c66b99a326",
+    "bytes": 2361,
+    "redistribution_license": "not confirmed; download for local evaluation only; prefer your module-specific calibrated file"
+  }
+}
